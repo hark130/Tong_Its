@@ -23,7 +23,6 @@ class Tong_Its_Game
 {
 public:
 	Tong_Its_Game(const shared_ptr<string>& humanPlayerName);
-private:
 	Tong_Its_Player player1;
 	Tong_Its_Player player2;
 	Tong_Its_Player player3;

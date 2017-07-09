@@ -31,11 +31,12 @@ int Tong_Its_Player::count_chips(void)
 /***********************/
 /* TONG ITS GAME BEGIN */
 /***********************/
-Tong_Its_Game::Tong_Its_Game(const shared_ptr<string>& humanPlayerName)
+Tong_Its_Game::Tong_Its_Game(const shared_ptr<string>& humanPlayerName) : \
+player1(*humanPlayerName), player2(string("Player2")), player3(string("Player3"))
 {
-	player1 = Tong_Its_Player(*humanPlayerName);
-	player2 = Tong_Its_Player(string("Player 2"));
-	player3 = Tong_Its_Player(string("Player 3"));
+	// player1 = Tong_Its_Player::Tong_Its_Player(*humanPlayerName);
+	// player2 = Tong_Its_Player(string("Player 2"));
+	// player3 = Tong_Its_Player(string("Player 3"));
 }
 /*********************/
 /* TONG ITS GAME END */

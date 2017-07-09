@@ -11,7 +11,7 @@ int main(void)
     auto me = make_shared<string>(string("Joe"));
     // cout << *me << endl;  // DEBUGGING
     auto game = Tong_Its_Game(me);
-    // Tong_Its_Game(string("Joe"));  // DOESN'T WORK
+    cout << game.player1.count_chips() << endl;
 
     return 0;
 }

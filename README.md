@@ -1,5 +1,6 @@
 # Tong_Its
-Command line replication of the Filipino card game "Tong Its" in C++
+Command line replication of the Filipino card game ["Tong Its"](https://www.pagat.com/rummy/tong-its.html) in C++
+
 
 ## Why?
 * I haven't programmed anything in a while (I'm supposed to be on vacation)

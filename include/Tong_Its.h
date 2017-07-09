@@ -4,8 +4,17 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <vector>
 
 using namespace std;
+
+typedef struct Playing_Card
+{
+	string rank;  	// Value as a string
+	char16_t suit;  // U+2660–2667
+	int value;		// Value as a number
+} PCard, *PCard_ptr;
+
 
 class Tong_Its_Player
 {
@@ -36,7 +45,8 @@ public:
 	Tong_Its_Player player2;
 	Tong_Its_Player player3;
 private:
-	// Deck == vector of unique pointers to Card objects
+	// Builds a vector of unique pointers to Card objects
+	shared_ptr<vector<unique_ptr<PCard>>> build_a_deck(void);
 	// Discard == vector of unique pointers to Card objects
 	// currentPlayer
 

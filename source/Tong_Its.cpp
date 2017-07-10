@@ -204,8 +204,7 @@ void Tong_Its_Game::TEST_the_deck(void)
         cout << "Draw pile is empty!" << endl;
     }        
 
-    // _setmode(_fileno(stdout), _O_U16TEXT);  // DOESN'T WORK... Windows specific?
-    setlocale(LC_ALL, "");
+    // setlocale(LC_ALL, "");
     for (int i = 0; i < (*drawPile).size(); ++i)
     {
         cout << "Card # " << i + 1 << endl;
@@ -221,8 +220,6 @@ void Tong_Its_Game::TEST_the_deck(void)
 
 shared_ptr<vector<shared_ptr<PCard>>> Tong_Its_Game::build_a_deck(void)
 {
-    // shared_ptr<vector<shared_ptr<PCard>>> retVal;  // ...
-    // ...= make_shared<vector<shared_ptr<PCard>>>();
     auto retVal = make_shared<vector<shared_ptr<PCard>>>();
     shared_ptr<PCard> tempCard;
     vector<string> cardRanks = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
@@ -240,18 +237,12 @@ shared_ptr<vector<shared_ptr<PCard>>> Tong_Its_Game::build_a_deck(void)
                 tempCard = make_shared<PCard>(PCard(rank, suit));
                 (*retVal).emplace_back(tempCard);
             }
-        }
-        
-        // retVal.emplace_back(tempCard);
-        // (*retVal).emplace_back(make_shared<PCard>(PCard("A", SPADE)));
+        }        
     }
     catch (...)
     {
         cout << "EXCEPTION!";  // DEBUGGING
     }
-    // Hearts
-    // Diamonds
-    // Clubs
 
     return retVal;
 }

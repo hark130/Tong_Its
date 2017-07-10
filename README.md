@@ -21,7 +21,7 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 * Hand printer <br />
     [ ] Prints horizontally, or vertically <br />
 * Card dealer <br />
-    [ ] Deal cards to all the players
+    [X] Deal cards to all the players
 * Deck builder <br />
     [X] Allocates shared pointers to a Card class <br />
     [X] Builds vector of cards <br />

@@ -28,7 +28,7 @@ public:
 private:
     string name;
     int numOfChips;
-    // Hand == vector of unique pointers to Card objects
+    shared_ptr<vector<shared_ptr<PCard>>> playersHand;
     // AI decision algorithm
     //    Random Plays
     //    Overt
@@ -48,12 +48,19 @@ public:
     Tong_Its_Player player2;
     Tong_Its_Player player3;
     void TEST_the_deck(void);  // DEBUGGING
-    void shuffle_a_deck(shared_ptr<vector<shared_ptr<PCard>>>);
+    Tong_Its_Player currentDealer;  // Also the last winner
 private:
     // Builds a vector of unique pointers to Card objects
     shared_ptr<vector<shared_ptr<PCard>>> build_a_deck(void);
     // Current draw pile of unseen cards
     shared_ptr<vector<shared_ptr<PCard>>> drawPile;
+    // Randomizes the order of a vector of card pointers
+    void shuffle_a_deck(shared_ptr<vector<shared_ptr<PCard>>> deckOfCards);
+    // Used to play, discard, deal, etc
+    void move_one_card(int cardNumber, shared_ptr<vector<shared_ptr<PCard>>> source, \
+                       shared_ptr<vector<shared_ptr<PCard>>> destination);
+
+    void deal_player_hands(void);
     // Discard == vector of unique pointers to Card objects
     // currentPlayer
 

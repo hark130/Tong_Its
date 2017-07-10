@@ -3,12 +3,14 @@
 #include "Tong_Its.h"
 #include <algorithm>    // random_shuffle
 // #include <clocale>         // Set locale
+#include <cstdlib>      // srand
 // #include <fcntl.h>      // Set mode 16 bit
 #include <iostream>
 // #include <io.h>         // Set mode 16 bit
 #include <locale>
 #include <memory>
 #include <string>
+#include <ctime>         // time
 #include <vector>
 
 #define CONTRAST 10  // 0 for normal, 1 for contrast
@@ -257,6 +259,8 @@ shared_ptr<vector<shared_ptr<PCard>>> Tong_Its_Game::build_a_deck(void)
  */
 void Tong_Its_Game::shuffle_a_deck(shared_ptr<vector<shared_ptr<PCard>>> deckOfCards)
 {
+    srand(unsigned(time(NULL)));
+
     random_shuffle((*deckOfCards).begin(), (*deckOfCards).end());
 
     return;

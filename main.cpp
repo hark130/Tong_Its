@@ -12,7 +12,7 @@ int main(void)
     // cout << *me << endl;  // DEBUGGING
     auto game = Tong_Its_Game(me);
     // cout << game.player1.count_chips() << endl;  // DEBUGGING
-    // game.TEST_the_deck();  // DEBUGGING
+    game.TEST_the_deck();  // DEBUGGING
 
     return 0;
 }

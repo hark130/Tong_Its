@@ -24,8 +24,8 @@ NOTE: I wanted std::make_unique so I needed C++ 14
     [X] Allocates shared pointers to a Card class <br />
     [X] Builds vector of cards <br />
 * Shuffler <br />
-    [ ] Calls randomizer <br />
-    [ ] Randomizes the order of the vector of unique pointers to the Card objects <br />
+    [X] Calls randomizer <br />
+    [X] Randomizes the order of the vector of unique pointers to the Card objects <br />
 * Randomizer <br />
     [ ] Returns a random number from x to y <br />
 

@@ -9,7 +9,7 @@ Command line replication of the Filipino card game ["Tong Its"](https://www.paga
 
 
 ## How?
-g++ --std=c++14 -I include source/Tong_Its.cpp main.cpp -o game
+g++ --std=c++14 -I include source/Tong_Its.cpp main.cpp -o game.exe
 ./game
 NOTE: I wanted std::make_unique so I needed C++ 14
 

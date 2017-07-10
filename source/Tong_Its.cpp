@@ -1,6 +1,7 @@
 // #include "../include/Tong_Its.h"
 // #include "include/Tong_Its.h"
 #include "Tong_Its.h"
+#include <algorithm>    // random_shuffle
 // #include <clocale>         // Set locale
 // #include <fcntl.h>      // Set mode 16 bit
 #include <iostream>
@@ -178,6 +179,7 @@ player1(*humanPlayerName), player2(string("Player2")), player3(string("Player3")
     // cout << "Function call to build_a_deck()" << endl;  // DEBUGGING
     drawPile = build_a_deck();
     // cout << "build_a_deck() made " << drawPile << endl;  // DEBUGGING
+    shuffle_a_deck(drawPile);
 }
 
 
@@ -225,7 +227,7 @@ shared_ptr<vector<shared_ptr<PCard>>> Tong_Its_Game::build_a_deck(void)
     vector<string> cardRanks = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
     vector<string> cardSuits = {spadeString, clubString, heartString, diamondString};
 
-    // Spades
+    // Build the deck
     try
     {
         // cout << "Building deck." << endl;  // DEBUGGING
@@ -245,6 +247,19 @@ shared_ptr<vector<shared_ptr<PCard>>> Tong_Its_Game::build_a_deck(void)
     }
 
     return retVal;
+}
+
+
+/*
+    Input - Shared pointer to a vector of PCard shared pointers (see: Pointer to a stack of cards)
+    Output - None
+    Purpose - Shuffle the cards
+ */
+void Tong_Its_Game::shuffle_a_deck(shared_ptr<vector<shared_ptr<PCard>>> deckOfCards)
+{
+    random_shuffle((*deckOfCards).begin(), (*deckOfCards).end());
+
+    return;
 }
 /*********************/
 /* TONG ITS GAME END */

@@ -48,6 +48,7 @@ public:
     Tong_Its_Player player2;
     Tong_Its_Player player3;
     void TEST_the_deck(void);  // DEBUGGING
+    void shuffle_a_deck(shared_ptr<vector<shared_ptr<PCard>>>);
 private:
     // Builds a vector of unique pointers to Card objects
     shared_ptr<vector<shared_ptr<PCard>>> build_a_deck(void);

@@ -22,9 +22,12 @@ class Tong_Its_Player
 {
 public:
     Tong_Its_Player(string playerName);
+    // ~Tong_Its_Player();
+    void TEST_the_hand(void);
     string get_name(void);
     int count_chips(void);
     // int count_cards(void);
+    void receive_a_card(shared_ptr<PCard> drawnCard);
 private:
     string name;
     int numOfChips;
@@ -43,12 +46,14 @@ private:
 class Tong_Its_Game 
 {
 public:
+    // Tong_Its_Game(shared_ptr<string> humanPlayerName);
     Tong_Its_Game(const shared_ptr<string>& humanPlayerName);
+    // ~Tong_Its_Game();
     Tong_Its_Player player1;
     Tong_Its_Player player2;
     Tong_Its_Player player3;
-    void TEST_the_deck(void);  // DEBUGGING
-    Tong_Its_Player currentDealer;  // Also the last winner
+    void TEST_the_deck(shared_ptr<vector<shared_ptr<PCard>>> deckToTest);  // DEBUGGING
+    // int currentDealer;  // Also the last winner
 private:
     // Builds a vector of unique pointers to Card objects
     shared_ptr<vector<shared_ptr<PCard>>> build_a_deck(void);
@@ -60,7 +65,7 @@ private:
     void move_one_card(int cardNumber, shared_ptr<vector<shared_ptr<PCard>>> source, \
                        shared_ptr<vector<shared_ptr<PCard>>> destination);
 
-    void deal_player_hands(void);
+    void deal_player_hands(Tong_Its_Player currentDealer);
     // Discard == vector of unique pointers to Card objects
     // currentPlayer
 

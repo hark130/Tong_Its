@@ -30,4 +30,9 @@ NOTE: I wanted std::make_unique so I needed C++ 14
     [X] Randomizes the order of the vector of unique pointers to the Card objects <br />
 * Randomizer <br />
     [ ] Returns a random number from x to y <br />
+* Game Playe <br />
+    [ ] {re}Implement "currentDealer" functionality
+
+## Refactoring
+* Better way to move cards from a game-private deck member variable to a player-private hand member variable than "tempDeck"?
 

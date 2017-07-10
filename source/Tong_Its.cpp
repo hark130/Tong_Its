@@ -140,30 +140,75 @@ Playing_Card::Playing_Card(string pcRank, string pcSuit)
     rank = pcRank;
 }
 
-/***********************/
-/* TONG ITS PLAYER END */
-/***********************/
+/********************/
+/* PLAYING CARD END */
+/********************/
 
 
 /*************************/
 /* TONG ITS PLAYER BEGIN */
 /*************************/
-Tong_Its_Player::Tong_Its_Player(string playerName)
+Tong_Its_Player::Tong_Its_Player(string playerName) : 
+name(playerName), numOfChips(100), playersHand(make_shared<vector<shared_ptr<PCard>>>())
 {
-    name = playerName;
-    numOfChips = 100;
+    // cout << "Player Name: " << playerName << endl;  // DEBUGGING
+    // name = playerName;
+    // numOfChips = 100;
+    // playersHand = make_shared<vector<shared_ptr<PCard>>>();
 }
+
+
+void Tong_Its_Player::TEST_the_hand(void)
+{
+    cout << "Testing the deck" << endl;
+    if (playersHand)
+    {
+        cout << "Deck size: " << (*playersHand).size() << endl;
+    }
+    else
+    {
+        cout << "Deck is empty!" << endl;
+    }        
+
+    // setlocale(LC_ALL, "");
+    for (int i = 0; i < (*playersHand).size(); ++i)
+    {
+        cout << "\nCard # " << i + 1 << endl;
+        cout << "Rank: " << (*playersHand)[i]->rank << endl;
+        cout << "Suit: " << (*playersHand)[i]->suit << endl;
+        cout << "Value: " << (*playersHand)[i]->value << endl;
+    }
+
+    return;
+}
+
 
 string Tong_Its_Player::get_name(void)
 {
     return name;
 }
 
+
 int Tong_Its_Player::count_chips(void)
 {
     return numOfChips;
 }
 
+
+void Tong_Its_Player::receive_a_card(shared_ptr<PCard> drawnCard)
+{
+    if (drawnCard)
+    {
+        (*playersHand).push_back(drawnCard);
+    }
+    else
+    {
+        throw invalid_argument("NULL card pointer");
+        // throw exception("NULL card pointer");
+    }
+
+    return;
+}
 /***********************/
 /* TONG ITS PLAYER END */
 /***********************/
@@ -172,50 +217,47 @@ int Tong_Its_Player::count_chips(void)
 /***********************/
 /* TONG ITS GAME BEGIN */
 /***********************/
-Tong_Its_Game::Tong_Its_Game(const shared_ptr<string>& humanPlayerName) : \
-player1(*humanPlayerName), player2(string("Player2")), player3(string("Player3")) //, drawPile(build_a_deck()))
+// Tong_Its_Game::Tong_Its_Game(shared_ptr<string> humanPlayerName) : 
+Tong_Its_Game::Tong_Its_Game(const shared_ptr<string>& humanPlayerName) : 
+player1(*humanPlayerName), player2(string("Player2")), player3(string("Player3"))
+// player1(*humanPlayerName), player2(string("Player2")), player3(string("Player3"))
+// player1("Human"), player2("Player2"), player3("Player3")
+// player1(*humanPlayerName), player2(*humanPlayerName), player3(*humanPlayerName)
+
 {
     // player1 = Tong_Its_Player::Tong_Its_Player(*humanPlayerName);
     // player2 = Tong_Its_Player(string("Player 2"));
     // player3 = Tong_Its_Player(string("Player 3"));
-    // cout << "Function call to build_a_deck()" << endl;  // DEBUGGING
+    cout << "Function call to build_a_deck()" << endl;  // DEBUGGING
     drawPile = build_a_deck();
     // cout << "build_a_deck() made " << drawPile << endl;  // DEBUGGING
+    cout << "Function call to shuffle_a_deck()" << endl;  // DEBUGGING
     shuffle_a_deck(drawPile);
+    // currentDealer = 1;
+    cout << "Function call to deal_player_hands()" << endl;  // DEBUGGING
+    deal_player_hands(player1);
 }
 
 
-void Tong_Its_Game::TEST_the_deck(void)
+void Tong_Its_Game::TEST_the_deck(shared_ptr<vector<shared_ptr<PCard>>> deckToTest)
 {
-    // for (shared_ptr<PCard> card : drawPile)
-    // {
-    //     cout << "Rank: " << card->rank;
-    //     cout << "Suit: " << card->suit;
-    //     cout << "Value: " << card->value << endl;
-    // }
-
-    // cout << "Rank: " << *drawPile.begin()->rank;
-    // cout << "Suit: " << *drawPile.begin()->suit;
-    // cout << "Value: " << *drawPile.begin()->value << endl;
-
     cout << "Testing the deck" << endl;
-    if (drawPile)
+    if (deckToTest)
     {
-        cout << "Draw pile size: " << (*drawPile).size() << endl;
+        cout << "Deck size: " << (*deckToTest).size() << endl;
     }
     else
     {
-        cout << "Draw pile is empty!" << endl;
+        cout << "Deck is empty!" << endl;
     }        
 
     // setlocale(LC_ALL, "");
-    for (int i = 0; i < (*drawPile).size(); ++i)
+    for (int i = 0; i < (*deckToTest).size(); ++i)
     {
-        cout << "Card # " << i + 1 << endl;
-        cout << "Rank: " << (*drawPile)[i]->rank << endl;
-        cout << "Suit: " << (*drawPile)[i]->suit << endl;
-        // wcout << L"Suit: " << (*drawPile)[i]->suit << endl;
-        cout << "Value: " << (*drawPile)[i]->value << endl;
+        cout << "\nCard # " << i + 1 << endl;
+        cout << "Rank: " << (*deckToTest)[i]->rank << endl;
+        cout << "Suit: " << (*deckToTest)[i]->suit << endl;
+        cout << "Value: " << (*deckToTest)[i]->value << endl;
     }
 
     return;
@@ -265,6 +307,105 @@ void Tong_Its_Game::shuffle_a_deck(shared_ptr<vector<shared_ptr<PCard>>> deckOfC
 
     return;
 }
+
+
+/*
+    Input
+        cardNumber - 1 through N, human readable card number
+        source - shared pointer to a vector of card pointers to take from
+        destination - shared pointer to a vector of card pointers to give to
+    Output - None
+    Purpose - Take a given card number from a deck and place that card in another deck
+ */
+void Tong_Its_Game::move_one_card(int cardNumber, shared_ptr<vector<shared_ptr<PCard>>> source, \
+                                  shared_ptr<vector<shared_ptr<PCard>>> destination)
+{
+    if (source == nullptr)
+    {
+        throw runtime_error("Source deck is NULL");
+    }
+    else if (destination == nullptr)
+    {
+        throw runtime_error("Destination deck is NULL");
+    }
+    else if (cardNumber < 1)
+    {
+        throw range_error("Invalid card number");
+    }
+    else if (cardNumber > (*source).size())
+    {
+        throw out_of_range("This card number does not exist in the source deck");
+    }
+
+    // Get the vector
+    auto tempVector = (*source);
+    // TEST_the_deck(source);  // DEBUGGING
+
+    // Get the card
+    // auto tempCard = tempVector.at(cardNumber - 1)
+    shared_ptr<PCard> tempCard = tempVector.at(cardNumber - 1);
+    // cout << "Temp Card Rank: " << tempCard->rank << endl;  // DEBUGGING
+    // auto tempCard = (*source).at(cardNumber - 1)
+
+    // Erase the card from source
+    // tempVector.erase(tempVector.begin() + cardNumber - 1);
+    // (*source).erase((*source).begin() + cardNumber - 1);
+
+    // Insert the card into destination
+    // tempVector = (*destination);
+    // (*destination).push_back(tempCard);
+    // tempVector.emplace_back(tempCard);
+    // tempVector.push_back(tempCard);
+    (*destination).push_back(tempCard);
+
+
+    return;
+}
+
+
+/*
+    Note - 13 cards to the dealer, 12 cards to the other players
+ */
+void Tong_Its_Game::deal_player_hands(Tong_Its_Player currentDealer)
+{
+    auto tempDeck = make_shared<vector<shared_ptr<PCard>>>();
+    // auto tempCard = make_shared<PCard>();
+
+
+    // One to the dealer   
+    move_one_card(1, drawPile, tempDeck);
+    // cout << (*tempDeck).size();  // DEBUGGING
+    auto tempCard = (*tempDeck).at(0);
+    // cout << "Dealer!\n";  // DEBUGGING
+    currentDealer.receive_a_card(tempCard);
+    (*tempDeck).erase((*tempDeck).begin());
+
+    // 12 to everyone
+    for (int i = 0; i < 12; ++i)
+    {
+        move_one_card(1, drawPile, tempDeck);
+        tempCard = (*tempDeck).at(0);
+        player1.receive_a_card(tempCard);
+        // cout << "Player 1";  // DEBUGGING
+        (*tempDeck).pop_back();
+
+        move_one_card(1, drawPile, tempDeck);
+        tempCard = (*tempDeck).at(0);
+        player2.receive_a_card(tempCard);
+        // cout << "Player 2";  // DEBUGGING
+        (*tempDeck).pop_back();
+
+        move_one_card(1, drawPile, tempDeck);
+        tempCard = (*tempDeck).at(0);
+        player3.receive_a_card(tempCard);
+        // cout << "Player 3";  // DEBUGGING
+        (*tempDeck).pop_back();
+    }
+
+    return;
+}
+
+
 /*********************/
 /* TONG ITS GAME END */
 /*********************/

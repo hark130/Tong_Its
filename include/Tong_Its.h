@@ -6,6 +6,14 @@
 #include <string>
 #include <vector>
 
+#define BORDER_UPPER_LEFT (char(201))
+#define BORDER_UPPER_RIGHT ((unsigned char)187)
+#define BORDER_VERTICAL ((unsigned char)186)
+#define BORDER_LOWER_RIGHT ((unsigned char)188)
+#define BORDER_LOWER_LEFT ((unsigned char)200)
+#define BORDER_HORIZONTAL ((unsigned char)205)
+#define BORDER_SPACE ((unsigned char)' ')
+
 using namespace std;
 
 typedef struct Playing_Card
@@ -66,6 +74,7 @@ private:
                        shared_ptr<vector<shared_ptr<PCard>>> destination);
 
     void deal_player_hands(Tong_Its_Player currentDealer);
+    void print_a_card(shared_ptr<PCard> cardToPrint);
     // Discard == vector of unique pointers to Card objects
     // currentPlayer
 

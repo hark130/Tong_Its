@@ -13,36 +13,38 @@
 #include <ctime>         // time
 #include <vector>
 
-#define CONTRAST 10  // 0 for normal, 1 for contrast
+// #define CONTRAST 10  // 0 for normal, 1 for contrast
 
-#if CONTRAST == 1
-#define SPADE ((char16_t) '\u2664')    // ♤
-#define HEART ((char16_t) '\u2665')    // ♥
-#define DIAMOND ((char16_t) '\u2666')  // ♦
-#define CLUB ((char16_t) '\u2667')     // ♧
-#elif CONTRAST == 69
-#define SPADE L'♤'
-#define HEART L'♥'
-#define DIAMOND L'♦'
-#define CLUB L'♧'
-#elif CONTRAST == 10
-    #if defined(_WIN32) || defined(__MSDOS__)
-       #define SPADE   "\x06"
-       #define CLUB    "\x05"
-       #define HEART   "\x03"
-       #define DIAMOND "\x04"
-    #else
-       #define SPADE   "\xE2\x99\xA0"
-       #define CLUB    "\xE2\x99\xA3"
-       #define HEART   "\xE2\x99\xA5"
-       #define DIAMOND "\xE2\x99\xA6"
-    #endif
+// #if CONTRAST == 1
+// #define SPADE ((char16_t) '\u2664')    // ♤
+// #define HEART ((char16_t) '\u2665')    // ♥
+// #define DIAMOND ((char16_t) '\u2666')  // ♦
+// #define CLUB ((char16_t) '\u2667')     // ♧
+// #elif CONTRAST == 69
+// #define SPADE L'♤'
+// #define HEART L'♥'
+// #define DIAMOND L'♦'
+// #define CLUB L'♧'
+// #elif CONTRAST == 10
+#if defined(_WIN32) || defined(__MSDOS__)
+   #define SPADE   "\x06"
+   #define CLUB    "\x05"
+   #define HEART   "\x03"
+   #define DIAMOND "\x04"
 #else
-#define SPADE ((char16_t) '\u2660')    // ♠
-#define HEART ((char16_t) '\u2661')    // ♡
-#define DIAMOND ((char16_t) '\u2662')  // ♢
-#define CLUB ((char16_t) '\u2663')     // ♣
-#endif // Conditional suit values
+   #define SPADE   "\xE2\x99\xA0"
+   #define CLUB    "\xE2\x99\xA3"
+   #define HEART   "\xE2\x99\xA5"
+   #define DIAMOND "\xE2\x99\xA6"
+#endif
+// #else
+// #define SPADE ((char16_t) '\u2660')    // ♠
+// #define HEART ((char16_t) '\u2661')    // ♡
+// #define DIAMOND ((char16_t) '\u2662')  // ♢
+// #define CLUB ((char16_t) '\u2663')     // ♣
+// #endif // Conditional suit values
+
+
 
 using namespace std;
 const auto spadeString = string(SPADE);
@@ -236,6 +238,7 @@ player1(*humanPlayerName), player2(string("Player2")), player3(string("Player3")
     // currentDealer = 1;
     cout << "Function call to deal_player_hands()" << endl;  // DEBUGGING
     deal_player_hands(player1);
+    print_a_card((*drawPile).at(0));
 }
 
 
@@ -405,6 +408,29 @@ void Tong_Its_Game::deal_player_hands(Tong_Its_Player currentDealer)
     return;
 }
 
+
+void Tong_Its_Game::print_a_card(shared_ptr<PCard> cardToPrint)
+{
+    if (cardToPrint)
+    {
+        cout << BORDER_UPPER_LEFT << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_UPPER_RIGHT << endl;
+
+    }
+    else
+    {
+        throw invalid_argument("NULL card pointer");
+    }
+
+    for (wchar_t i = 0; i < 512; ++i)
+    {
+        // cout << char(i);
+        wcout << int(i) << ": " << i;
+        // printf("%c%c%c%c%c ", BORDER_VERTICAL, BORDER_SPACE, BORDER_SPACE, BORDER_SPACE, BORDER_VERTICAL);
+        // printf("%c ", i);
+    }
+
+    return;
+}
 
 /*********************/
 /* TONG ITS GAME END */

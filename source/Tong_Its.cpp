@@ -15,6 +15,7 @@
 #include <vector>
 
 #define CLEAR_SCREEN 30     // Number of newlines to print to clear the screen 
+#define USER_EXIT 999       // User interface indication to quit the program
 
 // #define CONTRAST 10  // 0 for normal, 1 for contrast
 
@@ -263,7 +264,22 @@ shared_ptr<PCard> Tong_Its_Player::play_a_card(int cardNumber)
 
 void Tong_Its_Player::print_players_hand(void)
 {
-    cout << "print_players_hand() not yet implemented!" << endl;
+    int totalCards = (*playersHand).size();
+    int currentCardNum = 0;
+    // Number of full rows
+    int numOfFullRows = (totalCards - totalCards % 4) / 4;
+    int numOfPrintedRows = numOfFullRows;
+    int numOfLeftovers = totalCards % 4;
+    // Spare row
+    if (numOfLeftovers != 0)
+    {
+        ++numOfPrintedRows;
+    }
+
+    cout << "Number of rows: " << numOfPrintedRows << endl;  // DEBUGGING
+
+
+    // cout << "print_players_hand() not yet implemented!" << endl;
 
     return;
 }
@@ -272,6 +288,18 @@ void Tong_Its_Player::print_players_hand(void)
 void Tong_Its_Player::sort_players_hand(void)
 {
     cout << "sort_players_hand() not yet implemented!" << endl;
+
+    return;
+}
+
+
+void Tong_Its_Player::print_a_row(int rowToPrint)
+{
+    int numCardsToPrint = 
+    shared_ptr<PCard> card1 = 
+    shared_ptr<PCard> card2 = 
+    shared_ptr<PCard> card3 = 
+    shared_ptr<PCard> card4 = 
 
     return;
 }
@@ -321,12 +349,14 @@ player1(*humanPlayerName), player2(string("Mike")), player3(string("Eren"))
 
 void Tong_Its_Game::start_the_game(void)
 {
-    while(1)
+    int gameOver = 0;
+
+    while(gameOver != USER_EXIT)
     {
         // 1. Whose turn is it?
         if (currentPlayer == 1)
         {
-            user_interface();
+            gameOver = user_interface();
         }
         else if (currentPlayer == 2 || currentPlayer == 3)
         {
@@ -532,7 +562,7 @@ void Tong_Its_Game::print_a_card(shared_ptr<PCard> cardToPrint)
 }
 
 
-void Tong_Its_Game::user_interface(void)
+int Tong_Its_Game::user_interface(void)
 {
     auto tempCard = make_shared<PCard>(" ", " ");
     string dynamicChoice1opt1 = string("Draw a card");
@@ -548,7 +578,7 @@ void Tong_Its_Game::user_interface(void)
 
     game_state();
 
-    while(menuChoice != 999 && isTurnOver == false)
+    while(menuChoice != USER_EXIT && isTurnOver == false)
     {
         // Reset temp variables
         menuChoice = 0;
@@ -563,7 +593,7 @@ void Tong_Its_Game::user_interface(void)
         cout << "2. " << dynamicChoice2 << endl;
         cout << "3. " << dynamicChoice3 << endl;
         cout << "4. " << dynamicChoice4 << endl;
-        cout << "999. " << dynamicChoice9 << endl;
+        cout << USER_EXIT << ". " << dynamicChoice9 << endl;
 
         // Take user input
         menuChoice = input_number();
@@ -633,7 +663,6 @@ void Tong_Its_Game::user_interface(void)
                     cout << "\n";
                 }
                 game_state();
-                player1.print_players_hand();
                 break;
             case 3:
                 // Behavior
@@ -641,7 +670,7 @@ void Tong_Its_Game::user_interface(void)
             case 4:
                 // Behavior
                 // break;
-            case 999:
+            case USER_EXIT:
                 cout << "Exiting game" << endl;
                 break;
             default:
@@ -650,7 +679,7 @@ void Tong_Its_Game::user_interface(void)
         }
     }
 
-    return;
+    return menuChoice;
 }
 
 
@@ -677,6 +706,10 @@ void Tong_Its_Game::game_state(void)
         print_a_card(blankCard);
     }
     cout << "\n";
+
+    // Print player's hand
+    cout << "YOUR HAND" << endl;
+    player1.print_players_hand();
 
     return;
 }

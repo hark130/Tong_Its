@@ -58,6 +58,7 @@ private:
     int numOfChips;
     int numOfCards;
     shared_ptr<vector<shared_ptr<PCard>>> playersHand;
+    void print_a_row(int rowToPrint);
     // AI decision algorithm
     //    Random Plays
     //    Overt
@@ -102,7 +103,7 @@ private:
 
     void deal_player_hands(Tong_Its_Player currentDealer);
     void print_a_card(shared_ptr<PCard> cardToPrint);
-    void user_interface(void);
+    int user_interface(void);
     void game_state(void);
     int next_player(void);
 

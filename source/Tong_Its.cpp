@@ -409,24 +409,20 @@ void Tong_Its_Game::deal_player_hands(Tong_Its_Player currentDealer)
 }
 
 
+
 void Tong_Its_Game::print_a_card(shared_ptr<PCard> cardToPrint)
 {
     if (cardToPrint)
     {
-        cout << BORDER_UPPER_LEFT << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_UPPER_RIGHT << endl;
-
+        cout << BORDER_UPPER_LEFT << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_UPPER_RIGHT << endl;
+        cout << BORDER_VERTICAL << cardToPrint->rank << BORDER_SPACE << BORDER_SPACE << BORDER_SPACE << BORDER_VERTICAL << endl;
+        cout << BORDER_VERTICAL << BORDER_SPACE << cardToPrint->suit << BORDER_SPACE << BORDER_SPACE << BORDER_VERTICAL << endl;
+        cout << BORDER_VERTICAL << BORDER_SPACE << BORDER_SPACE << BORDER_SPACE << cardToPrint->rank << BORDER_VERTICAL << endl;
+        cout << BORDER_LOWER_LEFT << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_LOWER_RIGHT << endl;
     }
     else
     {
         throw invalid_argument("NULL card pointer");
-    }
-
-    for (wchar_t i = 0; i < 512; ++i)
-    {
-        // cout << char(i);
-        wcout << int(i) << ": " << i;
-        // printf("%c%c%c%c%c ", BORDER_VERTICAL, BORDER_SPACE, BORDER_SPACE, BORDER_SPACE, BORDER_VERTICAL);
-        // printf("%c ", i);
     }
 
     return;
@@ -435,3 +431,45 @@ void Tong_Its_Game::print_a_card(shared_ptr<PCard> cardToPrint)
 /*********************/
 /* TONG ITS GAME END */
 /*********************/
+
+
+/*
+CARD DESIGNS
+#define SPADE L'♤'
+#define HEART L'♥'
+#define DIAMOND L'♦'
+#define CLUB L'♧'
+#define BORDER_UPPER_LEFT "╔"
+#define BORDER_UPPER_RIGHT "╗"
+#define BORDER_VERTICAL "║"
+#define BORDER_LOWER_RIGHT "╝"
+#define BORDER_LOWER_LEFT "╚"
+#define BORDER_HORIZONTAL "═"
+╔═══╗
+║ A ║
+║ ♤ ║
+╚═══╝ 
+
+╔═══╗
+║ K ║
+║ ♥ ║
+╚═══╝ 
+
+╔═══╗
+║ 2 ║
+║ ♧ ║
+╚═══╝ 
+
+╔═════╗
+║ 2   ║
+║  ♧  ║
+║   2 ║
+╚═════╝ 
+
+╔═══╗
+║2  ║
+║ ♧ ║
+║  2║
+╚═══╝ 
+
+ */

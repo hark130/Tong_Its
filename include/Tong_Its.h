@@ -6,13 +6,26 @@
 #include <string>
 #include <vector>
 
-#define BORDER_UPPER_LEFT (char(201))
-#define BORDER_UPPER_RIGHT ((unsigned char)187)
-#define BORDER_VERTICAL ((unsigned char)186)
-#define BORDER_LOWER_RIGHT ((unsigned char)188)
-#define BORDER_LOWER_LEFT ((unsigned char)200)
-#define BORDER_HORIZONTAL ((unsigned char)205)
-#define BORDER_SPACE ((unsigned char)' ')
+// #define SKINNY
+
+#ifdef SKINNY
+#define BORDER_UPPER_LEFT "┌"
+#define BORDER_UPPER_RIGHT "┐"
+#define BORDER_VERTICAL "│"
+#define BORDER_LOWER_RIGHT "┘"
+#define BORDER_LOWER_LEFT "└"
+#define BORDER_HORIZONTAL "─"
+#define BORDER_SPACE " "
+#else
+#define BORDER_UPPER_LEFT "╔"
+#define BORDER_UPPER_RIGHT "╗"
+#define BORDER_VERTICAL "║"
+#define BORDER_LOWER_RIGHT "╝"
+#define BORDER_LOWER_LEFT "╚"
+#define BORDER_HORIZONTAL "═"
+#define BORDER_SPACE " "
+#endif // SKINNY OR FAT BOXES
+
 
 using namespace std;
 
@@ -44,6 +57,9 @@ private:
     //    Random Plays
     //    Overt
     //    Covert
+    //      Minimize sets played
+    //      Minimize pulls from the discard pile
+    //      Both
     //    Overt/Covert mix
     //    Perfect strategy (predictive)
     //    Maximize points   

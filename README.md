@@ -18,8 +18,9 @@ NOTE: I wanted std::make_unique so I needed C++ 14
     [ ] Calls card printer <br />
     [ ] Calls hand printer <br />
 * Card printer <br />
+    [X] Print one card
 * Hand printer <br />
-    [ ] Prints horizontally, or vertically <br />
+    [ ] Prints horizontally and vertically <br />
 * Card dealer <br />
     [X] Deal cards to all the players
 * Deck builder <br />

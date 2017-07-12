@@ -254,6 +254,7 @@ shared_ptr<PCard> Tong_Its_Player::play_a_card(int cardNumber)
         retVal = (*playersHand).at(cardNumber - 1);
         // (*playersHand).erase(playersHand.begin() + cardNumber - 1);
         (*playersHand).erase(cardPos);
+        --numOfCards;
     }
 
     return retVal;
@@ -305,13 +306,16 @@ player1(*humanPlayerName), player2(string("Mike")), player3(string("Eren"))
     // 4. Set the current dealer to Player 1
     // currentDealer = 1;
 
-    // 5. Deal hands to each player
+    // 5. Set current player
+    currentPlayer = 1;  // NOTE: Uncessary when currentDealer is (re)implemented?
+
+    // 6. Deal hands to each player
     // cout << "Function call to deal_player_hands()" << endl;  // DEBUGGING
     deal_player_hands(player1);
     // print_a_card((*drawPile).at(0));  // Accomplished in user_interfact() now
 
-    // 6. Set current player
-    currentPlayer = 1;  // NOTE: Uncessary when currentDealer is (re)implemented?
+
+    // cout << "Ctor - Current player: " << currentPlayer << endl;  // DEBUGGING
 }
 
 
@@ -430,50 +434,50 @@ void Tong_Its_Game::shuffle_a_deck(shared_ptr<vector<shared_ptr<PCard>>> deckOfC
     Output - None
     Purpose - Take a given card number from a deck and place that card in another deck
  */
-void Tong_Its_Game::move_one_card(int cardNumber, shared_ptr<vector<shared_ptr<PCard>>> source, \
-                                  shared_ptr<vector<shared_ptr<PCard>>> destination)
-{
-    if (source == nullptr)
-    {
-        throw runtime_error("Source deck is NULL");
-    }
-    else if (destination == nullptr)
-    {
-        throw runtime_error("Destination deck is NULL");
-    }
-    else if (cardNumber < 1)
-    {
-        throw range_error("Invalid card number");
-    }
-    else if (cardNumber > (*source).size())
-    {
-        throw out_of_range("This card number does not exist in the source deck");
-    }
+// void Tong_Its_Game::move_one_card(int cardNumber, shared_ptr<vector<shared_ptr<PCard>>> source, \
+//                                   shared_ptr<vector<shared_ptr<PCard>>> destination)
+// {
+//     if (source == nullptr)
+//     {
+//         throw runtime_error("Source deck is NULL");
+//     }
+//     else if (destination == nullptr)
+//     {
+//         throw runtime_error("Destination deck is NULL");
+//     }
+//     else if (cardNumber < 1)
+//     {
+//         throw range_error("Invalid card number");
+//     }
+//     else if (cardNumber > (*source).size())
+//     {
+//         throw out_of_range("This card number does not exist in the source deck");
+//     }
 
-    // 1. Get the source vector
-    auto tempVector = (*source);
-    // TEST_the_deck(source);  // DEBUGGING
+//     // 1. Get the source vector
+//     auto tempVector = (*source);
+//     // TEST_the_deck(source);  // DEBUGGING
 
-    // 2. Get the card from the source vector
-    // auto tempCard = tempVector.at(cardNumber - 1)
-    shared_ptr<PCard> tempCard = tempVector.at(cardNumber - 1);
-    // cout << "Temp Card Rank: " << tempCard->rank << endl;  // DEBUGGING
-    // auto tempCard = (*source).at(cardNumber - 1)
+//     // 2. Get the card from the source vector
+//     // auto tempCard = tempVector.at(cardNumber - 1)
+//     shared_ptr<PCard> tempCard = tempVector.at(cardNumber - 1);
+//     // cout << "Temp Card Rank: " << tempCard->rank << endl;  // DEBUGGING
+//     // auto tempCard = (*source).at(cardNumber - 1)
 
-    // 3. Erase the card from source
-    // tempVector.erase(tempVector.begin() + cardNumber - 1);
-    // (*source).erase((*source).begin() + cardNumber - 1);
+//     // 3. Erase the card from source
+//     // tempVector.erase(tempVector.begin() + cardNumber - 1);
+//     // (*source).erase((*source).begin() + cardNumber - 1);
 
-    // 4. Insert the card into destination
-    // tempVector = (*destination);
-    // (*destination).push_back(tempCard);
-    // tempVector.emplace_back(tempCard);
-    // tempVector.push_back(tempCard);
-    (*destination).push_back(tempCard);
+//     // 4. Insert the card into destination
+//     // tempVector = (*destination);
+//     // (*destination).push_back(tempCard);
+//     // tempVector.emplace_back(tempCard);
+//     // tempVector.push_back(tempCard);
+//     (*destination).push_back(tempCard);
 
 
-    return;
-}
+//     return;
+// }
 
 
 /*
@@ -481,38 +485,41 @@ void Tong_Its_Game::move_one_card(int cardNumber, shared_ptr<vector<shared_ptr<P
  */
 void Tong_Its_Game::deal_player_hands(Tong_Its_Player currentDealer)
 {
-    auto tempDeck = make_shared<vector<shared_ptr<PCard>>>();
-    // auto tempCard = make_shared<PCard>();
-
+    // auto tempDeck = make_shared<vector<shared_ptr<PCard>>>();
+    // auto tempCard = make_shared<PCard>(" ", " ");
 
     // One to the dealer   
-    move_one_card(1, drawPile, tempDeck);
-    // cout << (*tempDeck).size();  // DEBUGGING
-    auto tempCard = (*tempDeck).at(0);
-    // cout << "Dealer!\n";  // DEBUGGING
-    currentDealer.receive_a_card(tempCard);
-    (*tempDeck).erase((*tempDeck).begin());
+    auto tempCard = card_is_drawn();
+    // cout << "deal_player_hands() - Current player: " << currentPlayer << endl;  // DEBUGGING
+
+    if (currentPlayer == 1)
+    {
+        player1.receive_a_card(tempCard);
+    }
+    else if (currentPlayer == 2)
+    {
+        player2.receive_a_card(tempCard);        
+    }
+    else if (currentPlayer == 3)
+    {
+        player3.receive_a_card(tempCard);
+    }
+    else
+    {
+        throw "deal_player_hands() - Tong_Its_Game.currentPlayer has become corrupted";
+    }
 
     // 12 to everyone
     for (int i = 0; i < 12; ++i)
     {
-        move_one_card(1, drawPile, tempDeck);
-        tempCard = (*tempDeck).at(0);
+        tempCard = card_is_drawn();
         player1.receive_a_card(tempCard);
-        // cout << "Player 1";  // DEBUGGING
-        (*tempDeck).pop_back();
 
-        move_one_card(1, drawPile, tempDeck);
-        tempCard = (*tempDeck).at(0);
+        tempCard = card_is_drawn();
         player2.receive_a_card(tempCard);
-        // cout << "Player 2";  // DEBUGGING
-        (*tempDeck).pop_back();
 
-        move_one_card(1, drawPile, tempDeck);
-        tempCard = (*tempDeck).at(0);
+        tempCard = card_is_drawn();
         player3.receive_a_card(tempCard);
-        // cout << "Player 3";  // DEBUGGING
-        (*tempDeck).pop_back();
     }
 
     return;

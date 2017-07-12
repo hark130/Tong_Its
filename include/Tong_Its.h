@@ -86,7 +86,6 @@ public:
     void receive_a_discard(shared_ptr<PCard> discardedCard);  // Tong_Its_Player discards a card
     shared_ptr<PCard> card_is_drawn(void);  // Tong_Its_Player draws a card from the drawPile
     // int currentDealer;  // Also the last winner
-    // currentPlayer
     int currentPlayer;
 private:
     // Builds a vector of unique pointers to Card objects
@@ -98,8 +97,8 @@ private:
     // Randomizes the order of a vector of card pointers
     void shuffle_a_deck(shared_ptr<vector<shared_ptr<PCard>>> deckOfCards);
     // Used to play, discard, deal, etc
-    void move_one_card(int cardNumber, shared_ptr<vector<shared_ptr<PCard>>> source, \
-                       shared_ptr<vector<shared_ptr<PCard>>> destination);
+    // void move_one_card(int cardNumber, shared_ptr<vector<shared_ptr<PCard>>> source, \
+    //                    shared_ptr<vector<shared_ptr<PCard>>> destination);
 
     void deal_player_hands(Tong_Its_Player currentDealer);
     void print_a_card(shared_ptr<PCard> cardToPrint);

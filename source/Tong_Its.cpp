@@ -9,9 +9,12 @@
 // #include <io.h>         // Set mode 16 bit
 #include <locale>
 #include <memory>
+#include <regex>
 #include <string>
 #include <ctime>         // time
 #include <vector>
+
+#define CLEAR_SCREEN 30     // Number of newlines to print to clear the screen 
 
 // #define CONTRAST 10  // 0 for normal, 1 for contrast
 
@@ -58,7 +61,7 @@ const auto diamondString = string(DIAMOND);
 Playing_Card::Playing_Card(string pcRank, string pcSuit)
 // Playing_Card::Playing_Card(string pcRank, char16_t pcSuit)
 {
-    if (pcSuit == spadeString || pcSuit == heartString || pcSuit == diamondString || pcSuit == clubString)
+    if (pcSuit == spadeString || pcSuit == heartString || pcSuit == diamondString || pcSuit == clubString || pcSuit == " ")
     // if (pcSuit == SPADE || pcSuit == HEART || pcSuit == DIAMOND || pcSuit == CLUB)
     {
         // const wchar_t heart[] = L"\u2665";  // DEBUGGING
@@ -80,6 +83,7 @@ Playing_Card::Playing_Card(string pcRank, string pcSuit)
     else
     {
         // Raise exception
+        throw invalid_argument("Invalid Playing Card suit");
     }
 
     if (pcRank == "A")
@@ -134,9 +138,14 @@ Playing_Card::Playing_Card(string pcRank, string pcSuit)
     {
         value = 13;
     }
+    else if (pcRank == " ")
+    {
+        value = 0;
+    }
     else
     {
         // Raise exception
+        throw invalid_argument("Invalid Playing Card rank");
     }
 
     rank = pcRank;
@@ -157,6 +166,7 @@ name(playerName), numOfChips(100), playersHand(make_shared<vector<shared_ptr<PCa
     // name = playerName;
     // numOfChips = 100;
     // playersHand = make_shared<vector<shared_ptr<PCard>>>();
+    sortBySuit = true;
 }
 
 
@@ -197,17 +207,70 @@ int Tong_Its_Player::count_chips(void)
 }
 
 
+int Tong_Its_Player::count_cards(void)
+{
+    int retVal = 0;
+
+    retVal = (*playersHand).size();
+
+    return retVal;
+}
+
+
 void Tong_Its_Player::receive_a_card(shared_ptr<PCard> drawnCard)
 {
     if (drawnCard)
     {
         (*playersHand).push_back(drawnCard);
+        sort_players_hand();
+        ++numOfCards;
     }
     else
     {
         throw invalid_argument("NULL card pointer");
         // throw exception("NULL card pointer");
     }
+
+    return;
+}
+
+
+shared_ptr<PCard> Tong_Its_Player::play_a_card(int cardNumber)
+{
+    auto retVal = make_shared<PCard>(" ", " ");
+
+    // Input Validation
+    if (cardNumber < 1)
+    {
+        throw invalid_argument("Tong_Its_Player::play_a_card() received invalid card number");
+    }
+    else if (cardNumber > numOfCards)
+    {
+        throw invalid_argument("Tong_Its_Player::play_a_card() received non-existent card number");
+    }
+    else
+    {
+        auto cardPos = (*playersHand).begin() + cardNumber - 1;
+        retVal = (*playersHand).at(cardNumber - 1);
+        // (*playersHand).erase(playersHand.begin() + cardNumber - 1);
+        (*playersHand).erase(cardPos);
+    }
+
+    return retVal;
+}
+
+
+void Tong_Its_Player::print_players_hand(void)
+{
+    cout << "print_players_hand() not yet implemented!" << endl;
+
+    return;
+}
+
+
+void Tong_Its_Player::sort_players_hand(void)
+{
+    cout << "sort_players_hand() not yet implemented!" << endl;
 
     return;
 }
@@ -221,24 +284,42 @@ void Tong_Its_Player::receive_a_card(shared_ptr<PCard> drawnCard)
 /***********************/
 // Tong_Its_Game::Tong_Its_Game(shared_ptr<string> humanPlayerName) : 
 Tong_Its_Game::Tong_Its_Game(const shared_ptr<string>& humanPlayerName) : 
-player1(*humanPlayerName), player2(string("Player2")), player3(string("Player3"))
+player1(*humanPlayerName), player2(string("Mike")), player3(string("Eren"))
 // player1(*humanPlayerName), player2(string("Player2")), player3(string("Player3"))
 // player1("Human"), player2("Player2"), player3("Player3")
 // player1(*humanPlayerName), player2(*humanPlayerName), player3(*humanPlayerName)
 
 {
-    // player1 = Tong_Its_Player::Tong_Its_Player(*humanPlayerName);
-    // player2 = Tong_Its_Player(string("Player 2"));
-    // player3 = Tong_Its_Player(string("Player 3"));
-    cout << "Function call to build_a_deck()" << endl;  // DEBUGGING
+    // 1. Build the deck of cards
+    // cout << "Function call to build_a_deck()" << endl;  // DEBUGGING
     drawPile = build_a_deck();
     // cout << "build_a_deck() made " << drawPile << endl;  // DEBUGGING
-    cout << "Function call to shuffle_a_deck()" << endl;  // DEBUGGING
+
+    // 2. Shuffle the deck of cards
+    // cout << "Function call to shuffle_a_deck()" << endl;  // DEBUGGING
     shuffle_a_deck(drawPile);
+
+    // 3. Create the discard pile
+    discardPile = make_shared<vector<shared_ptr<PCard>>>();
+
+    // 4. Set the current dealer to Player 1
     // currentDealer = 1;
-    cout << "Function call to deal_player_hands()" << endl;  // DEBUGGING
+
+    // 5. Deal hands to each player
+    // cout << "Function call to deal_player_hands()" << endl;  // DEBUGGING
     deal_player_hands(player1);
-    print_a_card((*drawPile).at(0));
+    // print_a_card((*drawPile).at(0));  // Accomplished in user_interfact() now
+
+    // 6. Set current player
+    currentPlayer = 1;  // NOTE: Uncessary when currentDealer is (re)implemented?
+}
+
+
+void Tong_Its_Game::start_the_game(void)
+{
+    user_interface();
+
+    return;
 }
 
 
@@ -251,7 +332,7 @@ void Tong_Its_Game::TEST_the_deck(shared_ptr<vector<shared_ptr<PCard>>> deckToTe
     }
     else
     {
-        cout << "Deck is empty!" << endl;
+        cout << "Deck is is non-existent!" << endl;
     }        
 
     // setlocale(LC_ALL, "");
@@ -264,6 +345,35 @@ void Tong_Its_Game::TEST_the_deck(shared_ptr<vector<shared_ptr<PCard>>> deckToTe
     }
 
     return;
+}
+
+
+/*
+    Purpose - Tong_Its_Player discards a card
+    Input - Shared pointer to the card to be discarded
+    Output - None
+ */
+void Tong_Its_Game::receive_a_discard(shared_ptr<PCard> discardedCard)
+{
+    if (discardedCard)
+    {
+        (*discardPile).push_back(discardedCard);
+    }
+
+    return;
+}
+
+
+/*
+    Purpose - Tong_Its_Player draws a card
+    Input - None (card drawn always comes from the back)
+    Output - Shared pointer to PCard removed from the drawPile
+ */
+shared_ptr<PCard> Tong_Its_Game::card_is_drawn(void)
+{
+    int cardPos = (*drawPile).size() - 1;
+    auto retVal = (*drawPile).at(cardPos);
+    return retVal;
 }
 
 
@@ -340,21 +450,21 @@ void Tong_Its_Game::move_one_card(int cardNumber, shared_ptr<vector<shared_ptr<P
         throw out_of_range("This card number does not exist in the source deck");
     }
 
-    // Get the vector
+    // 1. Get the source vector
     auto tempVector = (*source);
     // TEST_the_deck(source);  // DEBUGGING
 
-    // Get the card
+    // 2. Get the card from the source vector
     // auto tempCard = tempVector.at(cardNumber - 1)
     shared_ptr<PCard> tempCard = tempVector.at(cardNumber - 1);
     // cout << "Temp Card Rank: " << tempCard->rank << endl;  // DEBUGGING
     // auto tempCard = (*source).at(cardNumber - 1)
 
-    // Erase the card from source
+    // 3. Erase the card from source
     // tempVector.erase(tempVector.begin() + cardNumber - 1);
     // (*source).erase((*source).begin() + cardNumber - 1);
 
-    // Insert the card into destination
+    // 4. Insert the card into destination
     // tempVector = (*destination);
     // (*destination).push_back(tempCard);
     // tempVector.emplace_back(tempCard);
@@ -409,7 +519,6 @@ void Tong_Its_Game::deal_player_hands(Tong_Its_Player currentDealer)
 }
 
 
-
 void Tong_Its_Game::print_a_card(shared_ptr<PCard> cardToPrint)
 {
     if (cardToPrint)
@@ -428,13 +537,191 @@ void Tong_Its_Game::print_a_card(shared_ptr<PCard> cardToPrint)
     return;
 }
 
+
+void Tong_Its_Game::user_interface(void)
+{
+    auto tempCard = make_shared<PCard>(" ", " ");
+    string dynamicChoice1opt1 = string("Draw a card");
+    string dynamicChoice1opt2 = string("Discard a card");
+    string dynamicChoice1 = dynamicChoice1opt1;
+    string dynamicChoice2 = string("Reprint game state");
+    string dynamicChoice3 = string("Toggle hand sort ");
+    string dynamicChoice4 = string("Show sets in hand");
+    string dynamicChoice9 = string("Exit");
+    int menuChoice = 0;
+    int subMenuChoice = 0;
+
+    game_state();
+
+    while(menuChoice != 999)
+    {
+        // Reset temp variables
+        menuChoice = 0;
+        subMenuChoice = 0;
+
+        // Print interface
+        if (player1.count_cards() == 13)
+        {
+            dynamicChoice1 = dynamicChoice1opt2;
+        }
+        cout << "1. " << dynamicChoice1 << endl;
+        cout << "2. " << dynamicChoice2 << endl;
+        cout << "3. " << dynamicChoice3 << endl;
+        cout << "4. " << dynamicChoice4 << endl;
+        cout << "999. " << dynamicChoice9 << endl;
+
+        // Take user input
+        menuChoice = input_number();
+        // cin >> menuChoice;
+
+        switch (menuChoice)
+        {
+            case 1:
+                // Draw a card
+                if (dynamicChoice1 == dynamicChoice1opt1)
+                {
+                    // Prompt
+                    cout << "Draw a card from 1. Draw pile or 2. Discard pile?" << endl;
+
+                    // Input
+                    subMenuChoice = input_number();
+                    // cin >> subMenuChoice;
+
+                    // Input Validation
+                    if (subMenuChoice < 1 || subMenuChoice > 2)
+                    {
+                        // Try again
+                        cout << "Invalid card number.\n" << "Please choose again." << endl;
+                        break;
+                    }
+                    
+                    // Toggle menu choice
+                    dynamicChoice1 = dynamicChoice1opt2;
+                }
+                // Discard a card
+                else if (dynamicChoice1 == dynamicChoice1opt2)
+                {
+                    // Prompt
+                    cout << "Enter the number of the card you would like to discard: " << endl;
+                    
+                    // Input
+                    subMenuChoice = input_number();
+                    // cin >> subMenuChoice;
+
+                    // Input Validation
+                    if (subMenuChoice < 1 || subMenuChoice > player1.count_cards())
+                    {
+                        // Try again
+                        cout << "Invalid card number.\n" << "Please choose again." << endl;
+                        break; 
+                    }
+                    else
+                    {
+                        // Remove the card
+                        // Player removes the card from his hand
+                        tempCard = player1.play_a_card(subMenuChoice);
+                        // Removed card is added to the discard pile
+                        receive_a_discard(tempCard);
+                    }
+                }
+                else
+                {
+                    throw "Menu option 1 was corrupted!";
+                }
+                break;
+            case 2:
+                for (int i = 0; i < CLEAR_SCREEN; ++i)
+                {
+                    cout << "\n";
+                }
+                game_state();
+                player1.print_players_hand();
+                break;
+            case 3:
+                // Behavior
+                // break;
+            case 4:
+                // Behavior
+                // break;
+            case 999:
+                cout << "Exiting game" << endl;
+                break;
+            default:
+                cout << "Invalid selection\n" << "Please choose again" << endl;
+                break;
+        }
+    }
+
+    return;
+}
+
+
+void Tong_Its_Game::game_state(void)
+{
+    // Blank card
+    shared_ptr<PCard> blankCard = make_shared<PCard>(PCard(" ", " "));
+    // Print player status
+    cout << "Player 1: " << player1.get_name() << " has " << player1.count_cards() << " cards and " << player1.count_chips() << " chips." << endl;
+    cout << "Player 2: " << player2.get_name() << " has " << player2.count_cards() << " cards and " << player2.count_chips() << " chips." << endl;
+    cout << "Player 3: " << player3.get_name() << " has " << player3.count_cards() << " cards and " << player3.count_chips() << " chips." << endl;
+    cout << "\n";
+
+    // Print discard pile
+    cout << "DISCARD PILE" << endl;
+    if ((*discardPile).size() > 0)
+    {
+        print_a_card((*discardPile).back());
+    }
+    else  // Game just began
+    {
+        print_a_card(blankCard);
+    }
+    cout << "\n";
+
+    return;
+}
 /*********************/
 /* TONG ITS GAME END */
 /*********************/
 
 
+int input_number(void)
+{
+    string str;
+    bool instructions = false;
+    regex regex_pattern("^[1-9]\\d*$");
+
+    do
+    {
+        if (instructions)
+        {
+            cout << "Input a positive number: ";
+        }
+        cin >> str;
+        instructions = true;
+    }
+    while(!regex_match(str,regex_pattern));
+
+    return stoi(str);
+}
+
 /*
-CARD DESIGNS
+*************
+* INTERFACE *
+*************
+
+1. Draw/Discard a card
+2. Reprint hand
+3. Toggle hand sort (to _____)
+4. Show sets in hand
+5. 
+ */
+
+
+/*
+****************
+* CARD DESIGNS *
+****************
 #define SPADE L'♤'
 #define HEART L'♥'
 #define DIAMOND L'♦'

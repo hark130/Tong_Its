@@ -36,4 +36,9 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 
 ## Refactoring
 * Better way to move cards from a game-private deck member variable to a player-private hand member variable than "tempDeck"?
-
+* Current method of moving cards is clunky!
+* Template parent class to derive Player and Game classes from so that Player and Game may share common functionality (and use protected?)
+    [ ] move_one_card()?
+* Better user input tactics in the user interface?
+* Better way to store currentPlayer/currentDealer?  Pointer?  Reference?
+* Dynamically size printed cards?  Is this even necessary?

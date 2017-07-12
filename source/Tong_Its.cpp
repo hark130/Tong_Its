@@ -312,7 +312,7 @@ player1(*humanPlayerName), player2(string("Mike")), player3(string("Eren"))
     // 6. Deal hands to each player
     // cout << "Function call to deal_player_hands()" << endl;  // DEBUGGING
     deal_player_hands(player1);
-    // print_a_card((*drawPile).at(0));  // Accomplished in user_interfact() now
+    // print_a_card((*drawPile).at(0));  // Accomplished in user_interface() now
 
 
     // cout << "Ctor - Current player: " << currentPlayer << endl;  // DEBUGGING
@@ -321,7 +321,29 @@ player1(*humanPlayerName), player2(string("Mike")), player3(string("Eren"))
 
 void Tong_Its_Game::start_the_game(void)
 {
-    user_interface();
+    while(1)
+    {
+        // 1. Whose turn is it?
+        if (currentPlayer == 1)
+        {
+            user_interface();
+        }
+        else if (currentPlayer == 2 || currentPlayer == 3)
+        {
+            // AI Turn
+            // Implement this
+        }
+        else
+        {
+            throw "start_the_game() - currentPlayer appears to be broken";
+        }
+
+        // 2. Has anyone won?
+        // Implement this
+
+        // 3. Iterate to the next player
+        currentPlayer = next_player();
+    }
 
     return;
 }
@@ -427,60 +449,6 @@ void Tong_Its_Game::shuffle_a_deck(shared_ptr<vector<shared_ptr<PCard>>> deckOfC
 
 
 /*
-    Input
-        cardNumber - 1 through N, human readable card number
-        source - shared pointer to a vector of card pointers to take from
-        destination - shared pointer to a vector of card pointers to give to
-    Output - None
-    Purpose - Take a given card number from a deck and place that card in another deck
- */
-// void Tong_Its_Game::move_one_card(int cardNumber, shared_ptr<vector<shared_ptr<PCard>>> source, \
-//                                   shared_ptr<vector<shared_ptr<PCard>>> destination)
-// {
-//     if (source == nullptr)
-//     {
-//         throw runtime_error("Source deck is NULL");
-//     }
-//     else if (destination == nullptr)
-//     {
-//         throw runtime_error("Destination deck is NULL");
-//     }
-//     else if (cardNumber < 1)
-//     {
-//         throw range_error("Invalid card number");
-//     }
-//     else if (cardNumber > (*source).size())
-//     {
-//         throw out_of_range("This card number does not exist in the source deck");
-//     }
-
-//     // 1. Get the source vector
-//     auto tempVector = (*source);
-//     // TEST_the_deck(source);  // DEBUGGING
-
-//     // 2. Get the card from the source vector
-//     // auto tempCard = tempVector.at(cardNumber - 1)
-//     shared_ptr<PCard> tempCard = tempVector.at(cardNumber - 1);
-//     // cout << "Temp Card Rank: " << tempCard->rank << endl;  // DEBUGGING
-//     // auto tempCard = (*source).at(cardNumber - 1)
-
-//     // 3. Erase the card from source
-//     // tempVector.erase(tempVector.begin() + cardNumber - 1);
-//     // (*source).erase((*source).begin() + cardNumber - 1);
-
-//     // 4. Insert the card into destination
-//     // tempVector = (*destination);
-//     // (*destination).push_back(tempCard);
-//     // tempVector.emplace_back(tempCard);
-//     // tempVector.push_back(tempCard);
-//     (*destination).push_back(tempCard);
-
-
-//     return;
-// }
-
-
-/*
     Note - 13 cards to the dealer, 12 cards to the other players
  */
 void Tong_Its_Game::deal_player_hands(Tong_Its_Player currentDealer)
@@ -530,10 +498,29 @@ void Tong_Its_Game::print_a_card(shared_ptr<PCard> cardToPrint)
 {
     if (cardToPrint)
     {
+        // Row 1
         cout << BORDER_UPPER_LEFT << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_UPPER_RIGHT << endl;
-        cout << BORDER_VERTICAL << cardToPrint->rank << BORDER_SPACE << BORDER_SPACE << BORDER_SPACE << BORDER_VERTICAL << endl;
+        // Row 2
+        if (cardToPrint->rank == "10")
+        {
+            cout << BORDER_VERTICAL << cardToPrint->rank << BORDER_SPACE << BORDER_SPACE << BORDER_VERTICAL << endl;
+        }
+        else
+        {
+            cout << BORDER_VERTICAL << cardToPrint->rank << BORDER_SPACE << BORDER_SPACE << BORDER_SPACE << BORDER_VERTICAL << endl;            
+        }
+        // Row 3
         cout << BORDER_VERTICAL << BORDER_SPACE << cardToPrint->suit << BORDER_SPACE << BORDER_SPACE << BORDER_VERTICAL << endl;
-        cout << BORDER_VERTICAL << BORDER_SPACE << BORDER_SPACE << BORDER_SPACE << cardToPrint->rank << BORDER_VERTICAL << endl;
+        // Row 4
+        if (cardToPrint->rank == "10")
+        {
+            cout << BORDER_VERTICAL << BORDER_SPACE << BORDER_SPACE << cardToPrint->rank << BORDER_VERTICAL << endl;
+        }
+        else
+        {
+            cout << BORDER_VERTICAL << BORDER_SPACE << BORDER_SPACE << BORDER_SPACE << cardToPrint->rank << BORDER_VERTICAL << endl;
+        }
+        // Row 5
         cout << BORDER_LOWER_LEFT << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_LOWER_RIGHT << endl;
     }
     else
@@ -557,10 +544,11 @@ void Tong_Its_Game::user_interface(void)
     string dynamicChoice9 = string("Exit");
     int menuChoice = 0;
     int subMenuChoice = 0;
+    bool isTurnOver = false;
 
     game_state();
 
-    while(menuChoice != 999)
+    while(menuChoice != 999 && isTurnOver == false)
     {
         // Reset temp variables
         menuChoice = 0;
@@ -629,6 +617,9 @@ void Tong_Its_Game::user_interface(void)
                         tempCard = player1.play_a_card(subMenuChoice);
                         // Removed card is added to the discard pile
                         receive_a_discard(tempCard);
+
+                        // Turn is over
+                        isTurnOver = true;
                     }
                 }
                 else
@@ -667,6 +658,8 @@ void Tong_Its_Game::game_state(void)
 {
     // Blank card
     shared_ptr<PCard> blankCard = make_shared<PCard>(PCard(" ", " "));
+    // Deck size
+    int deckSize = (*discardPile).size();
     // Print player status
     cout << "Player 1: " << player1.get_name() << " has " << player1.count_cards() << " cards and " << player1.count_chips() << " chips." << endl;
     cout << "Player 2: " << player2.get_name() << " has " << player2.count_cards() << " cards and " << player2.count_chips() << " chips." << endl;
@@ -675,9 +668,9 @@ void Tong_Its_Game::game_state(void)
 
     // Print discard pile
     cout << "DISCARD PILE" << endl;
-    if ((*discardPile).size() > 0)
+    if (deckSize > 0)
     {
-        print_a_card((*discardPile).back());
+        print_a_card((*discardPile).at(deckSize - 1));
     }
     else  // Game just began
     {
@@ -686,6 +679,27 @@ void Tong_Its_Game::game_state(void)
     cout << "\n";
 
     return;
+}
+
+
+int Tong_Its_Game::next_player(void)
+{
+    int retVal = currentPlayer;
+
+    if (retVal < 1 || retVal > 3)
+    {
+        throw "next_player() - Tong_Its_Game.currentPlayer has become corrupted"; 
+    }    
+    else if (retVal == 3)
+    {
+        retVal = 1;
+    }
+    else
+    {
+        ++retVal;
+    }
+
+    return retVal;
 }
 /*********************/
 /* TONG ITS GAME END */

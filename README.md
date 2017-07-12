@@ -15,7 +15,7 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 
 ## To Do
 * Interface <br />
-    [ ] Calls card printer <br />
+    [X] Calls card printer <br />
     [ ] Calls hand printer <br />
 * Card printer <br />
     [X] Print one card

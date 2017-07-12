@@ -104,12 +104,11 @@ private:
     void print_a_card(shared_ptr<PCard> cardToPrint);
     void user_interface(void);
     void game_state(void);
-    // Discard == vector of unique pointers to Card objects
+    int next_player(void);
 
     // Calculate points()
     // Winner?()
-    // Next player()
-};
+    };
 
 int input_number(void);
 

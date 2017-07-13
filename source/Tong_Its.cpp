@@ -329,7 +329,7 @@ void Tong_Its_Player::print_a_row(int rowToPrint)
     // TEST_the_hand();  // DEBUGGING
     for (int i = ((rowToPrint - 1) * 4); i < (numCardsToPrint + ((rowToPrint - 1) * 4)); ++i)
     {
-        cout << "Card # " << i << endl;  // DEBUGGING 
+        // cout << "Card # " << i << endl;  // DEBUGGING 
         cardsToPrint.push_back((*playersHand).at(i));
     }
 
@@ -522,6 +522,23 @@ shared_ptr<PCard> Tong_Its_Game::card_is_drawn(void)
 }
 
 
+/*
+    Purpose - Tong_Its_Player takes the top discard from the discardPile
+    Input - None (card taken always comes from the back)
+    Output - Shared pointer to PCard removed from the discardPile
+ */
+shared_ptr<PCard> Tong_Its_Game::discard_is_taken(void)
+{
+    int cardPos = (*discardPile).size() - 1;
+    auto retVal = (*discardPile).at(cardPos);
+    if (retVal)
+    {
+        (*discardPile).pop_back();
+    }
+    return retVal;
+}
+
+
 shared_ptr<vector<shared_ptr<PCard>>> Tong_Its_Game::build_a_deck(void)
 {
     auto retVal = make_shared<vector<shared_ptr<PCard>>>();
@@ -709,6 +726,18 @@ int Tong_Its_Game::user_interface(void)
                         // Try again
                         cout << "Invalid card number.\n" << "Please choose again." << endl;
                         break;
+                    }
+                    else if (subMenuChoice == 1)
+                    {
+                        receive_a_card(card_is_drawn());
+                    }
+                    else if (subMenuChoice == 2)
+                    {
+                        // Implement this
+                    }
+                    else
+                    {
+                        throw range_error("user_interface() - Menu item #1 sub-selection is invalid");
                     }
                     
                     // Toggle menu choice

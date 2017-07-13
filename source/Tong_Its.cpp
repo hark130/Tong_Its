@@ -338,10 +338,12 @@ void Tong_Its_Player::print_players_hand(void)
     Purpose - Print all the melds in the order based on the TIP::sortBySuit bool
     Input - numbers melds if true
     Output - Number of melds that were found
+    Notes - This function will ensure the original sorting state is maintained
  */
 int Tong_Its_Player::show_all_melds(bool playOne)
 {
     int currMeldNum = 1;
+    bool originalSortingState = sortBySuit;
 
     if (sortBySuit == true)
     {
@@ -352,6 +354,11 @@ int Tong_Its_Player::show_all_melds(bool playOne)
     {
         currMeldNum = show_all_sets(playOne, currMeldNum);
         currMeldNum = show_all_runs(playOne, currMeldNum + 1);   
+    }
+
+    if (originalSortingState != sortBySuit)
+    {
+        toggle_sort();
     }
 
     return currMeldNum;
@@ -370,8 +377,14 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
     int retVal = 0;
     vector<string> cardRanks = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
     vector<string> cardSuits = {spadeString, clubString, heartString, diamondString};
-    bool thisIsOne = false;
+    vector<shared_ptr<PCard>> allSpades = make_shared<vector<shared_ptr<PCard>>>();
+    vector<shared_ptr<PCard>> allClubs = make_shared<vector<shared_ptr<PCard>>>();
+    vector<shared_ptr<PCard>> allHearts = make_shared<vector<shared_ptr<PCard>>>();
+    vector<shared_ptr<PCard>> allDiamonds = make_shared<vector<shared_ptr<PCard>>>();
+    vector<shared_ptr<PCard>> currentSet = make_shared<vector<shared_ptr<PCard>>>();
+    // bool thisIsOne = false;
 
+    // INPUT VALIDATION
     if (startingNum > 0)
     {
         retVal = startingNum;
@@ -381,13 +394,62 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
         throw invalid_argument("show_all_runs() - Invalid starting number");
     }
 
-    for (string currCardRank : cardRanks)
+    // CHECK SORTING
+    if (sortBySuit == false)
     {
-        for (shared_ptr<PCard> cardToEvaluate : (*playersHand))
+        toggle_sort();
+    }
+
+    // COPY AND SEPARATE
+    for (shared_ptr<PCard> cardToEvaluate : (*playersHand))
+    {
+        if (cardToEvaluate->rank == spadeString)
+        {
+            allSpades.push_back(cardToEvaluate);
+        }
+        else if (cardToEvaluate-> == clubString)
+        {
+            allClubs.push_back(cardToEvaluate);
+        }
+        else if (cardToEvaluate-> == heartString)
+        {
+            allHearts.push_back(cardToEvaluate);
+        }
+        else if (cardToEvaluate-> == diamondString)
+        {
+            allDiamonds.push_back(cardToEvaluate);
+        }
+        else
+        {
+            throw invalid_argument("Tong_Its_Player::show_all_runs() - Invalid rank on a playing card");
+        }
+    }
+
+    // EVALUATE SEPARATE VECTORS FOR RUNS
+    // Spades
+    while (allSpades.size() >= 3)
+    {
+        if (allSpades.at(allSpades.back())->rankValue == allSpades.at(allSpades.back() - 1)->rankValue + 1 && \
+            allSpades.at(allSpades.back())->rankValue == allSpades.at(allSpades.back() - 2)->rankValue + 2)
+        {
+            currentSet.push_back(allSpades.at(allSpades.back() - 2));
+            currentSet.push_back(allSpades.at(allSpades.back() - 1));
+            currentSet.push_back(allSpades.at(allSpades.back()));
+            allSpades.pop_back();
+            allSpades.pop_back();
+            allSpades.pop_back();
+        }
+
+        if (currentSet.size() >= 3)
         {
             
         }
     }
+
+    // Clubs
+    // Hearts
+    // Diamonds
+
 
     return retVal;
 }

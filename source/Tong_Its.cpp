@@ -1,7 +1,7 @@
 // #include "../include/Tong_Its.h"
 // #include "include/Tong_Its.h"
 #include "Tong_Its.h"
-#include <algorithm>    // random_shuffle
+#include <algorithm>    // random_shuffle && sort 
 // #include <clocale>         // Set locale
 #include <cstdlib>      // srand
 // #include <fcntl.h>      // Set mode 16 bit
@@ -80,6 +80,26 @@ Playing_Card::Playing_Card(string pcRank, string pcSuit)
         // wcout << SPADE;
         // cout << "\xE2\x99\xA6";
         // wcout << L"\xE2\x99\xA6";
+        if (pcSuit == spadeString)
+        {
+            suitValue = 1;
+        }
+        else if (pcSuit == heartString)
+        {
+            suitValue = 2;
+        }
+        else if (pcSuit == diamondString)
+        {
+            suitValue = 3;
+        }
+        else if (pcSuit == clubString)
+        {
+            suitValue = 4;
+        }
+        else // " "
+        {
+            suitValue = 0;
+        }
     }
     else
     {
@@ -89,59 +109,59 @@ Playing_Card::Playing_Card(string pcRank, string pcSuit)
 
     if (pcRank == "A")
     {
-        value = 1;
+        rankValue = 1;
     }
     else if (pcRank == "2")
     {
-        value = 2;
+        rankValue = 2;
     }
     else if (pcRank == "3")
     {
-        value = 3;
+        rankValue = 3;
     }
     else if (pcRank == "4")
     {
-        value = 4;
+        rankValue = 4;
     }
     else if (pcRank == "5")
     {
-        value = 5;
+        rankValue = 5;
     }
     else if (pcRank == "6")
     {
-        value = 6;
+        rankValue = 6;
     }
     else if (pcRank == "7")
     {
-        value = 7;
+        rankValue = 7;
     }
     else if (pcRank == "8")
     {
-        value = 8;
+        rankValue = 8;
     }
     else if (pcRank == "9")
     {
-        value = 9;
+        rankValue = 9;
     }
     else if (pcRank == "10")
     {
-        value = 10;
+        rankValue = 10;
     }
     else if (pcRank == "J" || pcRank == "j")
     {
-        value = 11;
+        rankValue = 11;
     }
     else if (pcRank == "Q" || pcRank == "q")
     {
-        value = 12;
+        rankValue = 12;
     }
     else if (pcRank == "K" || pcRank == "k")
     {
-        value = 13;
+        rankValue = 13;
     }
     else if (pcRank == " ")
     {
-        value = 0;
+        rankValue = 0;
     }
     else
     {
@@ -190,7 +210,7 @@ void Tong_Its_Player::TEST_the_hand(void)
         cout << "\nCard # " << i + 1 << endl;
         cout << "Rank: " << (*playersHand)[i]->rank << endl;
         cout << "Suit: " << (*playersHand)[i]->suit << endl;
-        cout << "Value: " << (*playersHand)[i]->value << endl;
+        cout << "Rank Value: " << (*playersHand)[i]->rankValue << endl;
     }
 
     return;
@@ -316,10 +336,52 @@ void Tong_Its_Player::print_players_hand(void)
 
 void Tong_Its_Player::sort_players_hand(void)
 {
-    // cout << "sort_players_hand() not yet implemented!" << endl;
+    // if (sortBySuit == true)
+    // {
+    //     sort((*playersHand).begin(), (*playersHand).end(), sort_by_suit);
+    // }
+    // else
+    // {
+    //     sort((*playersHand).begin(), (*playersHand).end(), sort_by_rank);
+    // }
+
+    if (sortBySuit == true)
+    {
+        sort((*playersHand).begin(), (*playersHand).end(), [ ]( const auto& left, const auto& right )
+            {
+                if (left->suitValue < right->suitValue)
+                {
+                    return true;
+                }
+                else if (left->suitValue == right->suitValue)
+                {
+                    return left->rankValue < right->rankValue;
+                }
+            });
+    }
+    else
+    {
+        sort((*playersHand).begin(), (*playersHand).end(), [ ]( const auto& left, const auto& right )
+            {
+                if (left->rankValue < right->rankValue)
+                {
+                    return true;
+                }
+                else if (left->rankValue == right->rankValue)
+                {
+                    return left->suitValue < right->suitValue;
+                }
+            });
+    }
 
     return;
 }
+/*
+sort( values.begin( ), values.end( ), [ ]( const auto& lhs, const auto& rhs )
+{
+   return lhs.key < rhs.key;
+});
+*/
 
 
 void Tong_Its_Player::print_a_row(int rowToPrint)
@@ -410,6 +472,22 @@ void Tong_Its_Player::print_a_row(int rowToPrint)
     cout << endl;
 
     return;
+}
+
+
+bool Tong_Its_Player::sort_by_suit(shared_ptr<PCard> left, shared_ptr<PCard> right)
+{
+    bool retVal = false;
+
+    return retVal;
+}
+
+
+bool Tong_Its_Player::sort_by_rank(shared_ptr<PCard> left, shared_ptr<PCard> right)
+{
+    bool retVal = false;
+
+    return retVal;
 }
 /***********************/
 /* TONG ITS PLAYER END */
@@ -505,7 +583,7 @@ void Tong_Its_Game::TEST_the_deck(shared_ptr<vector<shared_ptr<PCard>>> deckToTe
         cout << "\nCard # " << i + 1 << endl;
         cout << "Rank: " << (*deckToTest)[i]->rank << endl;
         cout << "Suit: " << (*deckToTest)[i]->suit << endl;
-        cout << "Value: " << (*deckToTest)[i]->value << endl;
+        cout << "Value: " << (*deckToTest)[i]->rankValue << endl;
     }
 
     return;

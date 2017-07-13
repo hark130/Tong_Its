@@ -35,7 +35,8 @@ typedef struct Playing_Card
     // Playing_Card(string pcRank, char16_t pcSuit);
     string rank;    // Value as a string
     string suit;  // U+2660–2667
-    int value;      // Value as a number
+    int rankValue;      // Value as a number
+    int suitValue;   // Ranking of the suit {1:4}
 } PCard, *PCard_ptr;
 
 
@@ -61,6 +62,8 @@ private:
     int numOfCards;
     shared_ptr<vector<shared_ptr<PCard>>> playersHand;
     void print_a_row(int rowToPrint);
+    bool sort_by_suit(shared_ptr<PCard> left, shared_ptr<PCard> right);
+    bool sort_by_rank(shared_ptr<PCard> left, shared_ptr<PCard> right);
     // AI decision algorithm
     //    Random Plays
     //    Overt

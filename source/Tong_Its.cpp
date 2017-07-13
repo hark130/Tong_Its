@@ -226,7 +226,8 @@ void Tong_Its_Player::receive_a_card(shared_ptr<PCard> drawnCard)
         (*playersHand).push_back(drawnCard);
         sort_players_hand();
         ++numOfCards;
-        cout << "Number of cards in hand: " << numOfCards << endl;  // DEBUGGING
+        // cout << "Card: Rank " << drawnCard->rank << " Suit " << drawnCard->suit << endl;  // DEBUGGING
+        // cout << "Number of cards in hand: " << numOfCards << endl;  // DEBUGGING
     }
     else
     {
@@ -513,6 +514,10 @@ shared_ptr<PCard> Tong_Its_Game::card_is_drawn(void)
 {
     int cardPos = (*drawPile).size() - 1;
     auto retVal = (*drawPile).at(cardPos);
+    if (retVal)
+    {
+        (*drawPile).pop_back();
+    }
     return retVal;
 }
 
@@ -572,6 +577,8 @@ void Tong_Its_Game::deal_player_hands(Tong_Its_Player currentDealer)
 
     // One to the dealer   
     auto tempCard = card_is_drawn();
+    // cout << "Card: Rank " << tempCard->rank << " Suit " << tempCard->suit << endl;  // DEBUGGING
+
     // cout << "deal_player_hands() - Current player: " << currentPlayer << endl;  // DEBUGGING
 
     if (currentPlayer == 1)

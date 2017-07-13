@@ -54,6 +54,9 @@ public:
     void receive_a_card(shared_ptr<PCard> drawnCard);
     shared_ptr<PCard> play_a_card(int cardNumber);
     void print_players_hand(void);
+    int show_all_melds(bool playOne);
+    int show_all_runs(bool playOne, int startingNum);
+    int show_all_sets(bool playOne, int startingNum);
     void sort_players_hand(void);
 private:
     bool sortBySuit;

@@ -334,17 +334,91 @@ void Tong_Its_Player::print_players_hand(void)
 }
 
 
+/*
+    Purpose - Print all the melds in the order based on the TIP::sortBySuit bool
+    Input - numbers melds if true
+    Output - Number of melds that were found
+ */
+int Tong_Its_Player::show_all_melds(bool playOne)
+{
+    int currMeldNum = 1;
+
+    if (sortBySuit == true)
+    {
+        currMeldNum = show_all_runs(playOne, currMeldNum);
+        currMeldNum = show_all_sets(playOne, currMeldNum + 1);
+    }
+    else
+    {
+        currMeldNum = show_all_sets(playOne, currMeldNum);
+        currMeldNum = show_all_runs(playOne, currMeldNum + 1);   
+    }
+
+    return currMeldNum;
+}
+
+
+/*
+    Purpose - Print all the runs found in the player's hand
+    Input
+        playOne - numbers melds if true
+        startingNum - If playOne is true, this is the number of the last meld
+    Output - Number of the last meld found, startingNum if no runs were found
+ */
+int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
+{
+    int retVal = 0;
+    vector<string> cardRanks = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
+    vector<string> cardSuits = {spadeString, clubString, heartString, diamondString};
+    bool thisIsOne = false;
+
+    if (startingNum > 0)
+    {
+        retVal = startingNum;
+    }
+    else
+    {
+        throw invalid_argument("show_all_runs() - Invalid starting number");
+    }
+
+    for (string currCardRank : cardRanks)
+    {
+        for (shared_ptr<PCard> cardToEvaluate : (*playersHand))
+        {
+            
+        }
+    }
+
+    return retVal;
+}
+
+
+/*
+    Purpose - Print all the sets found in the player's hand
+    Input
+        playOne - numbers melds if true
+        startingNum - If playOne is true, this is the number of the last meld
+    Output - Number of the last meld found, startingNum if no sets were found
+ */
+void Tong_Its_Player::show_all_sets(bool playOne, int startingNum)
+{
+    int retVal = 0;
+    
+    if (startingNum > 0)
+    {
+        retVal = startingNum;
+    }
+    else
+    {
+        throw invalid_argument("show_all_sets() - Invalid starting number");
+    }
+
+    return retVal;
+}
+
+
 void Tong_Its_Player::sort_players_hand(void)
 {
-    // if (sortBySuit == true)
-    // {
-    //     sort((*playersHand).begin(), (*playersHand).end(), sort_by_suit);
-    // }
-    // else
-    // {
-    //     sort((*playersHand).begin(), (*playersHand).end(), sort_by_rank);
-    // }
-
     if (sortBySuit == true)
     {
         sort((*playersHand).begin(), (*playersHand).end(), [ ]( const auto& left, const auto& right )
@@ -376,12 +450,6 @@ void Tong_Its_Player::sort_players_hand(void)
 
     return;
 }
-/*
-sort( values.begin( ), values.end( ), [ ]( const auto& lhs, const auto& rhs )
-{
-   return lhs.key < rhs.key;
-});
-*/
 
 
 void Tong_Its_Player::print_a_row(int rowToPrint)
@@ -777,11 +845,19 @@ int Tong_Its_Game::user_interface(void)
     string dynamicChoice1opt1 = string("Draw a card");
     string dynamicChoice1opt2 = string("Discard a card");
     string dynamicChoice1 = dynamicChoice1opt1;
-    string dynamicChoice2 = string("Reprint game state");
-    string dynamicChoice3opt1 = string("Toggle hand sort (to sort-by-rank)");
-    string dynamicChoice3opt2 = string("Toggle hand sort (to sort-by-suit)");
-    string dynamicChoice3 = dynamicChoice3opt1;
-    string dynamicChoice4 = string("Show sets in hand");
+
+    string dynamicChoice2 = string("Expose a meld");
+
+    string dynamicChoice3 = string("Show all melds");
+
+    string dynamicChoice4 = string("Reprint game state");
+
+    string dynamicChoice5opt1 = string("Toggle hand sort (to sort-by-rank)");
+    string dynamicChoice5opt2 = string("Toggle hand sort (to sort-by-suit)");
+    string dynamicChoice5 = dynamicChoice3opt1;
+
+    string dynamicChoice6 = string("Show sets in hand");
+
     string dynamicChoice9 = string("Exit");
     int menuChoice = 0;
     int subMenuChoice = 0;
@@ -804,6 +880,8 @@ int Tong_Its_Game::user_interface(void)
         cout << "2. " << dynamicChoice2 << endl;
         cout << "3. " << dynamicChoice3 << endl;
         cout << "4. " << dynamicChoice4 << endl;
+        cout << "5. " << dynamicChoice5 << endl;
+        cout << "6. " << dynamicChoice5 << endl;
         cout << USER_EXIT << ". " << dynamicChoice9 << endl;
 
         // Take user input
@@ -885,16 +963,24 @@ int Tong_Its_Game::user_interface(void)
                     throw "Menu option 1 was corrupted!";
                 }
                 break;
-            // 2. REPRINT GAME STATE
+            // 2. EXPOSE A MELD
             case 2:
+                // Implement this
+                break;
+            // 3. SHOW ALL MELDS
+            case 3:
+                // Implement this
+                break;
+            // 4. REPRINT GAME STATE
+            case 4:
                 for (int i = 0; i < CLEAR_SCREEN; ++i)
                 {
                     cout << "\n";
                 }
                 game_state();
                 break;
-            // 3. TOGGLE HAND SORTING
-            case 3:
+            // 5. TOGGLE HAND SORTING
+            case 5:
                 if (player1.sorting_by_suit() == true)
                 {
                     player1.toggle_sort();
@@ -906,10 +992,6 @@ int Tong_Its_Game::user_interface(void)
                     dynamicChoice3 = dynamicChoice3opt1;    
                 }
                 game_state();
-                break;
-            // 4. SHOW SETS IN HAND
-            case 4:
-                // Behavior
                 break;
             case USER_EXIT:
                 cout << "Exiting game" << endl;

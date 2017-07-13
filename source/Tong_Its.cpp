@@ -677,7 +677,9 @@ int Tong_Its_Game::user_interface(void)
     string dynamicChoice1opt2 = string("Discard a card");
     string dynamicChoice1 = dynamicChoice1opt1;
     string dynamicChoice2 = string("Reprint game state");
-    string dynamicChoice3 = string("Toggle hand sort ");
+    string dynamicChoice3opt1 = string("Toggle hand sort (to sort-by-rank)");
+    string dynamicChoice3opt2 = string("Toggle hand sort (to sort-by-suit)");
+    string dynamicChoice3 = dynamicChoice3opt1;
     string dynamicChoice4 = string("Show sets in hand");
     string dynamicChoice9 = string("Exit");
     int menuChoice = 0;
@@ -790,8 +792,18 @@ int Tong_Its_Game::user_interface(void)
                 game_state();
                 break;
             case 3:
-                // Behavior
-                // break;
+                if (player1.sortBySuit == true)
+                {
+                    player1.sortBySuit = false;
+                    dynamicChoice3 = dynamicChoice3opt2;
+                }
+                else
+                {
+                    player1.sortBySuit = true;
+                    dynamicChoice3 = dynamicChoice3opt1;    
+                }
+                game_state();
+                break;
             case 4:
                 // Behavior
                 // break;

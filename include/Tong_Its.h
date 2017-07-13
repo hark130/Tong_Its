@@ -42,10 +42,11 @@ typedef struct Playing_Card
 class Tong_Its_Player
 {
 public:
-    bool sortBySuit;
     Tong_Its_Player(string playerName);
     // ~Tong_Its_Player();  // NOT USED
     void TEST_the_hand(void);  // DEBUGGING
+    void toggle_sort(void);
+    bool sorting_by_suit(void);
     string get_name(void);
     int count_chips(void);
     int count_cards(void);
@@ -54,6 +55,7 @@ public:
     void print_players_hand(void);
     void sort_players_hand(void);
 private:
+    bool sortBySuit;
     string name;
     int numOfChips;
     int numOfCards;

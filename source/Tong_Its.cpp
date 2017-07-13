@@ -197,6 +197,29 @@ void Tong_Its_Player::TEST_the_hand(void)
 }
 
 
+void Tong_Its_Player::toggle_sort(void)
+{
+    if (sortBySuit == true)
+    {
+        sortBySuit = false;
+    }
+    else
+    {
+        sortBySuit = true;
+    }
+
+    sort_players_hand();
+
+    return;
+}
+
+
+bool Tong_Its_Player::sorting_by_suit(void)
+{
+    return sortBySuit;
+}
+
+
 string Tong_Its_Player::get_name(void)
 {
     return name;
@@ -784,6 +807,7 @@ int Tong_Its_Game::user_interface(void)
                     throw "Menu option 1 was corrupted!";
                 }
                 break;
+            // 2. REPRINT GAME STATE
             case 2:
                 for (int i = 0; i < CLEAR_SCREEN; ++i)
                 {
@@ -791,22 +815,24 @@ int Tong_Its_Game::user_interface(void)
                 }
                 game_state();
                 break;
+            // 3. TOGGLE HAND SORTING
             case 3:
-                if (player1.sortBySuit == true)
+                if (player1.sorting_by_suit() == true)
                 {
-                    player1.sortBySuit = false;
+                    player1.toggle_sort();
                     dynamicChoice3 = dynamicChoice3opt2;
                 }
                 else
                 {
-                    player1.sortBySuit = true;
+                    player1.toggle_sort();
                     dynamicChoice3 = dynamicChoice3opt1;    
                 }
                 game_state();
                 break;
+            // 4. SHOW SETS IN HAND
             case 4:
                 // Behavior
-                // break;
+                break;
             case USER_EXIT:
                 cout << "Exiting game" << endl;
                 break;

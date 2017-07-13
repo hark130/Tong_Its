@@ -44,8 +44,8 @@ class Tong_Its_Player
 public:
     bool sortBySuit;
     Tong_Its_Player(string playerName);
-    // ~Tong_Its_Player();
-    void TEST_the_hand(void);
+    // ~Tong_Its_Player();  // NOT USED
+    void TEST_the_hand(void);  // DEBUGGING
     string get_name(void);
     int count_chips(void);
     int count_cards(void);
@@ -78,7 +78,7 @@ class Tong_Its_Game
 public:
     // Tong_Its_Game(shared_ptr<string> humanPlayerName);
     Tong_Its_Game(const shared_ptr<string>& humanPlayerName);
-    // ~Tong_Its_Game();
+    // ~Tong_Its_Game();  // NOT USED
     Tong_Its_Player player1;
     Tong_Its_Player player2;
     Tong_Its_Player player3;

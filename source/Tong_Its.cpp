@@ -167,6 +167,7 @@ name(playerName), numOfChips(100), playersHand(make_shared<vector<shared_ptr<PCa
     // name = playerName;
     // numOfChips = 100;
     // playersHand = make_shared<vector<shared_ptr<PCard>>>();
+    numOfCards = 0;
     sortBySuit = true;
 }
 
@@ -225,6 +226,7 @@ void Tong_Its_Player::receive_a_card(shared_ptr<PCard> drawnCard)
         (*playersHand).push_back(drawnCard);
         sort_players_hand();
         ++numOfCards;
+        cout << "Number of cards in hand: " << numOfCards << endl;  // DEBUGGING
     }
     else
     {
@@ -239,7 +241,7 @@ void Tong_Its_Player::receive_a_card(shared_ptr<PCard> drawnCard)
 shared_ptr<PCard> Tong_Its_Player::play_a_card(int cardNumber)
 {
     auto retVal = make_shared<PCard>(" ", " ");
-
+    cout << "Number of cards in hand: " << numOfCards << endl;  // DEBUGGING
     // Input Validation
     if (cardNumber < 1)
     {
@@ -276,9 +278,12 @@ void Tong_Its_Player::print_players_hand(void)
         ++numOfPrintedRows;
     }
 
-    cout << "Number of rows: " << numOfPrintedRows << endl;  // DEBUGGING
+    // cout << "Number of rows: " << numOfPrintedRows << endl;  // DEBUGGING
 
-
+    for (int i = 1; i <= numOfPrintedRows; ++i)
+    {
+        print_a_row(i);
+    }
     // cout << "print_players_hand() not yet implemented!" << endl;
 
     return;
@@ -287,7 +292,7 @@ void Tong_Its_Player::print_players_hand(void)
 
 void Tong_Its_Player::sort_players_hand(void)
 {
-    cout << "sort_players_hand() not yet implemented!" << endl;
+    // cout << "sort_players_hand() not yet implemented!" << endl;
 
     return;
 }
@@ -295,11 +300,90 @@ void Tong_Its_Player::sort_players_hand(void)
 
 void Tong_Its_Player::print_a_row(int rowToPrint)
 {
-    int numCardsToPrint = 
-    shared_ptr<PCard> card1 = 
-    shared_ptr<PCard> card2 = 
-    shared_ptr<PCard> card3 = 
-    shared_ptr<PCard> card4 = 
+    int numCardsInHand = (*playersHand).size();
+    int numCardsToPrint = 0;
+    vector<shared_ptr<PCard>> cardsToPrint = vector<shared_ptr<PCard>>();
+
+    // Input Validation
+    if (rowToPrint < 1)
+    {
+        throw invalid_argument("print_a_row() - Invalid row number to print");
+    }
+    else if ((((rowToPrint - 1) * 4) + 1) > numCardsInHand)
+    {
+        throw range_error("print_a_row() - Row does not exist in player's hand");
+    }
+
+    // Determine Number Of Cards To Print
+    numCardsToPrint = numCardsInHand - ((rowToPrint - 1) * 4);
+    if (numCardsToPrint > 4)
+    {
+        numCardsToPrint = 4;
+    }
+
+    // Get the card pointers
+    // cout << "Size of hand: " << (*playersHand).size() << endl;  // DEBUGGING
+    // cout << "Card 1: Rank " << (*playersHand).at(0)->rank << endl;  // DEBUGGING
+    // cout << "Card 2: Rank " << (*playersHand).at(1)->rank << endl;  // DEBUGGING
+    // TEST_the_hand();  // DEBUGGING
+    for (int i = ((rowToPrint - 1) * 4); i < (numCardsToPrint + ((rowToPrint - 1) * 4)); ++i)
+    {
+        cout << "Card # " << i << endl;  // DEBUGGING 
+        cardsToPrint.push_back((*playersHand).at(i));
+    }
+
+    // DO NOT DELETE... UNDERSTANDING REQUIRES AN IDE
+    // for (auto it = begin(*playersHand) + ((rowToPrint - 1) * 4); it < begin(*playersHand) + (rowToPrint * 4); ++it)
+    // {
+    //     cout << "Rank: " << (*it)->rank << endl;  // DEBUGGING
+    //     cout << "Suit: " << (*it)->suit << endl;  // DEBUGGING
+    // }
+
+    // Print the card pointers
+    // Card Row 1
+    for (shared_ptr<PCard> cardToPrint : cardsToPrint)
+    {
+        cout << BORDER_UPPER_LEFT << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_UPPER_RIGHT;        
+    }
+    cout << endl;
+    // Row 2
+    for (shared_ptr<PCard> cardToPrint : cardsToPrint)
+    {
+        if (cardToPrint->rank == "10")
+        {
+            cout << BORDER_VERTICAL << cardToPrint->rank << BORDER_SPACE << BORDER_SPACE << BORDER_VERTICAL;
+        }
+        else
+        {
+            cout << BORDER_VERTICAL << cardToPrint->rank << BORDER_SPACE << BORDER_SPACE << BORDER_SPACE << BORDER_VERTICAL;
+        }        
+    }
+    cout << endl;
+    // Row 3
+    for (shared_ptr<PCard> cardToPrint : cardsToPrint)
+    {
+        cout << BORDER_VERTICAL << BORDER_SPACE << cardToPrint->suit << BORDER_SPACE << BORDER_SPACE << BORDER_VERTICAL;
+    }
+    cout << endl;
+    // Row 4
+    for (shared_ptr<PCard> cardToPrint : cardsToPrint)
+    {
+        if (cardToPrint->rank == "10")
+        {
+            cout << BORDER_VERTICAL << BORDER_SPACE << BORDER_SPACE << cardToPrint->rank << BORDER_VERTICAL;
+        }
+        else
+        {
+            cout << BORDER_VERTICAL << BORDER_SPACE << BORDER_SPACE << BORDER_SPACE << cardToPrint->rank << BORDER_VERTICAL;
+        }        
+    }
+    cout << endl;
+    // Row 5
+    for (shared_ptr<PCard> cardToPrint : cardsToPrint)
+    {
+        cout << BORDER_LOWER_LEFT << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_LOWER_RIGHT;        
+    }    
+    cout << endl;
 
     return;
 }

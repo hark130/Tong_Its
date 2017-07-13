@@ -729,11 +729,13 @@ int Tong_Its_Game::user_interface(void)
                     }
                     else if (subMenuChoice == 1)
                     {
-                        receive_a_card(card_is_drawn());
+                        player1.receive_a_card(card_is_drawn());
+                        // game_state();
                     }
                     else if (subMenuChoice == 2)
                     {
-                        // Implement this
+                        player1.receive_a_card(discard_is_taken());
+                        // game_state();
                     }
                     else
                     {
@@ -742,6 +744,9 @@ int Tong_Its_Game::user_interface(void)
                     
                     // Toggle menu choice
                     dynamicChoice1 = dynamicChoice1opt2;
+
+                    // Reprint the state of the game
+                    game_state();
                 }
                 // Discard a card
                 else if (dynamicChoice1 == dynamicChoice1opt2)

@@ -86,7 +86,7 @@ public:
     void TEST_the_deck(shared_ptr<vector<shared_ptr<PCard>>> deckToTest);  // DEBUGGING
     void receive_a_discard(shared_ptr<PCard> discardedCard);  // Tong_Its_Player discards a card
     shared_ptr<PCard> card_is_drawn(void);  // Tong_Its_Player draws a card from the drawPile
-    shared_ptr<PCard> discard_is_taken(void)  // Tong_Its_Player takes the top discard from the discardPile
+    shared_ptr<PCard> discard_is_taken(void);  // Tong_Its_Player takes the top discard from the discardPile
     // int currentDealer;  // Also the last winner
     int currentPlayer;
 private:

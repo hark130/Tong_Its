@@ -348,19 +348,19 @@ int Tong_Its_Player::show_all_melds(bool playOne)
     if (sortBySuit == true)
     {
         currMeldNum = show_all_runs(playOne, currMeldNum);
-        cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
+        // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
         currMeldNum = show_all_sets(playOne, currMeldNum + 1);
-        cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
+        // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
     }
     else
     {
         currMeldNum = show_all_sets(playOne, currMeldNum);
-        cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
+        // cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
         currMeldNum = show_all_runs(playOne, currMeldNum + 1);   
-        cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
+        // cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
     }
 
-    cout << "Resetting sort" << endl;  // DEBUGGING
+    // cout << "Resetting sort" << endl;  // DEBUGGING
     if (originalSortingState != sortBySuit)
     {
         toggle_sort();
@@ -430,6 +430,7 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
             throw invalid_argument("Tong_Its_Player::show_all_runs() - Invalid rank on a playing card");
         }
     }
+    // cout << "Done separating" << endl;  // DEBUGGING
 
     // EVALUATE SEPARATE VECTORS FOR RUNS
     // Spades
@@ -448,6 +449,10 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
                 (*allSpades).pop_back();
             }
         }
+        else
+        {
+            (*allSpades).pop_back();
+        }
 
         if ((*currentSet).size() >= 3)
         {
@@ -459,6 +464,7 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
             }
         }
     }
+    // cout << "Done evaluating spades" << endl;  // DEBUGGING
 
     // Clubs
     while ((*allClubs).size() >= 3)
@@ -476,6 +482,10 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
                 (*allClubs).pop_back();
             }
         }
+        else
+        {
+            (*allClubs).pop_back();
+        }
 
         if ((*currentSet).size() >= 3)
         {
@@ -487,7 +497,7 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
             }
         }
     }
-
+    // cout << "Done evaluating clubs" << endl;  // DEBUGGING
 
     // Hearts
     while ((*allHearts).size() >= 3)
@@ -505,6 +515,10 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
                 (*allHearts).pop_back();
             }
         }
+        else
+        {
+            (*allHearts).pop_back();
+        }
 
         if ((*currentSet).size() >= 3)
         {
@@ -516,6 +530,7 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
             }
         }
     }
+    // cout << "Done evaluating hearts" << endl;  // DEBUGGING
 
     // Diamonds
     while ((*allDiamonds).size() >= 3)
@@ -533,6 +548,10 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
                 (*allDiamonds).pop_back();
             }
         }
+        else
+        {
+            (*allDiamonds).pop_back();
+        }
 
         if ((*currentSet).size() >= 3)
         {
@@ -544,6 +563,7 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
             }
         }
     }
+    // cout << "Done evaluating diamonds" << endl;  // DEBUGGING
 
     return retVal;
 }

@@ -21,6 +21,7 @@ NOTE: I wanted std::make_unique so I needed C++ 14
     [X] Print one card
 * Hand printer <br />
     [ ] Prints horizontally and vertically <br />
+    [ ] Modular horizontal/vertical printing <br />
 * Card dealer <br />
     [X] Deal cards to all the players
 * Deck builder <br />

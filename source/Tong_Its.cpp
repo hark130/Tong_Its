@@ -734,10 +734,10 @@ void Tong_Its_Player::print_a_row(int rowToPrint)
     {
         throw invalid_argument("print_a_row() - Invalid row number to print");
     }
-    else if ((((rowToPrint - 1) * 4) + 1) > numCardsInHand)
-    {
-        throw range_error("print_a_row() - Row does not exist in player's hand");
-    }
+    // else if ((((rowToPrint - 1) * NUM_CARDS_PER_ROW) + 1) > numCardsInHand)
+    // {
+    //     throw range_error("print_a_row() - Row does not exist in player's hand");
+    // }
 
     // Determine Number Of Cards To Print
     if(NUM_CARDS_PER_ROW < 1)
@@ -748,7 +748,7 @@ void Tong_Its_Player::print_a_row(int rowToPrint)
     numCardsToPrint = numCardsInHand - ((rowToPrint - 1) * NUM_CARDS_PER_ROW);
     if (numCardsToPrint > NUM_CARDS_PER_ROW)
     {
-        numCardsToPrint = 4;
+        numCardsToPrint = NUM_CARDS_PER_ROW;
     }
     else if (numCardsInHand < NUM_CARDS_PER_ROW)
     {

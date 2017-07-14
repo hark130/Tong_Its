@@ -44,3 +44,9 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 * Better user input tactics in the user interface?
 * Better way to store currentPlayer/currentDealer?  Pointer?  Reference?
 * Dynamically size printed cards?  Is this even necessary?
+
+## Bugs
+[ ] When NUM_CARDS_PER_ROW is 1
+terminate called after throwing an instance of 'std::out_of_range'
+  what():  vector::_M_range_check: __n (which is 16) >= this->size() (which is 13)
+Aborted

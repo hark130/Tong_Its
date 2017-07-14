@@ -16,7 +16,7 @@
 
 #define CLEAR_SCREEN 30         // Number of newlines to print to clear the screen 
 #define USER_EXIT 999           // User interface indication to quit the program
-#define NUM_CARDS_PER_ROW 52    // Indicates how many cards print_a_row() will print per row
+#define NUM_CARDS_PER_ROW 52  // Indicates how many cards print_a_row() will print per row
 
 // #define CONTRAST 10  // 0 for normal, 1 for contrast
 
@@ -352,6 +352,7 @@ int Tong_Its_Player::show_all_melds(bool playOne)
     {
         currMeldNum = show_all_runs(playOne, currMeldNum);
         // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
+
         currMeldNum = show_all_sets(playOne, currMeldNum + 1);
         // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
     }
@@ -460,6 +461,7 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
         if ((*currentSet).size() >= 3)
         {
             print_a_meld((*currentSet));
+            ++retVal;
 
             while ((*currentSet).size() > 0)
             {
@@ -493,6 +495,7 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
         if ((*currentSet).size() >= 3)
         {
             print_a_meld((*currentSet));
+            ++retVal;
 
             while ((*currentSet).size() > 0)
             {
@@ -526,6 +529,7 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
         if ((*currentSet).size() >= 3)
         {
             print_a_meld((*currentSet));
+            ++retVal;
 
             while ((*currentSet).size() > 0)
             {
@@ -559,6 +563,7 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
         if ((*currentSet).size() >= 3)
         {
             print_a_meld((*currentSet));
+            ++retVal;
 
             while ((*currentSet).size() > 0)
             {
@@ -762,7 +767,7 @@ void Tong_Its_Player::print_a_row(int rowToPrint)
     // TEST_the_hand();  // DEBUGGING
     if (numCardsToPrint < numCardsInHand)
     {
-        for (int i = ((rowToPrint - 1) * 4); i < (numCardsToPrint + ((rowToPrint - 1) * 4)); ++i)
+        for (int i = ((rowToPrint - 1) * NUM_CARDS_PER_ROW); i < (numCardsToPrint + ((rowToPrint - 1) * NUM_CARDS_PER_ROW)); ++i)
         {
             // cout << "Card # " << i << endl;  // DEBUGGING 
             cardsToPrint.push_back((*playersHand).at(i));

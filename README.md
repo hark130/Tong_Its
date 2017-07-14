@@ -16,12 +16,12 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 ## To Do
 * Interface <br />
     [X] Calls card printer <br />
-    [ ] Calls hand printer <br />
+    [X] Calls hand printer <br />
 * Card printer <br />
     [X] Print one card
 * Hand printer <br />
-    [ ] Prints horizontally and vertically <br />
-    [ ] Modular horizontal/vertical printing <br />
+    [X] Prints horizontally and vertically <br />
+    [X] Modular horizontal/vertical printing <br />
 * Card dealer <br />
     [X] Deal cards to all the players
 * Deck builder <br />

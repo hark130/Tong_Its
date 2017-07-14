@@ -1,21 +1,22 @@
 // #include "../include/Tong_Its.h"
 // #include "include/Tong_Its.h"
 #include "Tong_Its.h"
-#include <algorithm>    // random_shuffle && sort 
-// #include <clocale>         // Set locale
-#include <cstdlib>      // srand
-// #include <fcntl.h>      // Set mode 16 bit
+#include <algorithm>            // random_shuffle && sort 
+// #include <clocale>           // Set locale
+#include <cstdlib>              // srand
+// #include <fcntl.h>           // Set mode 16 bit
 #include <iostream>
-// #include <io.h>         // Set mode 16 bit
+// #include <io.h>              // Set mode 16 bit
 #include <locale>
 #include <memory>
 #include <regex>
 #include <string>
-#include <ctime>         // time
+#include <ctime>                // time
 #include <vector>
 
-#define CLEAR_SCREEN 30     // Number of newlines to print to clear the screen 
-#define USER_EXIT 999       // User interface indication to quit the program
+#define CLEAR_SCREEN 30         // Number of newlines to print to clear the screen 
+#define USER_EXIT 999           // User interface indication to quit the program
+#define NUM_CARDS_PER_ROW 52    // Indicates how many cards print_a_row() will print per row
 
 // #define CONTRAST 10  // 0 for normal, 1 for contrast
 
@@ -313,9 +314,11 @@ void Tong_Its_Player::print_players_hand(void)
     int totalCards = (*playersHand).size();
     int currentCardNum = 0;
     // Number of full rows
-    int numOfFullRows = (totalCards - totalCards % 4) / 4;
+    int numOfFullRows = (totalCards - totalCards % NUM_CARDS_PER_ROW) / NUM_CARDS_PER_ROW;
+    // cout << "Number of full rows: " << numOfFullRows << endl;  // DEBUGGING
     int numOfPrintedRows = numOfFullRows;
-    int numOfLeftovers = totalCards % 4;
+    int numOfLeftovers = totalCards % NUM_CARDS_PER_ROW;
+    // cout << "Number of leftovers: " << numOfLeftovers << endl;  // DEBUGGING
     // Spare row
     if (numOfLeftovers != 0)
     {
@@ -737,10 +740,19 @@ void Tong_Its_Player::print_a_row(int rowToPrint)
     }
 
     // Determine Number Of Cards To Print
-    numCardsToPrint = numCardsInHand - ((rowToPrint - 1) * 4);
-    if (numCardsToPrint > 4)
+    if(NUM_CARDS_PER_ROW < 1)
+    {
+        throw range_error("Tong_Its_Player::print_a_row() - Invalid number of cards per row to print");
+    }
+
+    numCardsToPrint = numCardsInHand - ((rowToPrint - 1) * NUM_CARDS_PER_ROW);
+    if (numCardsToPrint > NUM_CARDS_PER_ROW)
     {
         numCardsToPrint = 4;
+    }
+    else if (numCardsInHand < NUM_CARDS_PER_ROW)
+    {
+        numCardsToPrint = numCardsInHand;
     }
 
     // Get the card pointers
@@ -748,10 +760,17 @@ void Tong_Its_Player::print_a_row(int rowToPrint)
     // cout << "Card 1: Rank " << (*playersHand).at(0)->rank << endl;  // DEBUGGING
     // cout << "Card 2: Rank " << (*playersHand).at(1)->rank << endl;  // DEBUGGING
     // TEST_the_hand();  // DEBUGGING
-    for (int i = ((rowToPrint - 1) * 4); i < (numCardsToPrint + ((rowToPrint - 1) * 4)); ++i)
+    if (numCardsToPrint < numCardsInHand)
     {
-        // cout << "Card # " << i << endl;  // DEBUGGING 
-        cardsToPrint.push_back((*playersHand).at(i));
+        for (int i = ((rowToPrint - 1) * 4); i < (numCardsToPrint + ((rowToPrint - 1) * 4)); ++i)
+        {
+            // cout << "Card # " << i << endl;  // DEBUGGING 
+            cardsToPrint.push_back((*playersHand).at(i));
+        }
+    }
+    else if (numCardsToPrint == numCardsInHand)
+    {
+        cardsToPrint = (*playersHand);
     }
 
     // DO NOT DELETE... UNDERSTANDING REQUIRES AN IDE

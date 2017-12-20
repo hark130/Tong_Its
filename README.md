@@ -33,7 +33,7 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 * Randomizer <br />
     [ ] Returns a random number from x to y <br />
 * Game Play <br />
-    [ ] {re}Implement "currentDealer" functionality
+    [ ] {re}Implement "currentDealer" functionality <br />
     [ ] Account for runs longer than 3
 
 ## Refactoring

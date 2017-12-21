@@ -68,6 +68,7 @@ private:
     void print_a_row(int rowToPrint);
     bool sort_by_suit(shared_ptr<PCard> left, shared_ptr<PCard> right);
     bool sort_by_rank(shared_ptr<PCard> left, shared_ptr<PCard> right);
+    int random_num(int start, int stop);
     // AI decision algorithm
     //    Random Plays
     //    Overt

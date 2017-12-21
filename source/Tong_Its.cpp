@@ -4,6 +4,7 @@
 #include <algorithm>            // random_shuffle && sort 
 // #include <clocale>           // Set locale
 #include <cstdlib>              // srand
+#include <ctime>                // time 
 // #include <fcntl.h>           // Set mode 16 bit
 #include <iostream>
 // #include <io.h>              // Set mode 16 bit
@@ -849,6 +850,33 @@ bool Tong_Its_Player::sort_by_rank(shared_ptr<PCard> left, shared_ptr<PCard> rig
 
     return retVal;
 }
+
+int Tong_Its_Player::random_num(int start, int stop)
+{
+    // Local Variables
+    int low = start;
+    int high = stop;
+    int retVal = 0;
+
+    // Input Validation
+    if (low > high)
+    {
+        low = low ^ high;
+        high = low ^ high;
+        low = low ^ high;
+    }
+    
+    if (start == stop)
+    {
+        retVal = start;
+    }
+    else
+    {
+        retVal = (rand() % (high - low + 1)) + (high - low);
+    }
+
+    return retVal;
+}
 /***********************/
 /* TONG ITS PLAYER END */
 /***********************/
@@ -865,6 +893,9 @@ player1(*humanPlayerName), player2(string("Mike")), player3(string("Eren"))
 // player1(*humanPlayerName), player2(*humanPlayerName), player3(*humanPlayerName)
 
 {
+    // 0. Seed the random number generator
+    srand(unsigned(time(NULL)));
+
     // 1. Build the deck of cards
     // cout << "Function call to build_a_deck()" << endl;  // DEBUGGING
     drawPile = build_a_deck();
@@ -1037,7 +1068,7 @@ shared_ptr<vector<shared_ptr<PCard>>> Tong_Its_Game::build_a_deck(void)
  */
 void Tong_Its_Game::shuffle_a_deck(shared_ptr<vector<shared_ptr<PCard>>> deckOfCards)
 {
-    srand(unsigned(time(NULL)));
+    // srand(unsigned(time(NULL)));  // This will be performed in the game constructor
 
     random_shuffle((*deckOfCards).begin(), (*deckOfCards).end());
 

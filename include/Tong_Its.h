@@ -65,9 +65,10 @@ private:
     int numOfChips;
     int numOfCards;
     shared_ptr<vector<shared_ptr<PCard>>> playersHand;
+    vector<shared_ptr<vector<shared_ptr<PCard>>>> playersMelds;
+    int find_a_suit_run(string sortThisSuit);
     void print_a_row(int rowToPrint);
-    bool sort_by_suit(shared_ptr<PCard> left, shared_ptr<PCard> right);
-    bool sort_by_rank(shared_ptr<PCard> left, shared_ptr<PCard> right);
+    void sort_cards(shared_ptr<vector<shared_ptr<PCard>>> cardsToSort, bool sortBySuit);
     int random_num(int start, int stop);
     // AI decision algorithm
     //    Random Plays

@@ -348,6 +348,7 @@ int Tong_Its_Player::show_all_melds(bool playOne)
 {
     int currMeldNum = 1;
     bool originalSortingState = sortBySuit;
+    playersMelds.clear();
 
     if (sortBySuit == true)
     {
@@ -371,6 +372,12 @@ int Tong_Its_Player::show_all_melds(bool playOne)
         toggle_sort();
     }
 
+    for (auto meldToPrint : playersMelds)
+    {
+        // cout << "Printing a new meld" << endl;  // DEBUGGING
+        print_a_meld(*meldToPrint);
+    }
+
     return currMeldNum;
 }
 
@@ -386,7 +393,7 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
 {
     int retVal = 0;
     // vector<string> cardRanks = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
-    // vector<string> cardSuits = {spadeString, clubString, heartString, diamondString};
+    vector<string> cardSuits = {spadeString, clubString, heartString, diamondString};
     auto allSpades = make_shared<vector<shared_ptr<PCard>>>();
     auto allClubs = make_shared<vector<shared_ptr<PCard>>>();
     auto allHearts = make_shared<vector<shared_ptr<PCard>>>();
@@ -410,169 +417,176 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
         toggle_sort();
     }
 
-    // COPY AND SEPARATE
-    for (shared_ptr<PCard> cardToEvaluate : (*playersHand))
+    // FIND RUNS
+    // IIMPLEMENT THIS LATER... ITERATE THROUGH cardSuits and call find_a_suit_run for each
+    for (auto suitToSort : cardSuits)
     {
-        if (cardToEvaluate->suit == spadeString)
-        {
-            (*allSpades).push_back(cardToEvaluate);
-        }
-        else if (cardToEvaluate->suit == clubString)
-        {
-            (*allClubs).push_back(cardToEvaluate);
-        }
-        else if (cardToEvaluate->suit == heartString)
-        {
-            (*allHearts).push_back(cardToEvaluate);
-        }
-        else if (cardToEvaluate->suit == diamondString)
-        {
-            (*allDiamonds).push_back(cardToEvaluate);
-        }
-        else
-        {
-            // cout << "Invalid rank: " << cardToEvaluate->rank << endl;  // DEBUGGING
-            throw invalid_argument("Tong_Its_Player::show_all_runs() - Invalid rank on a playing card");
-        }
+        find_a_suit_run(suitToSort);
     }
-    // cout << "Done separating" << endl;  // DEBUGGING
 
-    // EVALUATE SEPARATE VECTORS FOR RUNS
-    // Spades
-    while ((*allSpades).size() >= 3)
-    {
-        int lastCard = (*allSpades).size() - 1;
-        if ((*allSpades).at(lastCard)->rankValue == (*allSpades).at(lastCard - 1)->rankValue + 1 && \
-            (*allSpades).at(lastCard)->rankValue == (*allSpades).at(lastCard - 2)->rankValue + 2)
-        {
-            (*currentSet).push_back((*allSpades).at(lastCard - 2));
-            (*currentSet).push_back((*allSpades).at(lastCard - 1));
-            (*currentSet).push_back((*allSpades).at(lastCard));
+    // // COPY AND SEPARATE
+    // for (shared_ptr<PCard> cardToEvaluate : (*playersHand))
+    // {
+    //     if (cardToEvaluate->suit == spadeString)
+    //     {
+    //         (*allSpades).push_back(cardToEvaluate);
+    //     }
+    //     else if (cardToEvaluate->suit == clubString)
+    //     {
+    //         (*allClubs).push_back(cardToEvaluate);
+    //     }
+    //     else if (cardToEvaluate->suit == heartString)
+    //     {
+    //         (*allHearts).push_back(cardToEvaluate);
+    //     }
+    //     else if (cardToEvaluate->suit == diamondString)
+    //     {
+    //         (*allDiamonds).push_back(cardToEvaluate);
+    //     }
+    //     else
+    //     {
+    //         // cout << "Invalid rank: " << cardToEvaluate->rank << endl;  // DEBUGGING
+    //         throw invalid_argument("Tong_Its_Player::show_all_runs() - Invalid rank on a playing card");
+    //     }
+    // }
+    // // cout << "Done separating" << endl;  // DEBUGGING
 
-            while((*allSpades).size() > 0)
-            {
-                (*allSpades).pop_back();
-            }
-        }
-        else
-        {
-            (*allSpades).pop_back();
-        }
+    // // EVALUATE SEPARATE VECTORS FOR RUNS
+    // // Spades
+    // while ((*allSpades).size() >= 3)
+    // {
+    //     int lastCard = (*allSpades).size() - 1;
+    //     if ((*allSpades).at(lastCard)->rankValue == (*allSpades).at(lastCard - 1)->rankValue + 1 && \
+    //         (*allSpades).at(lastCard)->rankValue == (*allSpades).at(lastCard - 2)->rankValue + 2)
+    //     {
+    //         (*currentSet).push_back((*allSpades).at(lastCard - 2));
+    //         (*currentSet).push_back((*allSpades).at(lastCard - 1));
+    //         (*currentSet).push_back((*allSpades).at(lastCard));
 
-        if ((*currentSet).size() >= 3)
-        {
-            print_a_meld((*currentSet));
-            ++retVal;
+    //         while((*allSpades).size() > 0)
+    //         {
+    //             (*allSpades).pop_back();
+    //         }
+    //     }
+    //     else
+    //     {
+    //         (*allSpades).pop_back();
+    //     }
 
-            while ((*currentSet).size() > 0)
-            {
-                (*currentSet).pop_back();
-            }
-        }
-    }
-    // cout << "Done evaluating spades" << endl;  // DEBUGGING
+    //     if ((*currentSet).size() >= 3)
+    //     {
+    //         print_a_meld((*currentSet));
+    //         ++retVal;
 
-    // Clubs
-    while ((*allClubs).size() >= 3)
-    {
-        int lastCard = (*allClubs).size() - 1;
-        if ((*allClubs).at(lastCard)->rankValue == (*allClubs).at(lastCard - 1)->rankValue + 1 && \
-            (*allClubs).at(lastCard)->rankValue == (*allClubs).at(lastCard - 2)->rankValue + 2)
-        {
-            (*currentSet).push_back((*allClubs).at(lastCard - 2));
-            (*currentSet).push_back((*allClubs).at(lastCard - 1));
-            (*currentSet).push_back((*allClubs).at(lastCard));
+    //         while ((*currentSet).size() > 0)
+    //         {
+    //             (*currentSet).pop_back();
+    //         }
+    //     }
+    // }
+    // // cout << "Done evaluating spades" << endl;  // DEBUGGING
 
-            while((*allClubs).size() > 0)
-            {
-                (*allClubs).pop_back();
-            }
-        }
-        else
-        {
-            (*allClubs).pop_back();
-        }
+    // // Clubs
+    // while ((*allClubs).size() >= 3)
+    // {
+    //     int lastCard = (*allClubs).size() - 1;
+    //     if ((*allClubs).at(lastCard)->rankValue == (*allClubs).at(lastCard - 1)->rankValue + 1 && \
+    //         (*allClubs).at(lastCard)->rankValue == (*allClubs).at(lastCard - 2)->rankValue + 2)
+    //     {
+    //         (*currentSet).push_back((*allClubs).at(lastCard - 2));
+    //         (*currentSet).push_back((*allClubs).at(lastCard - 1));
+    //         (*currentSet).push_back((*allClubs).at(lastCard));
 
-        if ((*currentSet).size() >= 3)
-        {
-            print_a_meld((*currentSet));
-            ++retVal;
+    //         while((*allClubs).size() > 0)
+    //         {
+    //             (*allClubs).pop_back();
+    //         }
+    //     }
+    //     else
+    //     {
+    //         (*allClubs).pop_back();
+    //     }
 
-            while ((*currentSet).size() > 0)
-            {
-                (*currentSet).pop_back();
-            }
-        }
-    }
-    // cout << "Done evaluating clubs" << endl;  // DEBUGGING
+    //     if ((*currentSet).size() >= 3)
+    //     {
+    //         print_a_meld((*currentSet));
+    //         ++retVal;
 
-    // Hearts
-    while ((*allHearts).size() >= 3)
-    {
-        int lastCard = (*allHearts).size() - 1;
-        if ((*allHearts).at(lastCard)->rankValue == (*allHearts).at(lastCard - 1)->rankValue + 1 && \
-            (*allHearts).at(lastCard)->rankValue == (*allHearts).at(lastCard - 2)->rankValue + 2)
-        {
-            (*currentSet).push_back((*allHearts).at(lastCard - 2));
-            (*currentSet).push_back((*allHearts).at(lastCard - 1));
-            (*currentSet).push_back((*allHearts).at(lastCard));
+    //         while ((*currentSet).size() > 0)
+    //         {
+    //             (*currentSet).pop_back();
+    //         }
+    //     }
+    // }
+    // // cout << "Done evaluating clubs" << endl;  // DEBUGGING
 
-            while((*allHearts).size() > 0)
-            {
-                (*allHearts).pop_back();
-            }
-        }
-        else
-        {
-            (*allHearts).pop_back();
-        }
+    // // Hearts
+    // while ((*allHearts).size() >= 3)
+    // {
+    //     int lastCard = (*allHearts).size() - 1;
+    //     if ((*allHearts).at(lastCard)->rankValue == (*allHearts).at(lastCard - 1)->rankValue + 1 && \
+    //         (*allHearts).at(lastCard)->rankValue == (*allHearts).at(lastCard - 2)->rankValue + 2)
+    //     {
+    //         (*currentSet).push_back((*allHearts).at(lastCard - 2));
+    //         (*currentSet).push_back((*allHearts).at(lastCard - 1));
+    //         (*currentSet).push_back((*allHearts).at(lastCard));
 
-        if ((*currentSet).size() >= 3)
-        {
-            print_a_meld((*currentSet));
-            ++retVal;
+    //         while((*allHearts).size() > 0)
+    //         {
+    //             (*allHearts).pop_back();
+    //         }
+    //     }
+    //     else
+    //     {
+    //         (*allHearts).pop_back();
+    //     }
 
-            while ((*currentSet).size() > 0)
-            {
-                (*currentSet).pop_back();
-            }
-        }
-    }
-    // cout << "Done evaluating hearts" << endl;  // DEBUGGING
+    //     if ((*currentSet).size() >= 3)
+    //     {
+    //         print_a_meld((*currentSet));
+    //         ++retVal;
 
-    // Diamonds
-    while ((*allDiamonds).size() >= 3)
-    {
-        int lastCard = (*allDiamonds).size() - 1;
-        if ((*allDiamonds).at(lastCard)->rankValue == (*allDiamonds).at(lastCard - 1)->rankValue + 1 && \
-            (*allDiamonds).at(lastCard)->rankValue == (*allDiamonds).at(lastCard - 2)->rankValue + 2)
-        {
-            (*currentSet).push_back((*allDiamonds).at(lastCard - 2));
-            (*currentSet).push_back((*allDiamonds).at(lastCard - 1));
-            (*currentSet).push_back((*allDiamonds).at(lastCard));
+    //         while ((*currentSet).size() > 0)
+    //         {
+    //             (*currentSet).pop_back();
+    //         }
+    //     }
+    // }
+    // // cout << "Done evaluating hearts" << endl;  // DEBUGGING
 
-            while((*allDiamonds).size() > 0)
-            {
-                (*allDiamonds).pop_back();
-            }
-        }
-        else
-        {
-            (*allDiamonds).pop_back();
-        }
+    // // Diamonds
+    // while ((*allDiamonds).size() >= 3)
+    // {
+    //     int lastCard = (*allDiamonds).size() - 1;
+    //     if ((*allDiamonds).at(lastCard)->rankValue == (*allDiamonds).at(lastCard - 1)->rankValue + 1 && \
+    //         (*allDiamonds).at(lastCard)->rankValue == (*allDiamonds).at(lastCard - 2)->rankValue + 2)
+    //     {
+    //         (*currentSet).push_back((*allDiamonds).at(lastCard - 2));
+    //         (*currentSet).push_back((*allDiamonds).at(lastCard - 1));
+    //         (*currentSet).push_back((*allDiamonds).at(lastCard));
 
-        if ((*currentSet).size() >= 3)
-        {
-            print_a_meld((*currentSet));
-            ++retVal;
+    //         while((*allDiamonds).size() > 0)
+    //         {
+    //             (*allDiamonds).pop_back();
+    //         }
+    //     }
+    //     else
+    //     {
+    //         (*allDiamonds).pop_back();
+    //     }
 
-            while ((*currentSet).size() > 0)
-            {
-                (*currentSet).pop_back();
-            }
-        }
-    }
-    // cout << "Done evaluating diamonds" << endl;  // DEBUGGING
+    //     if ((*currentSet).size() >= 3)
+    //     {
+    //         print_a_meld((*currentSet));
+    //         ++retVal;
+
+    //         while ((*currentSet).size() > 0)
+    //         {
+    //             (*currentSet).pop_back();
+    //         }
+    //     }
+    // }
+    // // cout << "Done evaluating diamonds" << endl;  // DEBUGGING
 
     return retVal;
 }
@@ -696,36 +710,107 @@ void Tong_Its_Player::print_a_meld(vector<shared_ptr<PCard>> oneMeld)
 
 void Tong_Its_Player::sort_players_hand(void)
 {
-    if (sortBySuit == true)
-    {
-        sort((*playersHand).begin(), (*playersHand).end(), [ ]( const auto& left, const auto& right )
-            {
-                if (left->suitValue < right->suitValue)
-                {
-                    return true;
-                }
-                else if (left->suitValue == right->suitValue)
-                {
-                    return left->rankValue < right->rankValue;
-                }
-            });
-    }
-    else
-    {
-        sort((*playersHand).begin(), (*playersHand).end(), [ ]( const auto& left, const auto& right )
-            {
-                if (left->rankValue < right->rankValue)
-                {
-                    return true;
-                }
-                else if (left->rankValue == right->rankValue)
-                {
-                    return left->suitValue < right->suitValue;
-                }
-            });
-    }
+    // if (sortBySuit == true)
+    // {
+    //     sort((*playersHand).begin(), (*playersHand).end(), [ ]( const auto& left, const auto& right )
+    //         {
+    //             if (left->suitValue < right->suitValue)
+    //             {
+    //                 return true;
+    //             }
+    //             else if (left->suitValue == right->suitValue)
+    //             {
+    //                 return left->rankValue < right->rankValue;
+    //             }
+    //         });
+    // }
+    // else
+    // {
+    //     sort((*playersHand).begin(), (*playersHand).end(), [ ]( const auto& left, const auto& right )
+    //         {
+    //             if (left->rankValue < right->rankValue)
+    //             {
+    //                 return true;
+    //             }
+    //             else if (left->rankValue == right->rankValue)
+    //             {
+    //                 return left->suitValue < right->suitValue;
+    //             }
+    //         });
+    // }
+
+    sort_cards(playersHand, sortBySuit);
 
     return;
+}
+
+
+/*
+    Purpose - Find all runs in the player's hand for a given suit
+    Input
+        sortThisSuit - string representation of the suit to match for
+    Output - Number of the last meld found, startingNum if no sets were found
+ */
+int Tong_Its_Player::find_a_suit_run(string sortThisSuit)
+{
+    // INPUT VALIDATION
+    // IMPLEMENT THIS LATER!  CHECK AGAINST VALID SUITS?
+
+    // LOCAL VARIABLES
+    auto suitMatches = make_shared<vector<shared_ptr<PCard>>>();
+    auto tempMeld = make_shared<vector<shared_ptr<PCard>>>();
+
+    // COPY AND SEPARATE
+    for (shared_ptr<PCard> cardToEvaluate : (*playersHand))
+    {
+        if (cardToEvaluate->suit == sortThisSuit)
+        {
+            (*suitMatches).push_back(cardToEvaluate);
+        }
+    }    
+
+    // EVALUATE LOCAL VECTOR FOR RUNS
+    while ((*suitMatches).size() >= 3)
+    {
+        int lastCard = (*suitMatches).size() - 1;
+        if ((*suitMatches).at(lastCard)->rankValue == (*suitMatches).at(lastCard - 1)->rankValue + 1 && \
+            (*suitMatches).at(lastCard)->rankValue == (*suitMatches).at(lastCard - 2)->rankValue + 2)
+        {
+            // Found 3
+            (*tempMeld).push_back((*suitMatches).at(lastCard - 2));
+            (*tempMeld).push_back((*suitMatches).at(lastCard - 1));
+            (*tempMeld).push_back((*suitMatches).at(lastCard));
+
+            // Clear 3
+            (*suitMatches).pop_back();
+            (*suitMatches).pop_back();
+            (*suitMatches).pop_back();
+
+            // Check the next one
+            while((*suitMatches).size() > 0)
+            {
+                lastCard = (*suitMatches).size() - 1;
+                if ((*suitMatches).at(lastCard)->rankValue + 1 == (*tempMeld).at(0)->rankValue)
+                {
+                    (*tempMeld).push_back((*suitMatches).at(lastCard));
+                    (*suitMatches).pop_back();
+                    sort_cards(tempMeld, true);
+                }
+                else
+                {
+                    playersMelds.push_back(tempMeld);
+                    (*tempMeld).clear();
+                    break;
+                }
+            }
+        }
+        else
+        {
+            (*suitMatches).pop_back();
+        }
+    }
+
+
 }
 
 
@@ -836,20 +921,40 @@ void Tong_Its_Player::print_a_row(int rowToPrint)
 }
 
 
-bool Tong_Its_Player::sort_by_suit(shared_ptr<PCard> left, shared_ptr<PCard> right)
+void Tong_Its_Player::sort_cards(shared_ptr<vector<shared_ptr<PCard>>> cardsToSort, bool sortByTheSuits)
 {
-    bool retVal = false;
+    if (sortByTheSuits == true)
+    {
+        sort((*cardsToSort).begin(), (*cardsToSort).end(), [ ]( const auto& left, const auto& right )
+            {
+                if (left->suitValue < right->suitValue)
+                {
+                    return true;
+                }
+                else if (left->suitValue == right->suitValue)
+                {
+                    return left->rankValue < right->rankValue;
+                }
+            });
+    }
+    else
+    {
+        sort((*cardsToSort).begin(), (*cardsToSort).end(), [ ]( const auto& left, const auto& right )
+            {
+                if (left->rankValue < right->rankValue)
+                {
+                    return true;
+                }
+                else if (left->rankValue == right->rankValue)
+                {
+                    return left->suitValue < right->suitValue;
+                }
+            });
+    }
 
-    return retVal;
+    return;
 }
 
-
-bool Tong_Its_Player::sort_by_rank(shared_ptr<PCard> left, shared_ptr<PCard> right)
-{
-    bool retVal = false;
-
-    return retVal;
-}
 
 int Tong_Its_Player::random_num(int start, int stop)
 {

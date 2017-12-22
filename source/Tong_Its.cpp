@@ -601,7 +601,7 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
  */
 int Tong_Its_Player::show_all_sets(bool playOne, int startingNum)
 {
-    auto currentSet = make_shared<vector<shared_ptr<PCard>>>();
+    auto tempMeld = make_shared<vector<shared_ptr<PCard>>>();
     vector<string> cardRanks = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
     int tempCount = 0;  // Count for each rank
     int retVal = 0;
@@ -631,7 +631,7 @@ int Tong_Its_Player::show_all_sets(bool playOne, int startingNum)
         {
             if (currCard->rank == currRank)
             {
-                (*currentSet).push_back(currCard);                
+                (*tempMeld).push_back(currCard);                
                 ++tempCount;
             }
         }
@@ -639,14 +639,22 @@ int Tong_Its_Player::show_all_sets(bool playOne, int startingNum)
         // Three, or more, of a kind
         if (tempCount >= 3)
         {
-            print_a_meld(*currentSet);
+            // print_a_meld(*currentSet);
+            // playersMelds.push_back(tempMeld);
+
+            playersMelds.push_back(make_shared<vector<shared_ptr<PCard>>>());
+            for (shared_ptr<PCard> meldCard : (*tempMeld))
+            {
+                playersMelds.at(playersMelds.size() - 1)->push_back(meldCard);
+            }
+            (*tempMeld).clear();
         }
 
         // Clear the temp vector
         // cout << "Current Set size for " << currRank << " is: " << (*currentSet).size() << endl;  // DEBUGGING
-        while((*currentSet).size() > 0)
+        while((*tempMeld).size() > 0)
         {
-            (*currentSet).pop_back();
+            (*tempMeld).pop_back();
         }
         // cout << "Done with rank: " << currRank << endl;  // DEBUGGING
     }
@@ -798,7 +806,15 @@ int Tong_Its_Player::find_a_suit_run(string sortThisSuit)
                 }
                 else
                 {
-                    playersMelds.push_back(tempMeld);
+                    // playersMelds.push_back(tempMeld);
+                    // (*tempMeld).clear();
+                    // break;
+                    // cout << "Found a suit run" << endl;  // DEBUGGING
+                    playersMelds.push_back(make_shared<vector<shared_ptr<PCard>>>());
+                    for (shared_ptr<PCard> meldCard : (*tempMeld))
+                    {
+                        playersMelds.at(playersMelds.size() - 1)->push_back(meldCard);
+                    }
                     (*tempMeld).clear();
                     break;
                 }

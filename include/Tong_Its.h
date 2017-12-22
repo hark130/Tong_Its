@@ -57,7 +57,7 @@ public:
     int show_all_melds(bool playOne);
     int show_all_runs(bool playOne, int startingNum);
     int show_all_sets(bool playOne, int startingNum);
-    void print_a_meld(vector<shared_ptr<PCard>> oneMeld);
+    void print_a_meld(vector<shared_ptr<PCard>> oneMeld, int meldNum);
     void sort_players_hand(void);
 private:
     bool sortBySuit;

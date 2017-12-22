@@ -352,17 +352,17 @@ int Tong_Its_Player::show_all_melds(bool playOne)
 
     if (sortBySuit == true)
     {
-        currMeldNum = show_all_runs(playOne, currMeldNum);
+        show_all_runs(playOne, currMeldNum);
         // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
 
-        currMeldNum = show_all_sets(playOne, currMeldNum + 1);
+        show_all_sets(playOne, currMeldNum + 1);
         // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
     }
     else
     {
-        currMeldNum = show_all_sets(playOne, currMeldNum);
+        show_all_sets(playOne, currMeldNum);
         // cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
-        currMeldNum = show_all_runs(playOne, currMeldNum + 1);   
+        show_all_runs(playOne, currMeldNum + 1);   
         // cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
     }
 
@@ -372,10 +372,19 @@ int Tong_Its_Player::show_all_melds(bool playOne)
         toggle_sort();
     }
 
+    if (playersMelds.size() == 0)
+    {
+        cout << "\nYou have no melds.\n" << endl;
+    }
+    else
+    {
+        cout << "\nYour Melds:" << endl;  // Clear some space
+    }
     for (auto meldToPrint : playersMelds)
     {
         // cout << "Printing a new meld" << endl;  // DEBUGGING
-        print_a_meld(*meldToPrint);
+        // cout << "Found this meld at position " << SUPER FANCE ITERATOR COUNTER GOES HERE << endl;  // DEBUGGING
+        print_a_meld(*meldToPrint, currMeldNum++);
     }
 
     return currMeldNum;
@@ -394,11 +403,11 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
     int retVal = 0;
     // vector<string> cardRanks = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
     vector<string> cardSuits = {spadeString, clubString, heartString, diamondString};
-    auto allSpades = make_shared<vector<shared_ptr<PCard>>>();
-    auto allClubs = make_shared<vector<shared_ptr<PCard>>>();
-    auto allHearts = make_shared<vector<shared_ptr<PCard>>>();
-    auto allDiamonds = make_shared<vector<shared_ptr<PCard>>>();
-    auto currentSet = make_shared<vector<shared_ptr<PCard>>>();
+    // auto allSpades = make_shared<vector<shared_ptr<PCard>>>();
+    // auto allClubs = make_shared<vector<shared_ptr<PCard>>>();
+    // auto allHearts = make_shared<vector<shared_ptr<PCard>>>();
+    // auto allDiamonds = make_shared<vector<shared_ptr<PCard>>>();
+    // auto currentSet = make_shared<vector<shared_ptr<PCard>>>();
     // bool thisIsOne = false;
 
     // INPUT VALIDATION
@@ -418,7 +427,6 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
     }
 
     // FIND RUNS
-    // IIMPLEMENT THIS LATER... ITERATE THROUGH cardSuits and call find_a_suit_run for each
     for (auto suitToSort : cardSuits)
     {
         find_a_suit_run(suitToSort);
@@ -664,16 +672,62 @@ int Tong_Its_Player::show_all_sets(bool playOne, int startingNum)
 }
 
 
-void Tong_Its_Player::print_a_meld(vector<shared_ptr<PCard>> oneMeld)
+void Tong_Its_Player::print_a_meld(vector<shared_ptr<PCard>> oneMeld, int meldNum)
 {
+    string leftBorder = "";
+    string leftNumber = "";
+    if (meldNum > 0)
+    {
+        leftBorder = "  ";
+        // leftNumber = string(meldNum) + " ";
+        switch (meldNum)
+        {
+            case(0):
+                leftNumber = "0 ";
+                break;
+            case(1):
+                leftNumber = "1 ";
+                break;
+            case(2):
+                leftNumber = "2 ";
+                break;
+            case(3):
+                leftNumber = "3 ";
+                break;
+            case(4):
+                leftNumber = "4 ";
+                break;
+            case(5):
+                leftNumber = "5 ";
+                break;
+            case(6):
+                leftNumber = "6 ";
+                break;
+            case(7):
+                leftNumber = "7 ";
+                break;
+            case(8):
+                leftNumber = "8 ";
+                break;
+            case(9):
+                leftNumber = "9 ";
+                break;
+            default:
+                leftNumber = "# ";
+                break;
+        };
+    }
+
     // Print the card pointers
     // Card Row 1
+    cout << leftNumber;
     for (shared_ptr<PCard> cardToPrint : oneMeld)
     {
         cout << BORDER_UPPER_LEFT << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_UPPER_RIGHT;        
     }
     cout << endl;
     // Row 2
+    cout << leftBorder;
     for (shared_ptr<PCard> cardToPrint : oneMeld)
     {
         if (cardToPrint->rank == "10")
@@ -687,12 +741,14 @@ void Tong_Its_Player::print_a_meld(vector<shared_ptr<PCard>> oneMeld)
     }
     cout << endl;
     // Row 3
+    cout << leftBorder;
     for (shared_ptr<PCard> cardToPrint : oneMeld)
     {
         cout << BORDER_VERTICAL << BORDER_SPACE << cardToPrint->suit << BORDER_SPACE << BORDER_SPACE << BORDER_VERTICAL;
     }
     cout << endl;
     // Row 4
+    cout << leftBorder;
     for (shared_ptr<PCard> cardToPrint : oneMeld)
     {
         if (cardToPrint->rank == "10")
@@ -706,6 +762,7 @@ void Tong_Its_Player::print_a_meld(vector<shared_ptr<PCard>> oneMeld)
     }
     cout << endl;
     // Row 5
+    cout << leftBorder;
     for (shared_ptr<PCard> cardToPrint : oneMeld)
     {
         cout << BORDER_LOWER_LEFT << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_LOWER_RIGHT;        
@@ -785,6 +842,7 @@ int Tong_Its_Player::find_a_suit_run(string sortThisSuit)
             (*suitMatches).at(lastCard)->rankValue == (*suitMatches).at(lastCard - 2)->rankValue + 2)
         {
             // Found 3
+            // cout << "Found a suit run of three" << endl;  // DEBUGGING
             (*tempMeld).push_back((*suitMatches).at(lastCard - 2));
             (*tempMeld).push_back((*suitMatches).at(lastCard - 1));
             (*tempMeld).push_back((*suitMatches).at(lastCard));
@@ -800,6 +858,7 @@ int Tong_Its_Player::find_a_suit_run(string sortThisSuit)
                 lastCard = (*suitMatches).size() - 1;
                 if ((*suitMatches).at(lastCard)->rankValue + 1 == (*tempMeld).at(0)->rankValue)
                 {
+                    // cout << "Found another card to add to the suit run" << endl;  // DEBUGGING
                     (*tempMeld).push_back((*suitMatches).at(lastCard));
                     (*suitMatches).pop_back();
                     sort_cards(tempMeld, true);
@@ -818,6 +877,16 @@ int Tong_Its_Player::find_a_suit_run(string sortThisSuit)
                     (*tempMeld).clear();
                     break;
                 }
+            }
+
+            if ((*tempMeld).size() > 0)
+            {
+                playersMelds.push_back(make_shared<vector<shared_ptr<PCard>>>());
+                for (shared_ptr<PCard> meldCard : (*tempMeld))
+                {
+                    playersMelds.at(playersMelds.size() - 1)->push_back(meldCard);
+                }
+                (*tempMeld).clear();
             }
         }
         else

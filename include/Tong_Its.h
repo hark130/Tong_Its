@@ -51,7 +51,9 @@ public:
     string get_name(void);
     int count_chips(void);
     int count_cards(void);
+    int count_potential_melds(void);
     void receive_a_card(shared_ptr<PCard> drawnCard);
+    int get_card_number(shared_ptr<PCard> findThisCard)
     shared_ptr<PCard> play_a_card(int cardNumber);
     void print_players_hand(void);
     int show_all_melds(bool playOne);
@@ -59,6 +61,7 @@ public:
     int show_all_sets(bool playOne, int startingNum);
     void print_a_meld(vector<shared_ptr<PCard>> oneMeld, int meldNum);
     void sort_players_hand(void);
+    void update_potential_melds(bool playOne);
 private:
     bool sortBySuit;
     string name;
@@ -66,6 +69,7 @@ private:
     int numOfCards;
     shared_ptr<vector<shared_ptr<PCard>>> playersHand;
     vector<shared_ptr<vector<shared_ptr<PCard>>>> playersMelds;
+    // vector<shared_ptr<vector<shared_ptr<PCard>>>> playersExposedMelds;
     int find_a_suit_run(string sortThisSuit);
     void print_a_row(int rowToPrint);
     void sort_cards(shared_ptr<vector<shared_ptr<PCard>>> cardsToSort, bool sortBySuit);

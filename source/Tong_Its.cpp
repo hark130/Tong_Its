@@ -264,6 +264,17 @@ int Tong_Its_Player::count_cards(void)
 }
 
 
+int Tong_Its_Player::count_potential_melds(void)
+{
+    // Refresh player's melds
+    update_potential_melds(true);
+
+    // Count the melds
+    return playersMelds.size();
+}
+
+
+
 void Tong_Its_Player::receive_a_card(shared_ptr<PCard> drawnCard)
 {
     if (drawnCard)
@@ -281,6 +292,33 @@ void Tong_Its_Player::receive_a_card(shared_ptr<PCard> drawnCard)
     }
 
     return;
+}
+
+
+/*
+    Purpose - Translate a card into a card number
+    Input - shared pointer to the card in question
+    Output - Card number if found in player's hand, 0 otherwise
+ */
+int Tong_Its_Player::get_card_number(shared_ptr<PCard> findThisCard)
+{
+    int retVal = 0;
+    int currCardNum = 1;
+
+    for (auto playersCard : (*playersHand))
+    {
+        if (playersCard == findThisCard)
+        {
+            retVal = currCardNum;
+            break;
+        }
+        else
+        {
+            currCardNum++;
+        }
+    }
+
+    return retVal;
 }
 
 
@@ -339,6 +377,34 @@ void Tong_Its_Player::print_players_hand(void)
 
 
 /*
+    Purpose - Update the vector of potential melds for a player
+    Input - None
+    Output - Number of melds in playersMelds
+ */
+void Tong_Its_Player::update_potential_melds(bool playOne)
+{
+    if (sortBySuit == true)
+    {
+        show_all_runs(playOne, 0);
+        // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
+
+        show_all_sets(playOne, 0);
+        // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
+    }
+    else
+    {
+        show_all_sets(playOne, 0);
+        // cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
+        show_all_runs(playOne, 0);   
+        // cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
+    }
+
+    return;   
+}
+
+
+
+/*
     Purpose - Print all the melds in the order based on the TIP::sortBySuit bool
     Input - numbers melds if true
     Output - Number of melds that were found
@@ -350,21 +416,22 @@ int Tong_Its_Player::show_all_melds(bool playOne)
     bool originalSortingState = sortBySuit;
     playersMelds.clear();
 
-    if (sortBySuit == true)
-    {
-        show_all_runs(playOne, currMeldNum);
-        // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
+    update_potential_melds(playOne);
+    // if (sortBySuit == true)
+    // {
+    //     show_all_runs(playOne, currMeldNum);
+    //     // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
 
-        show_all_sets(playOne, currMeldNum + 1);
-        // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
-    }
-    else
-    {
-        show_all_sets(playOne, currMeldNum);
-        // cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
-        show_all_runs(playOne, currMeldNum + 1);   
-        // cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
-    }
+    //     show_all_sets(playOne, currMeldNum + 1);
+    //     // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
+    // }
+    // else
+    // {
+    //     show_all_sets(playOne, currMeldNum);
+    //     // cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
+    //     show_all_runs(playOne, currMeldNum + 1);   
+    //     // cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
+    // }
 
     // cout << "Resetting sort" << endl;  // DEBUGGING
     if (originalSortingState != sortBySuit)
@@ -1479,7 +1546,37 @@ int Tong_Its_Game::user_interface(void)
                 break;
             // 2. EXPOSE A MELD
             case 2:
-                // Implement this
+                // Prompt
+                cout << "Enter the number of the meld you would like to expose: " << endl;
+                
+                // Input
+                subMenuChoice = input_number();
+
+                // Input Validation
+                if (subMenuChoice < 1 || subMenuChoice > player1.count_potential_melds())
+                {
+                    // Try again
+                    cout << "Invalid meld number.\n" << "Please choose again." << endl;
+                    break;
+                }
+                else
+                {
+                    // 1. Remove the meld from player's hand
+                    //////////////////// CONTINUE HERE /////////////////////////////
+                    // 2. Add the meld to the player's expose melds
+
+                    // 3. Recalculate the player's melds
+                    update_potential_melds(false);
+
+                    // // Remove the card
+                    // // Player removes the card from his hand
+                    // tempCard = player1.play_a_card(subMenuChoice);
+                    // // Removed card is added to the discard pile
+                    // receive_a_discard(tempCard);
+
+                    // // Turn is over
+                    // isTurnOver = true;
+                }
                 break;
             // 3. SHOW ALL MELDS
             case 3:

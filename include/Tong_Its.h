@@ -51,6 +51,7 @@ public:
     string get_name(void);
     int count_chips(void);
     int count_cards(void);
+    int count_exposed_melds(void);
     int count_potential_melds(void);
     void receive_a_card(shared_ptr<PCard> drawnCard);
     int get_card_number(shared_ptr<PCard> findThisCard);
@@ -61,6 +62,7 @@ public:
     int show_all_runs(bool playOne, int startingNum);
     int show_all_sets(bool playOne, int startingNum);
     void print_a_meld(vector<shared_ptr<PCard>> oneMeld, int meldNum);
+    void print_exposed_melds(void);
     void sort_players_hand(void);
     void update_potential_melds(bool playOne);
     bool expose_a_meld(int meldNum);

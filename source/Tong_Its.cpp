@@ -257,11 +257,13 @@ int Tong_Its_Player::count_chips(void)
 
 int Tong_Its_Player::count_cards(void)
 {
-    int retVal = 0;
+    return (*playersHand).size();
+}
 
-    retVal = (*playersHand).size();
 
-    return retVal;
+int Tong_Its_Player::count_exposed_melds(void)
+{
+    return playersExposedMelds.size();
 }
 
 
@@ -895,6 +897,14 @@ int Tong_Its_Player::show_all_sets(bool playOne, int startingNum)
 }
 
 
+/*
+    Purpose - Print a meld
+    Input
+        oneMeld - A vector of shared_pointers to PCard objects
+        meldNum - Meld number, if any, to print with the meld
+    Output - None
+    Note - If meldNum is less than 1, no number will be printed with the meld
+ */
 void Tong_Its_Player::print_a_meld(vector<shared_ptr<PCard>> oneMeld, int meldNum)
 {
     string leftBorder = "";
@@ -991,6 +1001,29 @@ void Tong_Its_Player::print_a_meld(vector<shared_ptr<PCard>> oneMeld, int meldNu
         cout << BORDER_LOWER_LEFT << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_LOWER_RIGHT;        
     }    
     cout << endl;
+
+    return;
+}
+
+
+/*
+    Purpose - Print a player's exposed melds
+    Input - None
+    Output - None
+ */
+void Tong_Its_Player::print_exposed_melds(void)
+{
+    for (auto oneExposedMeld : playersExposedMelds)
+    {
+        if (oneExposedMeld != nullptr)
+        {
+            print_a_meld((*oneExposedMeld), 0);
+        }
+        else
+        {
+            throw runtime_error("How did a nullptr get into this player's exposed melds?!");
+        }
+    }
 
     return;
 }
@@ -1721,8 +1754,10 @@ int Tong_Its_Game::user_interface(void)
                     {
                         cout << "There was a problem exposing your meld.\n" << endl;
                     }
-                    // // Turn is over
-                    // isTurnOver = true;
+                    else
+                    {
+                        game_state();
+                    }
                 }
                 break;
             // 3. SHOW ALL MELDS
@@ -1767,6 +1802,8 @@ int Tong_Its_Game::user_interface(void)
 
 void Tong_Its_Game::game_state(void)
 {
+    // Clear the screen
+    clear_the_screen();
     // Blank card
     shared_ptr<PCard> blankCard = make_shared<PCard>(PCard(" ", " "));
     // Deck size
@@ -1788,6 +1825,25 @@ void Tong_Its_Game::game_state(void)
         print_a_card(blankCard);
     }
     cout << "\n";
+
+    // Print exposed melds
+    if (player1.count_exposed_melds() > 0)
+    {
+        cout << "Player 1: " << player1.get_name() << "'s Exposed Melds" << endl;
+        player1.print_exposed_melds();
+    }
+    if (player2.count_exposed_melds() > 0)
+    {
+        cout << "Player 2: " << player2.get_name() << "'s Exposed Melds" << endl;
+    }
+    if (player3.count_exposed_melds() > 0)
+    {
+        cout << "Player 3: " << player3.get_name() << "'s Exposed Melds" << endl;
+    }
+    if (player1.count_exposed_melds() > 0 || player2.count_exposed_melds() > 0 || player3.count_exposed_melds() > 0)
+    {
+        cout << endl;
+    }
 
     // Print player's hand
     cout << "YOUR HAND" << endl;

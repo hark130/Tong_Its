@@ -1735,29 +1735,36 @@ int Tong_Its_Game::user_interface(void)
                 break;
             // 2. EXPOSE A MELD
             case 2:
-                // Prompt
-                cout << "Enter the number of the meld you would like to expose: " << endl;
-                
-                // Input
-                subMenuChoice = input_number();
+                if (player1.count_potential_melds() > 0)
+                {
+                    // Prompt
+                    cout << "Enter the number of the meld you would like to expose: " << endl;
+                    
+                    // Input
+                    subMenuChoice = input_number();
 
-                // Input Validation
-                if (subMenuChoice < 1 || subMenuChoice > player1.count_potential_melds())
-                {
-                    // Try again
-                    cout << "Invalid meld number.\n" << "Please choose again." << endl;
-                    break;
-                }
-                else
-                {
-                    if (!(player1.expose_a_meld(subMenuChoice)))
+                    // Input Validation
+                    if (subMenuChoice < 1 || subMenuChoice > player1.count_potential_melds())
                     {
-                        cout << "There was a problem exposing your meld.\n" << endl;
+                        // Try again
+                        cout << "Invalid meld number.\n" << "Please choose again." << endl;
+                        break;
                     }
                     else
                     {
-                        game_state();
+                        if (!(player1.expose_a_meld(subMenuChoice)))
+                        {
+                            cout << "There was a problem exposing your meld.\n" << endl;
+                        }
+                        else
+                        {
+                            game_state();
+                        }
                     }
+                }
+                else
+                {
+                    cout << "\nYou have no melds.\n" << endl;                    
                 }
                 break;
             // 3. SHOW ALL MELDS

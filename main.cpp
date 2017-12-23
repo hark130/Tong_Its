@@ -1,4 +1,5 @@
 // #include "include/Tong_Its.h"
+#include "Clear_Screen.h"
 #include "Tong_Its.h"
 #include <iostream>
 #include <memory>
@@ -8,6 +9,7 @@ using namespace std;
 
 int main(void)
 {
+	clear_the_screen();
     auto me = make_shared<string>(string("Joe"));
     // cout << *me << endl;  // DEBUGGING
     auto game = Tong_Its_Game(me);

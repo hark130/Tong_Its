@@ -1,5 +1,6 @@
 // #include "../include/Tong_Its.h"
 // #include "include/Tong_Its.h"
+#include "Clear_Screen.h"       // clear_screen
 #include "Tong_Its.h"
 #include <algorithm>            // random_shuffle && sort 
 // #include <clocale>           // Set locale
@@ -15,9 +16,9 @@
 #include <ctime>                // time
 #include <vector>
 
-#define CLEAR_SCREEN 30         // Number of newlines to print to clear the screen 
+// #define CLEAR_SCREEN 30      // Number of newlines to print to clear the screen 
 #define USER_EXIT 999           // User interface indication to quit the program
-#define NUM_CARDS_PER_ROW 52  // Indicates how many cards print_a_row() will print per row
+#define NUM_CARDS_PER_ROW 52    // Indicates how many cards print_a_row() will print per row
 
 // #define CONTRAST 10  // 0 for normal, 1 for contrast
 
@@ -1730,10 +1731,11 @@ int Tong_Its_Game::user_interface(void)
                 break;
             // 4. REPRINT GAME STATE
             case 4:
-                for (int i = 0; i < CLEAR_SCREEN; ++i)
-                {
-                    cout << "\n";
-                }
+                clear_the_screen();
+                // for (int i = 0; i < CLEAR_SCREEN; ++i)
+                // {
+                //     cout << "\n";
+                // }
                 game_state();
                 break;
             // 5. TOGGLE HAND SORTING

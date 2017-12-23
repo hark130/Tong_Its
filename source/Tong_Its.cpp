@@ -283,18 +283,96 @@ bool Tong_Its_Player::expose_a_meld(int meldNum)
 {
     // LOCAL VARIABLES
     bool retVal = false;
+    shared_ptr<vector<shared_ptr<PCard>>> pMeldsVector_ptr = nullptr;  // playersMelds
+    shared_ptr<vector<shared_ptr<PCard>>> pExpMeldsVector_ptr = nullptr;  // playersExposedMelds
+    shared_ptr<PCard> tmpPCard_ptr = nullptr;
+    int tempCardNum = 0;
+    vector<shared_ptr<PCard>> tmpMeldSet;
 
-    // 1. Remove the meld from player's hand
+    // INPUT VALIDATION
+    if (meldNum < 1)
+    {
+        throw invalid_argument("Tong_Its_Player::expose_a_meld() received invalid meld number");
+    }
+    else if (meldNum > playersMelds.size())
+    {
+        throw invalid_argument("Tong_Its_Player::expose_a_meld() received non-existent meld number");
+    }
 
+    // EXPOSE THAT MELD
+    // 1. Find the meld
+    pMeldsVector_ptr = playersMelds.at(meldNum - 1);
+    if (pMeldsVector_ptr == nullptr)
+    {
+        throw runtime_error("Tong_Its_Player::expose_a_meld() received a nullptr");
+    }
 
-    // 2. Add the meld to the player's expose melds
+    for (auto meldCard : (*pMeldsVector_ptr))
+    {
+        // 2. Remove the meld from player's hand
+        // 2.1. Get the card number
+        tempCardNum = get_card_number(meldCard);
+        // 2.2. Remove that card
+        tmpPCard_ptr = play_a_card(tempCardNum);
+        // 2.3. Verify return value
+        if (tmpPCard_ptr == nullptr)
+        {
+            throw runtime_error("Tong_Its_Player::expose_a_meld() received a nullptr");    
+        }
+        else if (meldCard != tmpPCard_ptr)
+        {
+            throw runtime_error("Tong_Its_Player::expose_a_meld() received the wrong card");
+        }
 
+        // 2.4. Add the card to the tmpMeldSet vector
+        tmpMeldSet.push_back(tmpPCard_ptr);
+    }
 
-    // 3. Recalculate the player's melds
+    // 3. Add the meld to the player's exposed melds
+    // 3.1. Validate tmpMeldSet
+    if (tmpMeldSet.size() < 3)
+    {
+        throw runtime_error("Tong_Its_Player::expose_a_meld() tmpMeldSet is improperly sized");
+    }
+
+    // 3.2. Make a new shared_pointer to a vector of PCard shared pointers
+    pExpMeldsVector_ptr = make_shared<vector<shared_ptr<PCard>>>();
+    if (pExpMeldsVector_ptr == nullptr)
+    {
+        throw runtime_error("Tong_Its_Player::expose_a_meld() made a nullptr?!");    
+    }
+
+    // 3.2. Add a new shared_point to a vector of PCard shared pointers to playersExposedMelds
+    playersExposedMelds.push_back(pExpMeldsVector_ptr);
+
+    // 3.3. Copy the PCards to the player's exposed melds
+    for (auto meldCard : tmpMeldSet)
+    {
+        (*pExpMeldsVector_ptr).push_back(meldCard);
+    }
+
+    // 3.4. Validate the copy
+    if (tmpMeldSet.size() == (*pExpMeldsVector_ptr).size())
+    {
+        retVal = true;
+    }
+
+    // 4. Recalculate the player's melds
     update_potential_melds(false);
 
     // DONE
     return retVal;
+
+    /*
+    if (cardNumber < 1)
+    {
+        throw invalid_argument("Tong_Its_Player::play_a_card() received invalid card number");
+    }
+    else if (cardNumber > numOfCards)
+    {
+        throw invalid_argument("Tong_Its_Player::play_a_card() received non-existent card number");
+    }
+    */
 }
 
 
@@ -390,7 +468,7 @@ shared_ptr<PCard> Tong_Its_Player::play_a_card(int cardNumber)
 }
 
 
-shared_ptr<PCard> play_any_card(int cardNumber, shared_ptr<vector<shared_ptr<PCard>>> deckToPlayFrom)
+shared_ptr<PCard> Tong_Its_Player::play_any_card(int cardNumber, shared_ptr<vector<shared_ptr<PCard>>> deckToPlayFrom)
 {
     // LOCAL VARIABLES
     auto retVal = make_shared<PCard>(" ", " ");  // Return value for this function
@@ -403,7 +481,7 @@ shared_ptr<PCard> play_any_card(int cardNumber, shared_ptr<vector<shared_ptr<PCa
     }
     else
     {
-        decksize = (*deckToPlayFrom).size();
+        deckSize = (*deckToPlayFrom).size();
     }
 
     if (cardNumber < 1)
@@ -462,17 +540,17 @@ void Tong_Its_Player::update_potential_melds(bool playOne)
 {
     if (sortBySuit == true)
     {
-        show_all_runs(playOne, 0);
+        show_all_runs(playOne, 1);
         // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
 
-        show_all_sets(playOne, 0);
+        show_all_sets(playOne, 1);
         // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
     }
     else
     {
-        show_all_sets(playOne, 0);
+        show_all_sets(playOne, 1);
         // cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
-        show_all_runs(playOne, 0);   
+        show_all_runs(playOne, 1);   
         // cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
     }
 
@@ -1638,7 +1716,7 @@ int Tong_Its_Game::user_interface(void)
                 }
                 else
                 {
-                    if (!expose_a_meld(subMenuChoice))
+                    if (!(player1.expose_a_meld(subMenuChoice)))
                     {
                         cout << "There was a problem exposing your meld.\n" << endl;
                     }

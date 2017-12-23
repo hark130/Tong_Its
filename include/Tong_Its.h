@@ -53,7 +53,7 @@ public:
     int count_cards(void);
     int count_potential_melds(void);
     void receive_a_card(shared_ptr<PCard> drawnCard);
-    int get_card_number(shared_ptr<PCard> findThisCard)
+    int get_card_number(shared_ptr<PCard> findThisCard);
     shared_ptr<PCard> play_a_card(int cardNumber);
     shared_ptr<PCard> play_any_card(int cardNumber, shared_ptr<vector<shared_ptr<PCard>>> deckToPlayFrom);
     void print_players_hand(void);
@@ -71,7 +71,7 @@ private:
     int numOfCards;
     shared_ptr<vector<shared_ptr<PCard>>> playersHand;
     vector<shared_ptr<vector<shared_ptr<PCard>>>> playersMelds;
-    // vector<shared_ptr<vector<shared_ptr<PCard>>>> playersExposedMelds;
+    vector<shared_ptr<vector<shared_ptr<PCard>>>> playersExposedMelds;
     int find_a_suit_run(string sortThisSuit);
     void print_a_row(int rowToPrint);
     void sort_cards(shared_ptr<vector<shared_ptr<PCard>>> cardsToSort, bool sortBySuit);

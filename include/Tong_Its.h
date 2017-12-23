@@ -55,6 +55,7 @@ public:
     void receive_a_card(shared_ptr<PCard> drawnCard);
     int get_card_number(shared_ptr<PCard> findThisCard)
     shared_ptr<PCard> play_a_card(int cardNumber);
+    shared_ptr<PCard> play_any_card(int cardNumber, shared_ptr<vector<shared_ptr<PCard>>> deckToPlayFrom);
     void print_players_hand(void);
     int show_all_melds(bool playOne);
     int show_all_runs(bool playOne, int startingNum);
@@ -62,6 +63,7 @@ public:
     void print_a_meld(vector<shared_ptr<PCard>> oneMeld, int meldNum);
     void sort_players_hand(void);
     void update_potential_melds(bool playOne);
+    bool expose_a_meld(int meldNum);
 private:
     bool sortBySuit;
     string name;

@@ -274,6 +274,29 @@ int Tong_Its_Player::count_potential_melds(void)
 }
 
 
+/*
+    Purpose - Glue together all of the 'heavy lifting' methods to expose one meld
+    Input - Meld number to expose (see: Index number into the potentialMeld vector)
+    Output - True for sucess, False for failure
+ */
+bool Tong_Its_Player::expose_a_meld(int meldNum)
+{
+    // LOCAL VARIABLES
+    bool retVal = false;
+
+    // 1. Remove the meld from player's hand
+
+
+    // 2. Add the meld to the player's expose melds
+
+
+    // 3. Recalculate the player's melds
+    update_potential_melds(false);
+
+    // DONE
+    return retVal;
+}
+
 
 void Tong_Its_Player::receive_a_card(shared_ptr<PCard> drawnCard)
 {
@@ -324,9 +347,11 @@ int Tong_Its_Player::get_card_number(shared_ptr<PCard> findThisCard)
 
 shared_ptr<PCard> Tong_Its_Player::play_a_card(int cardNumber)
 {
-    auto retVal = make_shared<PCard>(" ", " ");
-    cout << "Number of cards in hand: " << numOfCards << endl;  // DEBUGGING
-    // Input Validation
+    // LOCAL VARIABLES
+    shared_ptr<PCard> retVal = nullptr;
+    // cout << "Number of cards in hand: " << numOfCards << endl;  // DEBUGGING
+    
+    // INPUT VALIDATION
     if (cardNumber < 1)
     {
         throw invalid_argument("Tong_Its_Player::play_a_card() received invalid card number");
@@ -337,16 +362,68 @@ shared_ptr<PCard> Tong_Its_Player::play_a_card(int cardNumber)
     }
     else
     {
-        auto cardPos = (*playersHand).begin() + cardNumber - 1;
-        retVal = (*playersHand).at(cardNumber - 1);
-        // (*playersHand).erase(playersHand.begin() + cardNumber - 1);
-        (*playersHand).erase(cardPos);
-        --numOfCards;
+        // auto cardPos = (*playersHand).begin() + cardNumber - 1;
+        // retVal = (*playersHand).at(cardNumber - 1);
+        // // (*playersHand).erase(playersHand.begin() + cardNumber - 1);
+        // (*playersHand).erase(cardPos);
+        try
+        {
+            retVal = play_any_card(cardNumber, playersHand);
+        }
+        catch (...)
+        {
+            cout << "Tong_Its_Player::play_a_card() received an except from play_any_card()" << endl;
+            throw;
+        }
+
+        if (retVal == nullptr)
+        {
+            throw runtime_error("Tong_Its_Player::play_any_card() returned a nullptr");
+        }
+        else
+        {
+            --numOfCards;    
+        }        
     }
 
     return retVal;
 }
 
+
+shared_ptr<PCard> play_any_card(int cardNumber, shared_ptr<vector<shared_ptr<PCard>>> deckToPlayFrom)
+{
+    // LOCAL VARIABLES
+    auto retVal = make_shared<PCard>(" ", " ");  // Return value for this function
+    int deckSize = 0;  // Number of cards in the deck to play from
+
+    // INPUT VALIDATION
+    if (deckToPlayFrom == nullptr)
+    {
+        throw invalid_argument("Tong_Its_Player::play_any_card() received a nullptr");
+    }
+    else
+    {
+        decksize = (*deckToPlayFrom).size();
+    }
+
+    if (cardNumber < 1)
+    {
+        throw invalid_argument("Tong_Its_Player::play_any_card() received invalid card number");
+    }
+    else if (cardNumber > deckSize)
+    {
+        throw invalid_argument("Tong_Its_Player::play_any_card() received non-existent card number");        
+    }
+    else
+    {
+        auto cardPos = (*deckToPlayFrom).begin() + cardNumber - 1;
+        retVal = (*deckToPlayFrom).at(cardNumber - 1);
+        (*deckToPlayFrom).erase(cardPos);
+    }
+
+    // DONE
+    return retVal;
+}
 
 void Tong_Its_Player::print_players_hand(void)
 {
@@ -1561,19 +1638,10 @@ int Tong_Its_Game::user_interface(void)
                 }
                 else
                 {
-                    // 1. Remove the meld from player's hand
-                    //////////////////// CONTINUE HERE /////////////////////////////
-                    // 2. Add the meld to the player's expose melds
-
-                    // 3. Recalculate the player's melds
-                    update_potential_melds(false);
-
-                    // // Remove the card
-                    // // Player removes the card from his hand
-                    // tempCard = player1.play_a_card(subMenuChoice);
-                    // // Removed card is added to the discard pile
-                    // receive_a_discard(tempCard);
-
+                    if (!expose_a_meld(subMenuChoice))
+                    {
+                        cout << "There was a problem exposing your meld.\n" << endl;
+                    }
                     // // Turn is over
                     // isTurnOver = true;
                 }

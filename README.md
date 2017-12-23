@@ -37,9 +37,9 @@ NOTE: I wanted std::make_unique so I needed C++ 14
         [X] Show melds
         [X] Number melds
         [/] Expose a meld
-            [ ] Remove that meld from player's hand
-            [ ] Add that meld to player's exposed melds
-            [ ] Recalculate player's melds
+            [X] Remove that meld from player's hand
+            [X] Add that meld to player's exposed melds
+            [X] Recalculate player's melds
             [ ] Printing the game state should show all of the exposed melds
             [ ] Showing player's melds should also show potential 'add ons' to previously exposed melds
     [ ] {re}Implement "currentDealer" functionality <br />
@@ -47,6 +47,7 @@ NOTE: I wanted std::make_unique so I needed C++ 14
     [ ] Only allowed to take from the discard if you can make a meld with it
 * Misc <br />
     [ ] Research a way to get access to C++ documentation offline (e.g., vector methods)
+    [ ] Better organize Tong_Its_Player class
 
 ## Refactoring
 * Less hacky method to get the index number into a vector while also getting the vector (see: show_all_melds())
@@ -59,6 +60,7 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 * Dynamically size printed cards?  Is this even necessary?
 * Research the C++ proper way of converting an int to a string in print_a_meld()
 * Refactor show_all_*() to stop using currMeldNum.  We're using class member vectors now.
+* As a shortcut, could I just take the shared_pointer from playersMelds and move it to playersExposedMelds in T_I_P::expose_a_meld()?!?!
 
 
 ## Bugs

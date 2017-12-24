@@ -33,10 +33,11 @@ typedef struct Playing_Card
 {
     Playing_Card(string pcRank, string pcSuit);
     // Playing_Card(string pcRank, char16_t pcSuit);
-    string rank;    // Value as a string
-    string suit;  // U+2660–2667
-    int rankValue;      // Value as a number
+    string rank;     // Value as a string
+    string suit;     // U+2660–2667
+    int rankValue;   // Value as a number
     int suitValue;   // Ranking of the suit {1:4}
+    int pointValue;  // Scoring value
 } PCard, *PCard_ptr;
 
 

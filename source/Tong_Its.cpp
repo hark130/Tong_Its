@@ -365,19 +365,14 @@ bool Tong_Its_Player::expose_a_meld(int meldNum)
     // 4. Recalculate the player's melds
     update_potential_melds(false);
 
+    // 5. Did the player get Tongits?
+    if (hand_size() == 0)
+    {
+        call_tongits();
+    }
+
     // DONE
     return retVal;
-
-    /*
-    if (cardNumber < 1)
-    {
-        throw invalid_argument("Tong_Its_Player::play_a_card() received invalid card number");
-    }
-    else if (cardNumber > numOfCards)
-    {
-        throw invalid_argument("Tong_Its_Player::play_a_card() received non-existent card number");
-    }
-    */
 }
 
 
@@ -404,6 +399,13 @@ bool Tong_Its_Player::called_tongits(void)
 bool Tong_Its_Player::called_draw(void)
 {
     return calledDraw;
+}
+
+
+int Tong_Its_Player::hand_size(void)
+{
+    numOfCards = (*playersHand).size();
+    return numOfCards;
 }
 
 
@@ -465,7 +467,7 @@ shared_ptr<PCard> Tong_Its_Player::play_a_card(int cardNumber)
     {
         throw invalid_argument("Tong_Its_Player::play_a_card() received invalid card number");
     }
-    else if (cardNumber > numOfCards)
+    else if (cardNumber > hand_size())
     {
         throw invalid_argument("Tong_Its_Player::play_a_card() received non-existent card number");
     }
@@ -481,7 +483,7 @@ shared_ptr<PCard> Tong_Its_Player::play_a_card(int cardNumber)
         }
         catch (...)
         {
-            cout << "Tong_Its_Player::play_a_card() received an except from play_any_card()" << endl;
+            cout << "Tong_Its_Player::play_a_card() received an exception from play_any_card()" << endl;
             throw;
         }
 
@@ -1407,7 +1409,7 @@ void Tong_Its_Game::start_the_game(void)
 {
     int gameOver = 0;
 
-    while(gameOver != USER_EXIT && !is_the_game_over())
+    while(gameOver != USER_EXIT)
     {
         // 1. Whose turn is it?
         if (currentPlayer == 1)
@@ -1430,6 +1432,7 @@ void Tong_Its_Game::start_the_game(void)
             // Scoring
             // Continue playing?
             cout << "'Game over man. Game over!' -Pvt. Hudson" << endl;  // DEBUGGING
+            break;
         }
         else
         {
@@ -1521,6 +1524,7 @@ bool Tong_Its_Game::is_the_game_over(void)
 {
     // LOCAL VARIABLES
     bool retVal = false;
+    // int run = 0;  // DEBUGGING
 
     // CHECK GAME STATUS
     // 1. Draw pile exhausted
@@ -1534,6 +1538,7 @@ bool Tong_Its_Game::is_the_game_over(void)
         // 2. Did a player end the game?
         for (auto player : players)
         {
+            // ++run;  // DEBUGGING
             // 2.1. A player called Tongits
             if (player.called_tongits())
             {
@@ -1544,7 +1549,16 @@ bool Tong_Its_Game::is_the_game_over(void)
             // 2.2. A player called Draw
             if (player.called_draw())
             {
+                // cout << "Run #" << run << endl;  // DEBUGGING
                 cout << "GAME OVER:  " << player.get_name() << " called Draw!" << endl;  // DEBUGGING
+                retVal = true;
+                break;
+            }
+            // 2.3. A player is out of cards (see: TONGITS!)
+            if (player.hand_size() == 0)
+            {
+                player.call_tongits();
+                cout << "GAME OVER:  " << player.get_name() << " got Tongits!" << endl;  // DEBUGGING
                 retVal = true;
                 break;
             }
@@ -1704,12 +1718,15 @@ int Tong_Its_Game::user_interface(void)
     string dynamicChoice5opt2 = string("Toggle hand sort (to sort-by-suit)");
     string dynamicChoice5 = dynamicChoice5opt1;
 
-    string dynamicChoice6 = string("Show sets in hand");
+    // string dynamicChoice6 = string("Show sets in hand");
 
+    string dynamicChoice6 = string("TONGITS!");
+    string dynamicChoice7 = string("Call Draw");
     string dynamicChoice9 = string("Exit");
     int menuChoice = 0;
     int subMenuChoice = 0;
     bool isTurnOver = false;
+    bool eligibleToCallDraw = true;
 
     game_state();
 
@@ -1729,7 +1746,14 @@ int Tong_Its_Game::user_interface(void)
         cout << "3. " << dynamicChoice3 << endl;
         cout << "4. " << dynamicChoice4 << endl;
         cout << "5. " << dynamicChoice5 << endl;
-        // cout << "6. " << dynamicChoice5 << endl;
+        if (players[0].count_cards() <= 1)
+        {
+            cout << "6. " << dynamicChoice6 << endl;  // TONGITS
+        }
+        if (eligibleToCallDraw)
+        {
+            cout << "7. " << dynamicChoice7 << endl;  // Draw
+        }
         cout << USER_EXIT << ". " << dynamicChoice9 << endl;
 
         // Take user input
@@ -1760,12 +1784,12 @@ int Tong_Its_Game::user_interface(void)
                     else if (subMenuChoice == 1)
                     {
                         players[0].receive_a_card(card_is_drawn());
-                        // game_state();
+                        eligibleToCallDraw = false;
                     }
                     else if (subMenuChoice == 2)
                     {
                         players[0].receive_a_card(discard_is_taken());
-                        // game_state();
+                        eligibleToCallDraw = false;
                     }
                     else
                     {
@@ -1799,12 +1823,25 @@ int Tong_Its_Game::user_interface(void)
                     {
                         // Remove the card
                         // Player removes the card from his hand
-                        tempCard = players[0].play_a_card(subMenuChoice);
+                        try
+                        {
+                            tempCard = players[0].play_a_card(subMenuChoice);
+                        }
+                        catch (const std::invalid_argument& err)
+                        {
+                            cerr << "Invalid argument: " << err.what() << endl;
+                            cout << "Please choose again." << endl;
+                            continue;
+                        }
                         // Removed card is added to the discard pile
                         receive_a_discard(tempCard);
-
+                        eligibleToCallDraw = false;
                         // Turn is over
                         isTurnOver = true;
+                        if (players[0].count_cards() == 0)
+                        {
+                            players[0].call_tongits();
+                        }
                     }
                 }
                 else
@@ -1872,6 +1909,34 @@ int Tong_Its_Game::user_interface(void)
                     dynamicChoice5 = dynamicChoice5opt1;    
                 }
                 game_state();
+                break;
+            // 6. TONGITS
+            case 6:
+                if (players[0].count_cards() <= 1)
+                {
+                    players[0].call_tongits();
+                }
+                else
+                {
+                    // Try again
+                    cout << "You are not permitted to call Tongits at this time.\n" << "Please choose again." << endl;
+                }
+                break;
+            // 7. DRAW
+            case 7:
+                if (eligibleToCallDraw)
+                {
+                    // IMPLEMENT THIS LATER
+                    // 1. Call draw
+                    players[0].call_draw();
+                    // 2. Other players can challenge or fold (lose if ineligible to challenge)
+                    // 3. Score and compare the players that challenged
+                }
+                else
+                {
+                    // Try again
+                    cout << "You are not permitted to call Draw at this time.\n" << "Please choose again." << endl;
+                }
                 break;
             case USER_EXIT:
                 cout << "Exiting game" << endl;

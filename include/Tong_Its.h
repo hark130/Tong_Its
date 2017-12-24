@@ -70,6 +70,7 @@ public:
     void call_draw(void);
     bool called_tongits(void);
     bool called_draw(void);
+    int hand_size(void);
 private:
     bool sortBySuit;
     string name;

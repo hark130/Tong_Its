@@ -44,19 +44,27 @@ NOTE: I wanted std::make_unique so I needed C++ 14
             [ ] Showing player's melds should also show potential 'add ons' to previously exposed melds
             [ ] Print a player's melds horizontally to conserve space
             [ ] Allow the user to build specific melds (e.g. 9999 789 vs 999 *and* 789)
+    [ ] Declaring Draw (public method you_can_not_draw() coupled with a member variable ableToDraw)
+        [ ] You cannot call Draw if someone laid off on any of your melds since your previous turn
+        [ ] You cannot call Draw if you laid off on your own melds in your previous turn
     [ ] {re}Implement "currentDealer" functionality <br />
     [X] Account for runs longer than 3
     [ ] Only allowed to take from the discard if you can make a meld with it
     [ ] Default draw location (1. Draw pile 2. Discard pile [Draw pile])
     [ ] "You just drew a ..." assistant
 * End Of Play <br />
-    [ ] Determine if the game is over
-        [ ] Draw pile empty
-        [ ] Player called Tongits (bool calledTongits)
-        [ ] Player called Draw (bool calledDraw)
+    [/] Determine if the game is over
+        [X] Draw pile empty
+        [X] Player called Tongits (bool calledTongits)
+        [X] Player called Draw (bool calledDraw)
             [ ] Other players can fold or challenge
 * Scoring <br />
-    [ ] 
+    [ ] Winner gets the following from each loser:
+        [ ] 1 chip for the winner (3 if by Tong Its)
+        [ ] 1 chip per ace in the winner's melds (not sapaw)
+        [ ] 1 chip for being burned
+        [ ] 3 chips per secret set of 4
+        [ ] 3 chips for winning a Draw after a challenge
 
 * Misc <br />
     [X] Research a way to get access to [C++ documentation offline](http://en.cppreference.com/w/Cppreference%3aArchives) (e.g., vector methods)

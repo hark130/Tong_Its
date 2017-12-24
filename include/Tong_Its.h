@@ -66,11 +66,17 @@ public:
     void sort_players_hand(void);
     void update_potential_melds(bool playOne);
     bool expose_a_meld(int meldNum);
+    void call_tongits(void);
+    void call_draw(void);
+    bool called_tongits(void);
+    bool called_draw(void);
 private:
     bool sortBySuit;
     string name;
     int numOfChips;
     int numOfCards;
+    bool calledTongits;
+    bool calledDraw;
     shared_ptr<vector<shared_ptr<PCard>>> playersHand;
     vector<shared_ptr<vector<shared_ptr<PCard>>>> playersMelds;
     vector<shared_ptr<vector<shared_ptr<PCard>>>> playersExposedMelds;
@@ -98,9 +104,9 @@ public:
     // Tong_Its_Game(shared_ptr<string> humanPlayerName);
     Tong_Its_Game(const shared_ptr<string>& humanPlayerName);
     // ~Tong_Its_Game();  // NOT USED
-    Tong_Its_Player player1;
-    Tong_Its_Player player2;
-    Tong_Its_Player player3;
+    // Tong_Its_Player player1;
+    // Tong_Its_Player player2;
+    // Tong_Its_Player player3;
     void start_the_game(void);
     void TEST_the_deck(shared_ptr<vector<shared_ptr<PCard>>> deckToTest);  // DEBUGGING
     void receive_a_discard(shared_ptr<PCard> discardedCard);  // Tong_Its_Player discards a card
@@ -108,6 +114,8 @@ public:
     shared_ptr<PCard> discard_is_taken(void);  // Tong_Its_Player takes the top discard from the discardPile
     // int currentDealer;  // Also the last winner
     int currentPlayer;
+    bool is_the_game_over(void);
+    vector<Tong_Its_Player> players;
 private:
     // Builds a vector of unique pointers to Card objects
     shared_ptr<vector<shared_ptr<PCard>>> build_a_deck(void);

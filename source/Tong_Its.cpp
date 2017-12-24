@@ -192,6 +192,8 @@ name(playerName), numOfChips(100), playersHand(make_shared<vector<shared_ptr<PCa
     // playersHand = make_shared<vector<shared_ptr<PCard>>>();
     numOfCards = 0;
     sortBySuit = true;
+    calledTongits = false;
+    calledDraw = false;
 }
 
 
@@ -376,6 +378,32 @@ bool Tong_Its_Player::expose_a_meld(int meldNum)
         throw invalid_argument("Tong_Its_Player::play_a_card() received non-existent card number");
     }
     */
+}
+
+
+void Tong_Its_Player::call_tongits(void)
+{
+    calledTongits = true;
+    return;
+}
+
+
+void Tong_Its_Player::call_draw(void)
+{
+    calledDraw = true;
+    return;
+}
+
+
+bool Tong_Its_Player::called_tongits(void)
+{
+    return calledTongits;
+}
+
+
+bool Tong_Its_Player::called_draw(void)
+{
+    return calledDraw;
 }
 
 
@@ -1333,12 +1361,17 @@ int Tong_Its_Player::random_num(int start, int stop)
 /***********************/
 // Tong_Its_Game::Tong_Its_Game(shared_ptr<string> humanPlayerName) : 
 Tong_Its_Game::Tong_Its_Game(const shared_ptr<string>& humanPlayerName) : 
-player1(*humanPlayerName), player2(string("Mike")), player3(string("Eren"))
+players({*humanPlayerName, string("Mike"), string("Eren")})
+// player1(*humanPlayerName), player2(string("Mike")), player3(string("Eren"))
 // player1(*humanPlayerName), player2(string("Player2")), player3(string("Player3"))
 // player1("Human"), player2("Player2"), player3("Player3")
 // player1(*humanPlayerName), player2(*humanPlayerName), player3(*humanPlayerName)
 
 {
+    // for (auto player : players)
+    // {
+    //     cout << "Player: " << player.get_name() << endl;  // DEBUGGING
+    // }
     // 0. Seed the random number generator
     srand(unsigned(time(NULL)));
 
@@ -1362,7 +1395,7 @@ player1(*humanPlayerName), player2(string("Mike")), player3(string("Eren"))
 
     // 6. Deal hands to each player
     // cout << "Function call to deal_player_hands()" << endl;  // DEBUGGING
-    deal_player_hands(player1);
+    deal_player_hands(players[0]);
     // print_a_card((*drawPile).at(0));  // Accomplished in user_interface() now
 
 
@@ -1374,7 +1407,7 @@ void Tong_Its_Game::start_the_game(void)
 {
     int gameOver = 0;
 
-    while(gameOver != USER_EXIT)
+    while(gameOver != USER_EXIT && !is_the_game_over())
     {
         // 1. Whose turn is it?
         if (currentPlayer == 1)
@@ -1392,10 +1425,17 @@ void Tong_Its_Game::start_the_game(void)
         }
 
         // 2. Has anyone won?
-        // Implement this
-
-        // 3. Iterate to the next player
-        currentPlayer = next_player();
+        if (is_the_game_over())
+        {
+            // Scoring
+            // Continue playing?
+            cout << "'Game over man. Game over!' -Pvt. Hudson" << endl;  // DEBUGGING
+        }
+        else
+        {
+            // 3. Iterate to the next player
+            currentPlayer = next_player();
+        }
     }
 
     return;
@@ -1477,6 +1517,45 @@ shared_ptr<PCard> Tong_Its_Game::discard_is_taken(void)
 }
 
 
+bool Tong_Its_Game::is_the_game_over(void)
+{
+    // LOCAL VARIABLES
+    bool retVal = false;
+
+    // CHECK GAME STATUS
+    // 1. Draw pile exhausted
+    if ((*drawPile).size() == 0)
+    {
+        cout << "GAME OVER:  Ran out of cards!" << endl;  // DEBUGGING
+        retVal = true;
+    }
+    else
+    {
+        // 2. Did a player end the game?
+        for (auto player : players)
+        {
+            // 2.1. A player called Tongits
+            if (player.called_tongits())
+            {
+                cout << "GAME OVER:  " << player.get_name() << " called Tongits!" << endl;  // DEBUGGING
+                retVal = true;
+                break;
+            }
+            // 2.2. A player called Draw
+            if (player.called_draw())
+            {
+                cout << "GAME OVER:  " << player.get_name() << " called Draw!" << endl;  // DEBUGGING
+                retVal = true;
+                break;
+            }
+        }
+    }
+
+    // DONE
+    return retVal;
+}
+
+
 shared_ptr<vector<shared_ptr<PCard>>> Tong_Its_Game::build_a_deck(void)
 {
     auto retVal = make_shared<vector<shared_ptr<PCard>>>();
@@ -1538,15 +1617,15 @@ void Tong_Its_Game::deal_player_hands(Tong_Its_Player currentDealer)
 
     if (currentPlayer == 1)
     {
-        player1.receive_a_card(tempCard);
+        players[0].receive_a_card(tempCard);
     }
     else if (currentPlayer == 2)
     {
-        player2.receive_a_card(tempCard);        
+        players[1].receive_a_card(tempCard);        
     }
     else if (currentPlayer == 3)
     {
-        player3.receive_a_card(tempCard);
+        players[2].receive_a_card(tempCard);
     }
     else
     {
@@ -1557,13 +1636,13 @@ void Tong_Its_Game::deal_player_hands(Tong_Its_Player currentDealer)
     for (int i = 0; i < 12; ++i)
     {
         tempCard = card_is_drawn();
-        player1.receive_a_card(tempCard);
+        players[0].receive_a_card(tempCard);
 
         tempCard = card_is_drawn();
-        player2.receive_a_card(tempCard);
+        players[1].receive_a_card(tempCard);
 
         tempCard = card_is_drawn();
-        player3.receive_a_card(tempCard);
+        players[2].receive_a_card(tempCard);
     }
 
     return;
@@ -1634,14 +1713,14 @@ int Tong_Its_Game::user_interface(void)
 
     game_state();
 
-    while(menuChoice != USER_EXIT && isTurnOver == false)
+    while(menuChoice != USER_EXIT && isTurnOver == false && is_the_game_over() == false)
     {
         // Reset temp variables
         menuChoice = 0;
         subMenuChoice = 0;
 
         // Print interface
-        if (player1.count_cards() == 13)
+        if (players[0].count_cards() == 13)
         {
             dynamicChoice1 = dynamicChoice1opt2;
         }
@@ -1680,12 +1759,12 @@ int Tong_Its_Game::user_interface(void)
                     }
                     else if (subMenuChoice == 1)
                     {
-                        player1.receive_a_card(card_is_drawn());
+                        players[0].receive_a_card(card_is_drawn());
                         // game_state();
                     }
                     else if (subMenuChoice == 2)
                     {
-                        player1.receive_a_card(discard_is_taken());
+                        players[0].receive_a_card(discard_is_taken());
                         // game_state();
                     }
                     else
@@ -1710,7 +1789,7 @@ int Tong_Its_Game::user_interface(void)
                     // cin >> subMenuChoice;
 
                     // Input Validation
-                    if (subMenuChoice < 1 || subMenuChoice > player1.count_cards())
+                    if (subMenuChoice < 1 || subMenuChoice > players[0].count_cards())
                     {
                         // Try again
                         cout << "Invalid card number.\n" << "Please choose again." << endl;
@@ -1720,7 +1799,7 @@ int Tong_Its_Game::user_interface(void)
                     {
                         // Remove the card
                         // Player removes the card from his hand
-                        tempCard = player1.play_a_card(subMenuChoice);
+                        tempCard = players[0].play_a_card(subMenuChoice);
                         // Removed card is added to the discard pile
                         receive_a_discard(tempCard);
 
@@ -1735,7 +1814,7 @@ int Tong_Its_Game::user_interface(void)
                 break;
             // 2. EXPOSE A MELD
             case 2:
-                if (player1.count_potential_melds() > 0)
+                if (players[0].count_potential_melds() > 0)
                 {
                     // Prompt
                     cout << "Enter the number of the meld you would like to expose: " << endl;
@@ -1744,7 +1823,7 @@ int Tong_Its_Game::user_interface(void)
                     subMenuChoice = input_number();
 
                     // Input Validation
-                    if (subMenuChoice < 1 || subMenuChoice > player1.count_potential_melds())
+                    if (subMenuChoice < 1 || subMenuChoice > players[0].count_potential_melds())
                     {
                         // Try again
                         cout << "Invalid meld number.\n" << "Please choose again." << endl;
@@ -1752,7 +1831,7 @@ int Tong_Its_Game::user_interface(void)
                     }
                     else
                     {
-                        if (!(player1.expose_a_meld(subMenuChoice)))
+                        if (!(players[0].expose_a_meld(subMenuChoice)))
                         {
                             cout << "There was a problem exposing your meld.\n" << endl;
                         }
@@ -1769,7 +1848,7 @@ int Tong_Its_Game::user_interface(void)
                 break;
             // 3. SHOW ALL MELDS
             case 3:
-                player1.show_all_melds(false);
+                players[0].show_all_melds(false);
                 break;
             // 4. REPRINT GAME STATE
             case 4:
@@ -1782,14 +1861,14 @@ int Tong_Its_Game::user_interface(void)
                 break;
             // 5. TOGGLE HAND SORTING
             case 5:
-                if (player1.sorting_by_suit() == true)
+                if (players[0].sorting_by_suit() == true)
                 {
-                    player1.toggle_sort();
+                    players[0].toggle_sort();
                     dynamicChoice5 = dynamicChoice5opt2;
                 }
                 else
                 {
-                    player1.toggle_sort();
+                    players[0].toggle_sort();
                     dynamicChoice5 = dynamicChoice5opt1;    
                 }
                 game_state();
@@ -1816,9 +1895,9 @@ void Tong_Its_Game::game_state(void)
     // Deck size
     int deckSize = (*discardPile).size();
     // Print player status
-    cout << "Player 1: " << player1.get_name() << " has " << player1.count_cards() << " cards and " << player1.count_chips() << " chips." << endl;
-    cout << "Player 2: " << player2.get_name() << " has " << player2.count_cards() << " cards and " << player2.count_chips() << " chips." << endl;
-    cout << "Player 3: " << player3.get_name() << " has " << player3.count_cards() << " cards and " << player3.count_chips() << " chips." << endl;
+    cout << "Player 1: " << players[0].get_name() << " has " << players[0].count_cards() << " cards and " << players[0].count_chips() << " chips." << endl;
+    cout << "Player 2: " << players[1].get_name() << " has " << players[1].count_cards() << " cards and " << players[1].count_chips() << " chips." << endl;
+    cout << "Player 3: " << players[2].get_name() << " has " << players[2].count_cards() << " cards and " << players[2].count_chips() << " chips." << endl;
     cout << "\n";
 
     // Print discard pile
@@ -1834,27 +1913,27 @@ void Tong_Its_Game::game_state(void)
     cout << "\n";
 
     // Print exposed melds
-    if (player1.count_exposed_melds() > 0)
+    if (players[0].count_exposed_melds() > 0)
     {
-        cout << "Player 1: " << player1.get_name() << "'s Exposed Melds" << endl;
-        player1.print_exposed_melds();
+        cout << "Player 1: " << players[0].get_name() << "'s Exposed Melds" << endl;
+        players[0].print_exposed_melds();
     }
-    if (player2.count_exposed_melds() > 0)
+    if (players[1].count_exposed_melds() > 0)
     {
-        cout << "Player 2: " << player2.get_name() << "'s Exposed Melds" << endl;
+        cout << "Player 2: " << players[1].get_name() << "'s Exposed Melds" << endl;
     }
-    if (player3.count_exposed_melds() > 0)
+    if (players[2].count_exposed_melds() > 0)
     {
-        cout << "Player 3: " << player3.get_name() << "'s Exposed Melds" << endl;
+        cout << "Player 3: " << players[2].get_name() << "'s Exposed Melds" << endl;
     }
-    if (player1.count_exposed_melds() > 0 || player2.count_exposed_melds() > 0 || player3.count_exposed_melds() > 0)
+    if (players[0].count_exposed_melds() > 0 || players[1].count_exposed_melds() > 0 || players[2].count_exposed_melds() > 0)
     {
         cout << endl;
     }
 
     // Print player's hand
     cout << "YOUR HAND" << endl;
-    player1.print_players_hand();
+    players[0].print_players_hand();
 
     return;
 }
@@ -1864,11 +1943,11 @@ int Tong_Its_Game::next_player(void)
 {
     int retVal = currentPlayer;
 
-    if (retVal < 1 || retVal > 3)
+    if (retVal < 1 || retVal > players.size())
     {
         throw "next_player() - Tong_Its_Game.currentPlayer has become corrupted"; 
     }    
-    else if (retVal == 3)
+    else if (retVal == players.size())
     {
         retVal = 1;
     }

@@ -306,6 +306,12 @@ bool Tong_Its_Player::expose_a_meld(int meldNum)
 
     // EXPOSE THAT MELD
     // 1. Find the meld
+    cout << "You chose meld number " << meldNum << endl;  // DEBUGGING
+    cout << "There are " << playersMelds.size() << " melds to choose from" << endl;  // DEBUGGING
+    for (auto meld : playersMelds)
+    {
+        print_a_meld((*meld), 0);
+    }
     pMeldsVector_ptr = playersMelds.at(meldNum - 1);
     if (pMeldsVector_ptr == nullptr)
     {
@@ -579,6 +585,9 @@ void Tong_Its_Player::print_players_hand(void)
  */
 void Tong_Its_Player::update_potential_melds(bool playOne)
 {
+    // Clear existing melds
+    playersMelds.clear();
+
     if (sortBySuit == true)
     {
         show_all_runs(playOne, 1);
@@ -597,7 +606,6 @@ void Tong_Its_Player::update_potential_melds(bool playOne)
 
     return;   
 }
-
 
 
 /*
@@ -646,7 +654,7 @@ int Tong_Its_Player::show_all_melds(bool playOne)
     for (auto meldToPrint : playersMelds)
     {
         // cout << "Printing a new meld" << endl;  // DEBUGGING
-        // cout << "Found this meld at position " << SUPER FANCE ITERATOR COUNTER GOES HERE << endl;  // DEBUGGING
+        // cout << "Found this meld at position " << SUPER FANCY ITERATOR COUNTER GOES HERE << endl;  // DEBUGGING
         print_a_meld(*meldToPrint, currMeldNum++);
     }
 
@@ -1861,6 +1869,9 @@ int Tong_Its_Game::user_interface(void)
             case 2:
                 if (players[0].count_potential_melds() > 0)
                 {
+                    // Print
+                    players[0].show_all_melds(true);
+
                     // Prompt
                     cout << "Enter the number of the meld you would like to expose: " << endl;
                     

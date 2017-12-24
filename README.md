@@ -9,7 +9,7 @@ Command line replication of the Filipino card game ["Tong Its"](https://www.paga
 
 
 ## How?
-g++ --std=c++14 -I include source/Tong_Its.cpp main.cpp -o game.exe
+g++ --std=c++14 -I include source/Clear_Screen.cpp source/Tong_Its.cpp main.cpp -o game.exe -lncurses
 ./game
 NOTE: I wanted std::make_unique so I needed C++ 14
 
@@ -33,21 +33,36 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 * Randomizer <br />
     [X] Returns a random number from x to y <br />
 * Game Play <br />
-    [ ] Melds
+    [/] Melds
         [X] Show melds
         [X] Number melds
         [/] Expose a meld
             [X] Remove that meld from player's hand
             [X] Add that meld to player's exposed melds
             [X] Recalculate player's melds
-            [ ] Printing the game state should show all of the exposed melds
+            [X] Printing the game state should show all of the exposed melds
             [ ] Showing player's melds should also show potential 'add ons' to previously exposed melds
+            [ ] Print a player's melds horizontally to conserve space
+            [ ] Allow the user to build specific melds (e.g. 9999 789 vs 999 *and* 789)
     [ ] {re}Implement "currentDealer" functionality <br />
     [X] Account for runs longer than 3
     [ ] Only allowed to take from the discard if you can make a meld with it
+    [ ] Default draw location (1. Draw pile 2. Discard pile [Draw pile])
+    [ ] "You just drew a ..." assistant
+* End Of Play <br />
+    [ ] Determine if the game is over
+        [ ] Draw pile empty
+        [ ] Player called Tongits (bool calledTongits)
+        [ ] Player called Draw (bool calledDraw)
+            [ ] Other players can fold or challenge
+* Scoring <br />
+    [ ] 
+
 * Misc <br />
-    [ ] Research a way to get access to C++ documentation offline (e.g., vector methods)
+    [X] Research a way to get access to [C++ documentation offline](http://en.cppreference.com/w/Cppreference%3aArchives) (e.g., vector methods)
     [ ] Better organize Tong_Its_Player class
+        [ ] Alphabetize members/methods among public/private?
+        [ ] Organize methods into function groups?
 
 ## Refactoring
 * Less hacky method to get the index number into a vector while also getting the vector (see: show_all_melds())
@@ -61,6 +76,7 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 * Research the C++ proper way of converting an int to a string in print_a_meld()
 * Refactor show_all_*() to stop using currMeldNum.  We're using class member vectors now.
 * As a shortcut, could I just take the shared_pointer from playersMelds and move it to playersExposedMelds in T_I_P::expose_a_meld()?!?!
+* Vector of player objects instead of hard-coded player1, 2, and 3.  Then, you can iterate through the vector instead of copy/paste player actions (see: game_state() printing exposed melds, is_game_over() checking for Tongits and Draw)
 
 
 ## Bugs

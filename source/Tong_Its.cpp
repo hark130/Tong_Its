@@ -318,7 +318,15 @@ bool Tong_Its_Player::expose_a_meld(int meldNum)
         // 2.1. Get the card number
         tempCardNum = get_card_number(meldCard);
         // 2.2. Remove that card
-        tmpPCard_ptr = play_a_card(tempCardNum);
+        try
+        {
+            tmpPCard_ptr = play_a_card(tempCardNum);
+        }
+        catch (const std::invalid_argument& err)
+        {
+            cerr << "Invalid argument: " << err.what() << endl;
+            // continue;
+        }
         // 2.3. Verify return value
         if (tmpPCard_ptr == nullptr)
         {

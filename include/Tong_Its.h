@@ -1,10 +1,10 @@
 #ifndef __TONG_ITS__
 #define __TONG_ITS__
 
-#include <iostream>
-#include <memory>
-#include <string>
-#include <vector>
+#include <regex>                // regex_*
+#include <string>               // stoi
+
+using namespace std;
 
 // #define SKINNY
 
@@ -26,137 +26,31 @@
 #define BORDER_SPACE " "
 #endif // SKINNY OR FAT BOXES
 
+#if defined(_WIN32) || defined(__MSDOS__)
+   #define SPADE   "\x06"
+   #define CLUB    "\x05"
+   #define HEART   "\x03"
+   #define DIAMOND "\x04"
+#else
+   #define SPADE   "\xE2\x99\xA0"
+   #define CLUB    "\xE2\x99\xA3"
+   #define HEART   "\xE2\x99\xA5"
+   #define DIAMOND "\xE2\x99\xA6"
+#endif
 
-using namespace std;
-
-typedef struct Playing_Card
-{
-    Playing_Card(string pcRank, string pcSuit);
-    // Playing_Card(string pcRank, char16_t pcSuit);
-    string rank;     // Value as a string
-    string suit;     // U+2660–2667
-    int rankValue;   // Value as a number
-    int suitValue;   // Ranking of the suit {1:4}
-    int pointValue;  // Scoring value
-    int numMelds;    // Number of melds containing this PCard
-    bool sapaw;      // Played on someone else's meld
-} PCard, *PCard_ptr;
-
-
-class Tong_Its_Player
-{
-public:
-    Tong_Its_Player(string playerName);
-    // ~Tong_Its_Player();  // NOT USED
-    void TEST_the_hand(void);  // DEBUGGING
-    void toggle_sort(void);
-    bool sorting_by_suit(void);
-    string get_name(void);
-    int count_chips(void);
-    int count_aces(void);
-    void win_chips(int wonChips);
-    int lose_chips(int lostChips);
-    int count_cards(void);
-    int count_exposed_melds(void);
-    int count_potential_melds(void);
-    void receive_a_card(shared_ptr<PCard> drawnCard);
-    int get_card_number(shared_ptr<PCard> findThisCard);
-    shared_ptr<PCard> play_a_card(int cardNumber);
-    shared_ptr<PCard> play_any_card(int cardNumber, shared_ptr<vector<shared_ptr<PCard>>> deckToPlayFrom);
-    void print_players_hand(void);
-    int show_all_melds(bool playOne);
-    int show_all_runs(bool playOne, int startingNum);
-    int show_all_sets(bool playOne, int startingNum);
-    void print_a_meld(vector<shared_ptr<PCard>> oneMeld, int meldNum);
-    void print_exposed_melds(void);
-    void sort_players_hand(void);
-    void update_potential_melds(bool playOne);
-    bool expose_a_meld(int meldNum);
-    void call_tongits(void);
-    void call_draw(void);
-    bool called_tongits(void);
-    bool called_draw(void);
-    void challenge(void);
-    bool challenged_a_draw(void);
-    int hand_size(void);
-    int current_card_points(void);
-    void got_burned(void);
-    bool is_burned(void);
-    void calc_final_score(void);
-    int get_final_score(void);
-    void reset(Tong_Its_Game& theGame);
-private:
-    bool sortBySuit;
-    string name;
-    int numOfChips;
-    int numOfCards;
-    bool calledTongits;
-    bool calledDraw;
-    bool challengedDraw;
-    bool burned;
-    int finalScore;
-    shared_ptr<vector<shared_ptr<PCard>>> playersHand;
-    vector<shared_ptr<vector<shared_ptr<PCard>>>> playersMelds;
-    vector<shared_ptr<vector<shared_ptr<PCard>>>> playersExposedMelds;
-    int find_a_suit_run(string sortThisSuit);
-    void print_a_row(int rowToPrint);
-    void sort_cards(shared_ptr<vector<shared_ptr<PCard>>> cardsToSort, bool sortBySuit);
-    int random_num(int start, int stop);
-    bool card_in_a_meld(shared_ptr<PCard> findThisCard);
-    // AI decision algorithm
-    //    Random Plays
-    //    Overt
-    //    Covert
-    //      Minimize sets played
-    //      Minimize pulls from the discard pile
-    //      Both
-    //    Overt/Covert mix
-    //    Perfect strategy (predictive)
-    //    Maximize points   
-    //    Cheater 
-};
+// extern const auto spadeString = string(SPADE);
+// extern const auto clubString = string(CLUB);
+// extern const auto heartString = string(HEART);
+// extern const auto diamondString = string(DIAMOND);
+extern string spadeString;
+extern string clubString;
+extern string heartString;
+extern string diamondString;
 
 
-class Tong_Its_Game 
-{
-public:
-    // Tong_Its_Game(shared_ptr<string> humanPlayerName);
-    Tong_Its_Game(const shared_ptr<string>& humanPlayerName);
-    // ~Tong_Its_Game();  // NOT USED
-    // Tong_Its_Player player1;
-    // Tong_Its_Player player2;
-    // Tong_Its_Player player3;
-    void start_the_game(void);
-    void TEST_the_deck(shared_ptr<vector<shared_ptr<PCard>>> deckToTest);  // DEBUGGING
-    void receive_a_discard(shared_ptr<PCard> discardedCard);  // Tong_Its_Player discards a card
-    shared_ptr<PCard> card_is_drawn(void);  // Tong_Its_Player draws a card from the drawPile
-    shared_ptr<PCard> discard_is_taken(void);  // Tong_Its_Player takes the top discard from the discardPile
-    // int currentDealer;  // Also the last winner
-    int currentPlayer;  // AKA the dealer
-    bool is_the_game_over(void);
-    vector<Tong_Its_Player> players;
-private:
-    // Current draw pile of unseen cards
-    shared_ptr<vector<shared_ptr<PCard>>> drawPile;  // NOTE: Draw from the back()
-    // Current discard pile (only the top should be accessible)
-    shared_ptr<vector<shared_ptr<PCard>>> discardPile;  // NOTE: Discard to the back()
-    // Builds a vector of unique pointers to Card objects
-    shared_ptr<vector<shared_ptr<PCard>>> build_a_deck(void);
-    // Randomizes the order of a vector of card pointers
-    void shuffle_a_deck(shared_ptr<vector<shared_ptr<PCard>>> deckOfCards);
-    // Used to play, discard, deal, etc
-    // void move_one_card(int cardNumber, shared_ptr<vector<shared_ptr<PCard>>> source, \
-    //                    shared_ptr<vector<shared_ptr<PCard>>> destination);
-
-    void deal_player_hands(Tong_Its_Player currentDealer);
-    void print_a_card(shared_ptr<PCard> cardToPrint);
-    int user_interface(void);
-    void game_state(void);
-    int next_player(void);
-    int score_the_game(void);
-    int calc_chip_loss(const Tong_Its_Player& winner, const Tong_Its_Player& loser);
-    void reset_game(int winnerNum);
-    };
+// #define CLEAR_SCREEN 30      // Number of newlines to print to clear the screen 
+#define USER_EXIT 999           // User interface indication to quit the program
+#define NUM_CARDS_PER_ROW 52    // Indicates how many cards print_a_row() will print per row
 
 int input_number(void);
 

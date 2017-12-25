@@ -38,6 +38,7 @@ typedef struct Playing_Card
     int rankValue;   // Value as a number
     int suitValue;   // Ranking of the suit {1:4}
     int pointValue;  // Scoring value
+    int numMelds;    // Number of melds containing this PCard
 } PCard, *PCard_ptr;
 
 
@@ -72,6 +73,11 @@ public:
     bool called_tongits(void);
     bool called_draw(void);
     int hand_size(void);
+    int current_card_points(void);
+    void got_burned(void);
+    bool is_burned(void);
+    void calc_final_score(void);
+    int get_final_score(void);
 private:
     bool sortBySuit;
     string name;
@@ -79,6 +85,8 @@ private:
     int numOfCards;
     bool calledTongits;
     bool calledDraw;
+    bool burned;
+    int finalScore;
     shared_ptr<vector<shared_ptr<PCard>>> playersHand;
     vector<shared_ptr<vector<shared_ptr<PCard>>>> playersMelds;
     vector<shared_ptr<vector<shared_ptr<PCard>>>> playersExposedMelds;
@@ -86,6 +94,7 @@ private:
     void print_a_row(int rowToPrint);
     void sort_cards(shared_ptr<vector<shared_ptr<PCard>>> cardsToSort, bool sortBySuit);
     int random_num(int start, int stop);
+    bool card_in_a_meld(shared_ptr<PCard> findThisCard);
     // AI decision algorithm
     //    Random Plays
     //    Overt
@@ -136,6 +145,7 @@ private:
     int user_interface(void);
     void game_state(void);
     int next_player(void);
+    int score_the_game(void);
 
     // Calculate points()
     // Winner?()

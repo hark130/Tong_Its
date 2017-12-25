@@ -3,6 +3,7 @@
 #include "Clear_Screen.h"       // clear_screen
 #include "Tong_Its.h"
 #include <algorithm>            // random_shuffle && sort 
+#include <climits>              // INT_MAX
 // #include <clocale>           // Set locale
 #include <cstdlib>              // srand
 #include <ctime>                // time 
@@ -109,7 +110,7 @@ Playing_Card::Playing_Card(string pcRank, string pcSuit)
     else
     {
         // Raise exception
-        throw invalid_argument("Invalid Playing Card suit");
+        throw invalid_argument("Playing_Card ctor - Invalid Playing Card suit");
     }
 
     if (pcRank == "A")
@@ -188,9 +189,10 @@ Playing_Card::Playing_Card(string pcRank, string pcSuit)
     else
     {
         // Raise exception
-        throw invalid_argument("Invalid Playing Card rank");
+        throw invalid_argument("Playing_Card ctor - Invalid Playing Card rank");
     }
 
+    numMelds = 0;
     rank = pcRank;
 }
 
@@ -213,6 +215,8 @@ name(playerName), numOfChips(100), playersHand(make_shared<vector<shared_ptr<PCa
     sortBySuit = true;
     calledTongits = false;
     calledDraw = false;
+    burned = false;
+    finalScore = 0;
 }
 
 
@@ -386,6 +390,7 @@ bool Tong_Its_Player::expose_a_meld(int meldNum)
     // 3.3. Copy the PCards to the player's exposed melds
     for (auto meldCard : tmpMeldSet)
     {
+        meldCard->numMelds = 1;  // Set meld number
         (*pExpMeldsVector_ptr).push_back(meldCard);
     }
 
@@ -439,6 +444,67 @@ int Tong_Its_Player::hand_size(void)
 {
     numOfCards = (*playersHand).size();
     return numOfCards;
+}
+
+
+int Tong_Its_Player::current_card_points(void)
+{
+    // LOCAL VARIABLES
+    int retVal = 0;
+
+    // UPDATE HAND
+    update_potential_melds(false);
+
+    // CALCULATE POINTS
+    if (!called_tongits())
+    {
+        for (auto card : (*playersHand))
+        {
+            if (card->numMelds == 0)
+            {
+                retVal += card->pointValue;
+            }
+            else if (card->numMelds > 1)
+            {
+                cout << "Tong_Its_Player::current_card_points() - Find some way to account for overlapping potential melds!" << endl;
+            }
+        }
+    }
+
+    // DONE
+    return retVal;
+}
+
+
+/*
+    Purpose - Change the player's state to 'burned' (see: They lost)
+ */
+void Tong_Its_Player::got_burned(void)
+{
+    burned = true;
+    return;
+}
+
+
+bool Tong_Its_Player::is_burned(void)
+{
+    return burned;
+}
+
+
+void Tong_Its_Player::calc_final_score(void)
+{
+    finalScore = current_card_points();
+}
+
+
+int Tong_Its_Player::get_final_score(void)
+{
+    if (finalScore == 0)
+    {
+        calc_final_score();
+    }
+    return finalScore;
 }
 
 
@@ -1388,6 +1454,43 @@ int Tong_Its_Player::random_num(int start, int stop)
 
     return retVal;
 }
+
+
+/*
+    Purpose - Determine if this card is in a potential meld
+    Input - findThisCard - PCard to find in playersPotentialMelds
+    Output - true if in a potential meld, false otherwise
+    Note - Also updates how many melds it is in
+ */
+bool Tong_Its_Player::card_in_a_meld(shared_ptr<PCard> findThisCard)
+{
+    // LOCAL VARIABLES
+    bool retVal = false;
+
+    // RESET MELD COUNTER
+    findThisCard->numMelds = 0;
+
+    // FIND IT
+    for (auto meldSet : playersMelds)
+    {
+        if (meldSet == nullptr)
+        {
+            throw runtime_error("Tong_Its_Player::card_in_a_meld() found a nullptr");
+        }
+
+        for (auto meldCard : (*meldSet))
+        {
+            if (meldCard == findThisCard)
+            {
+                retVal = true;
+                findThisCard->numMelds++;
+            }
+        }
+    }
+
+    // DONE
+    return retVal;
+}
 /***********************/
 /* TONG ITS PLAYER END */
 /***********************/
@@ -1442,7 +1545,9 @@ players({*humanPlayerName, string("Mike"), string("Eren")})
 
 void Tong_Its_Game::start_the_game(void)
 {
+    // LOCAL VARIABLES
     int gameOver = 0;
+    int winningPlayerNumber = 0;
 
     while(gameOver != USER_EXIT)
     {
@@ -1458,14 +1563,21 @@ void Tong_Its_Game::start_the_game(void)
         }
         else
         {
-            throw "start_the_game() - currentPlayer appears to be broken";
+            throw runtime_error("start_the_game() - currentPlayer appears to be broken");
         }
 
         // 2. Has anyone won?
         if (is_the_game_over())
         {
             // Scoring
+            winningPlayerNumber = score_the_game();
+
+            // Resolve chips
+            // IMPLEMENT THIS LATER
+
             // Continue playing?
+            // If yes, reset game and player variables, increment the dealer then call start_the_game() again
+            // If no...
             cout << "'Game over man. Game over!' -Pvt. Hudson" << endl;  // DEBUGGING
             break;
         }
@@ -1678,7 +1790,7 @@ void Tong_Its_Game::deal_player_hands(Tong_Its_Player currentDealer)
     }
     else
     {
-        throw "deal_player_hands() - Tong_Its_Game.currentPlayer has become corrupted";
+        throw runtime_error("deal_player_hands() - Tong_Its_Game.currentPlayer has become corrupted");
     }
 
     // 12 to everyone
@@ -2048,7 +2160,7 @@ int Tong_Its_Game::next_player(void)
 
     if (retVal < 1 || retVal > players.size())
     {
-        throw "next_player() - Tong_Its_Game.currentPlayer has become corrupted"; 
+        throw runtime_error("next_player() - Tong_Its_Game.currentPlayer has become corrupted"); 
     }    
     else if (retVal == players.size())
     {
@@ -2060,6 +2172,84 @@ int Tong_Its_Game::next_player(void)
     }
 
     return retVal;
+}
+
+
+/*
+    Purpose - Score the game and determine the winner
+    Input - None
+    Output - Player number of the winner
+    Note - Prints the winning statement
+ */
+int Tong_Its_Game::score_the_game(void)
+{
+    // LOCAL VARIABLES
+    string currentWinner = "";
+    int winningScore = INT_MAX;
+    int winningPlayerNumber = 0;
+    int playerNumber = 0;
+    bool someoneCalledDraw = false;
+
+    // PROCESS SCORES
+    // Did anyone call Tongits or Draw?
+    for (auto player : players)
+    {
+        playerNumber++;
+        if (player.called_tongits())
+        {
+            cout << "Player " << playerNumber << ": " << player.get_name() << " called Tongits." << endl;
+            break;
+        }
+        else if (player.called_draw())
+        {
+            cout << "Player " << playerNumber << ": " << player.get_name() << " called Draw." << endl;
+            someoneCalledDraw = true;
+            break;
+        }
+    }
+    playerNumber = 0;
+
+    // Did anyone get burned?
+    for (auto player : players)
+    {
+        playerNumber++;
+        if (player.count_exposed_melds() == 0)
+        {
+            player.got_burned();
+            cout << "Player " << playerNumber << ": " << player.get_name() << " has " << player.count_exposed_melds() << " melds and got burned!" << endl;            
+        }
+    }
+    playerNumber = 0;
+
+    // Calculate scores for those that didn't get burned
+    for (auto player: players)
+    {
+        playerNumber++;
+        if (!player.is_burned())
+        {
+            if (player.get_final_score() < winningScore)
+            {
+                winningScore = player.get_final_score();
+                currentWinner = player.get_name();
+                winningPlayerNumber = playerNumber;
+            }
+        }
+    }
+    playerNumber = 0;
+
+    // Validate the end-of-game state
+    if (players[winningPlayerNumber - 1].called_tongits() == false && someoneCalledDraw == false && (*drawPile).size() > 0)
+    {
+        throw runtime_error("Tong_Its_Game::score_the_game() has been called but the game doesn't appear to be over yet!"); 
+    }
+    else
+    {
+        // Print the winner
+        cout << "Player " << winningPlayerNumber << ": " << currentWinner << " won with a score of " << winningScore << "!  CONGRATULATIONS!" << endl;
+    }
+
+    // DONE
+    return winningPlayerNumber;
 }
 /*********************/
 /* TONG ITS GAME END */

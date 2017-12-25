@@ -33,10 +33,10 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 * Randomizer <br />
     [X] Returns a random number from x to y <br />
 * Game Play <br />
-    [/] Melds <br />
-        [X] Show melds <br />
-        [X] Number melds <br />
-        [/] Expose a meld <br />
+    - [/] Melds <br />
+        - [X] Show melds <br />
+        - [X] Number melds <br />
+        - [/] Expose a meld <br />
             - [X] Remove that meld from player's hand <br />
             - [X] Add that meld to player's exposed melds <br />
             - [X] Recalculate player's melds <br />

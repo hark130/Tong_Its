@@ -280,6 +280,51 @@ int Tong_Its_Player::count_chips(void)
 }
 
 
+void Tong_Its_Player::win_chips(int wonChips)
+{
+    if (wonChips > 0)
+    {
+        numChips += wonChips;
+    }
+    else
+    {
+        throw invalid_argument("Tong_Its_Player::win_chips() was passed an invalid value for wonChips");
+    }
+
+    return;
+}
+
+
+/*
+    Purpose - The player lost some chips
+    Input - Number of chips lost
+    Output - Last remaining chips or lostChips, whichever is lowest
+    Note - This method will not allow the player's numChips to go negative
+ */
+int Tong_Its_Player::lose_chips(int lostChips)
+{
+    // LOCAL VARIABLES
+    int retVal = 0;
+
+    // PAY OUT
+    // Not enough to cover
+    if (lostChips > numChips)
+    {
+        numChips = 0;
+        retVal = numChips;
+    }
+    // Enough to cover
+    else
+    {
+        numChips -= lostChips;
+        retVal = lostChips;
+    }
+
+    // DONE
+    return retVal;
+}
+
+
 int Tong_Its_Player::count_cards(void)
 {
     return (*playersHand).size();

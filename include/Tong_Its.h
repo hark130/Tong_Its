@@ -52,6 +52,8 @@ public:
     bool sorting_by_suit(void);
     string get_name(void);
     int count_chips(void);
+    void win_chips(int wonChips);
+    int lose_chips(int lostChips);
     int count_cards(void);
     int count_exposed_melds(void);
     int count_potential_melds(void);

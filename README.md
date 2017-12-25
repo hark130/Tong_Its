@@ -37,22 +37,22 @@ NOTE: I wanted std::make_unique so I needed C++ 14
         [X] Show melds <br />
         [X] Number melds <br />
         [/] Expose a meld <br />
-            [X] Remove that meld from player's hand
-            [X] Add that meld to player's exposed melds
-            [X] Recalculate player's melds
-            [X] Printing the game state should show all of the exposed melds
-            [ ] Showing player's melds should also show potential 'add ons' to previously exposed melds
-            [ ] Print a player's melds horizontally to conserve space
-            [ ] Allow the user to build specific melds (e.g. 9999 789 vs 999 *and* 789)
-            [ ] Account for "special" melds somehow (struct with bool special and vector<shared_ptr<PCard>> ?) and don't forget to update T_I_G::calc_chip_loss() when you do
-    [ ] Declaring Draw (public method you_can_not_draw() coupled with a member variable ableToDraw)
-        [ ] You cannot call Draw if someone laid off on any of your melds since your previous turn
-        [ ] You cannot call Draw if you laid off on your own melds in your previous turn
+            [X] Remove that meld from player's hand <br />
+            [X] Add that meld to player's exposed melds <br />
+            [X] Recalculate player's melds <br />
+            [X] Printing the game state should show all of the exposed melds <br />
+            [ ] Showing player's melds should also show potential 'add ons' to previously exposed melds <br />
+            [ ] Print a player's melds horizontally to conserve space <br />
+            [ ] Allow the user to build specific melds (e.g. 9999 789 vs 999 *and* 789) <br />
+            [ ] Account for "special" melds somehow (struct with bool special and vector<shared_ptr<PCard>> ?) and don't forget to update T_I_G::calc_chip_loss() when you do <br />
+    [ ] Declaring Draw (public method you_can_not_draw() coupled with a member variable ableToDraw) <br />
+        [ ] You cannot call Draw if someone laid off on any of your melds since your previous turn <br />
+        [ ] You cannot call Draw if you laid off on your own melds in your previous turn <br />
     [ ] {re}Implement "currentDealer" functionality <br />
-    [X] Account for runs longer than 3
-    [ ] Only allowed to take from the discard if you can make a meld with it
-    [ ] Default draw location (1. Draw pile 2. Discard pile [Draw pile])
-    [ ] "You just drew a ..." assistant
+    [X] Account for runs longer than 3 <br />
+    [ ] Only allowed to take from the discard if you can make a meld with it <br />
+    [ ] Default draw location (1. Draw pile 2. Discard pile [Draw pile]) <br />
+    [ ] "You just drew a ..." assistant <br />
 * End Of Play <br />
     [/] Determine if the game is over
         [X] Draw pile empty

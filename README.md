@@ -15,23 +15,23 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 
 ## To Do
 * Interface <br />
-    [X] Calls card printer <br />
-    [X] Calls hand printer <br />
+    - [X] Calls card printer <br />
+    - [X] Calls hand printer <br />
 * Card printer <br />
-    [X] Print one card
+    - [X] Print one card
 * Hand printer <br />
-    [X] Prints horizontally and vertically <br />
-    [X] Modular horizontal/vertical printing <br />
+    - [X] Prints horizontally and vertically <br />
+    - [X] Modular horizontal/vertical printing <br />
 * Card dealer <br />
-    [X] Deal cards to all the players
+    - [X] Deal cards to all the players
 * Deck builder <br />
-    [X] Allocates shared pointers to a Card class <br />
-    [X] Builds vector of cards <br />
+    - [X] Allocates shared pointers to a Card class <br />
+    - [X] Builds vector of cards <br />
 * Shuffler <br />
-    [X] Calls randomizer <br />
-    [X] Randomizes the order of the vector of unique pointers to the Card objects <br />
+    - [X] Calls randomizer <br />
+    - [X] Randomizes the order of the vector of unique pointers to the Card objects <br />
 * Randomizer <br />
-    [X] Returns a random number from x to y <br />
+    - [X] Returns a random number from x to y <br />
 * Game Play <br />
     - [ ] Melds <br />
         - [X] Show melds <br />

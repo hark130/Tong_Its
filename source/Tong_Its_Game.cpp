@@ -92,6 +92,10 @@ void Tong_Its_Game::start_the_game(void)
         {
             // 2.1. Scoring
             winningPlayerNumber = score_the_game();
+            // for (auto player : players)
+            // {
+            //     cout << "[Post-score_the_game() function call] Player " << player.get_name() << " is burned?  " << player.is_burned() << endl;  // DEBUGGING
+            // }
 
             // 2.2. Resolve chips
             for (int i = 0; i < players.size(); i++)
@@ -772,20 +776,40 @@ int Tong_Its_Game::score_the_game(void)
     playerNumber = 0;
 
     // Did anyone get burned?
-    for (auto player : players)
+    // NOTE: Different iteration here because, and I'm guessing here, that
+    //  my usual auto stuff : stuffs was calling a copy constructor for stuff.
+    //  I'm guessing that because modifications to stuff weren't being 'saved'
+    //  here.  Changing to a standard for-loop coupled with dereferencing
+    //  indices in my vector cleared up the problem.
+    for (int i = 0; i < players.size(); i++)
     {
         playerNumber++;
-        if (player.count_exposed_melds() == 0)
+        if (players[i].count_exposed_melds() == 0)
         {
-            player.got_burned();
-            cout << "Player " << playerNumber << ": " << player.get_name() << " has " << player.count_exposed_melds() << " melds and got burned!" << endl;            
+            // cout << "Before logging the burn... Player " << playerNumber << ": " << player.get_name() << " is burned?  " << player.is_burned() << endl;  // DEBUGGING
+            players[i].got_burned();
+            // cout << "After logging the burn... Player " << playerNumber << ": " << players[i].get_name() << " is burned?  " << players[i].is_burned() << endl;  // DEBUGGING
+            cout << "Player " << playerNumber << ": " << players[i].get_name() << " has " << players[i].count_exposed_melds() << " melds and got burned!" << endl;
         }
     }
     playerNumber = 0;
 
+    // for (auto player : players)
+    // {
+    //     cout << "In between 'burned?' and 'calc score'... Player " << player.get_name() << " is burned?  " << player.is_burned() << endl;  // DEBUGGING
+    // }
+    // thePlayers[1].got_burned();
+    // thePlayers[2].got_burned();
+    // for (auto player : thePlayers)
+    // // for (auto player : players)
+    // {
+    //     cout << "MANUAL burn!... Player " << player.get_name() << " is burned?  " << player.is_burned() << endl;  // DEBUGGING
+    // }
+
     // Calculate scores for those that didn't get burned
-    for (auto player: players)
+    for (auto player : players)
     {
+        // cout << "Before getting final score... Player " << playerNumber << ": " << player.get_name() << " is burned?  " << player.is_burned() << endl;  // DEBUGGING
         playerNumber++;
         if (!player.is_burned())
         {
@@ -796,6 +820,7 @@ int Tong_Its_Game::score_the_game(void)
                 winningPlayerNumber = playerNumber;
             }
         }
+        // cout << "After getting final score... Player " << playerNumber << ": " << player.get_name() << " is burned?  " << player.is_burned() << endl;  // DEBUGGING
     }
     playerNumber = 0;
 
@@ -811,6 +836,10 @@ int Tong_Its_Game::score_the_game(void)
     }
 
     // DONE
+    // for (auto player : players)
+    // {
+    //     cout << "Just before score_the_game() returns... Player " << player.get_name() << " is burned?  " << player.is_burned() << endl;  // DEBUGGING
+    // }
     return winningPlayerNumber;
 }
 
@@ -832,23 +861,33 @@ int Tong_Its_Game::calc_chip_loss(Tong_Its_Player& winner, Tong_Its_Player& lose
         // Winning by Tongits
         if (winner.called_tongits())
         {
+            cout << "Winner got Tongits... adding 3" << endl;  // DEBUGGING
             retVal += 3;
         }
         // Winning a Draw
         else if (winner.called_draw() && loser.challenged_a_draw())
         {
+            cout << "Winner won Draw... adding 3" << endl;  // DEBUGGING
             retVal += 3;
         }
         // Just winning
         else
         {
+            cout << "Winner merely won... adding 1" << endl;  // DEBUGGING
             retVal += 1;
         }
         // Aces in hand
-        retVal += winner.count_aces();
-        // Burned?
-        if (loser.is_burned())
+        if (winner.count_aces() > 0)
         {
+            cout << "Winner had aces... adding " << winner.count_aces() << endl;  // DEBUGGING
+            retVal += winner.count_aces();
+        }
+        // retVal += winner.count_aces();
+        // Burned?
+        cout << "Loser " << loser.get_name() << " is burned?  " << loser.is_burned() << endl;  // DEBUGGING
+        if (loser.is_burned() == true)
+        {
+            cout << "Loser got burned... adding 1" << endl;  // DEBUGGING
             retVal += 1;
         }
         // Secret set

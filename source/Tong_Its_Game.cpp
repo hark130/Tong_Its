@@ -440,6 +440,10 @@ int Tong_Its_Game::user_interface(void)
     int subMenuChoice = 0;
     bool isTurnOver = false;
     bool eligibleToCallDraw = true;
+    if (players[0].count_exposed_melds() == 0)
+    {
+        eligibleToCallDraw = false;
+    }
 
     game_state();
 
@@ -511,6 +515,9 @@ int Tong_Its_Game::user_interface(void)
                     
                     // Toggle menu choice
                     dynamicChoice1 = dynamicChoice1opt2;
+
+                    // No longer eligible to call Draw
+                    eligibleToCallDraw = false;
 
                     // Reprint the state of the game
                     game_state();
@@ -590,6 +597,9 @@ int Tong_Its_Game::user_interface(void)
                         }
                         else
                         {
+                            // No longer eligible to call Draw
+                            eligibleToCallDraw = false;
+
                             game_state();
                         }
                     }
@@ -861,33 +871,33 @@ int Tong_Its_Game::calc_chip_loss(Tong_Its_Player& winner, Tong_Its_Player& lose
         // Winning by Tongits
         if (winner.called_tongits())
         {
-            cout << "Winner got Tongits... adding 3" << endl;  // DEBUGGING
+            // cout << "Winner got Tongits... adding 3" << endl;  // DEBUGGING
             retVal += 3;
         }
         // Winning a Draw
         else if (winner.called_draw() && loser.challenged_a_draw())
         {
-            cout << "Winner won Draw... adding 3" << endl;  // DEBUGGING
+            // cout << "Winner won Draw... adding 3" << endl;  // DEBUGGING
             retVal += 3;
         }
         // Just winning
         else
         {
-            cout << "Winner merely won... adding 1" << endl;  // DEBUGGING
+            // cout << "Winner merely won... adding 1" << endl;  // DEBUGGING
             retVal += 1;
         }
         // Aces in hand
         if (winner.count_aces() > 0)
         {
-            cout << "Winner had aces... adding " << winner.count_aces() << endl;  // DEBUGGING
+            // cout << "Winner had aces... adding " << winner.count_aces() << endl;  // DEBUGGING
             retVal += winner.count_aces();
         }
         // retVal += winner.count_aces();
         // Burned?
-        cout << "Loser " << loser.get_name() << " is burned?  " << loser.is_burned() << endl;  // DEBUGGING
+        // cout << "Loser " << loser.get_name() << " is burned?  " << loser.is_burned() << endl;  // DEBUGGING
         if (loser.is_burned() == true)
         {
-            cout << "Loser got burned... adding 1" << endl;  // DEBUGGING
+            // cout << "Loser got burned... adding 1" << endl;  // DEBUGGING
             retVal += 1;
         }
         // Secret set

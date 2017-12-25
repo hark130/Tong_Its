@@ -93,7 +93,8 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 * Refactor show_all_*() to stop using currMeldNum.  We're using class member vectors now.
 * As a shortcut, could I just take the shared_pointer from playersMelds and move it to playersExposedMelds in T_I_P::expose_a_meld()?!?!
 * Vector of player objects instead of hard-coded player1, 2, and 3.  Then, you can iterate through the vector instead of copy/paste player actions (see: game_state() printing exposed melds, is_game_over() checking for Tongits and Draw)
-
+* Tong_Its_Game::deal_players_hands() should utilize the newly created vector of players instead of hard-coded player references
+* Apparently, I should never include "using namespace" in a header file.  Research this more indepth later.
 
 ## Bugs
 [ ] There must be a better solution to allow a Tong_Its_Game to count the number of potential melds for a player than calling a public method since *anyone* could call that method to gain insight into what a player has

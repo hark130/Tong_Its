@@ -39,6 +39,7 @@ typedef struct Playing_Card
     int suitValue;   // Ranking of the suit {1:4}
     int pointValue;  // Scoring value
     int numMelds;    // Number of melds containing this PCard
+    bool sapaw;      // Played on someone else's meld
 } PCard, *PCard_ptr;
 
 
@@ -52,6 +53,7 @@ public:
     bool sorting_by_suit(void);
     string get_name(void);
     int count_chips(void);
+    int count_aces(void);
     void win_chips(int wonChips);
     int lose_chips(int lostChips);
     int count_cards(void);
@@ -74,12 +76,15 @@ public:
     void call_draw(void);
     bool called_tongits(void);
     bool called_draw(void);
+    void challenge(void);
+    bool challenged_a_draw(void);
     int hand_size(void);
     int current_card_points(void);
     void got_burned(void);
     bool is_burned(void);
     void calc_final_score(void);
     int get_final_score(void);
+    void reset(Tong_Its_Game& theGame);
 private:
     bool sortBySuit;
     string name;
@@ -87,6 +92,7 @@ private:
     int numOfCards;
     bool calledTongits;
     bool calledDraw;
+    bool challengedDraw;
     bool burned;
     int finalScore;
     shared_ptr<vector<shared_ptr<PCard>>> playersHand;
@@ -126,16 +132,16 @@ public:
     shared_ptr<PCard> card_is_drawn(void);  // Tong_Its_Player draws a card from the drawPile
     shared_ptr<PCard> discard_is_taken(void);  // Tong_Its_Player takes the top discard from the discardPile
     // int currentDealer;  // Also the last winner
-    int currentPlayer;
+    int currentPlayer;  // AKA the dealer
     bool is_the_game_over(void);
     vector<Tong_Its_Player> players;
 private:
-    // Builds a vector of unique pointers to Card objects
-    shared_ptr<vector<shared_ptr<PCard>>> build_a_deck(void);
     // Current draw pile of unseen cards
     shared_ptr<vector<shared_ptr<PCard>>> drawPile;  // NOTE: Draw from the back()
     // Current discard pile (only the top should be accessible)
     shared_ptr<vector<shared_ptr<PCard>>> discardPile;  // NOTE: Discard to the back()
+    // Builds a vector of unique pointers to Card objects
+    shared_ptr<vector<shared_ptr<PCard>>> build_a_deck(void);
     // Randomizes the order of a vector of card pointers
     void shuffle_a_deck(shared_ptr<vector<shared_ptr<PCard>>> deckOfCards);
     // Used to play, discard, deal, etc
@@ -148,9 +154,8 @@ private:
     void game_state(void);
     int next_player(void);
     int score_the_game(void);
-
-    // Calculate points()
-    // Winner?()
+    int calc_chip_loss(const Tong_Its_Player& winner, const Tong_Its_Player& loser);
+    void reset_game(int winnerNum);
     };
 
 int input_number(void);

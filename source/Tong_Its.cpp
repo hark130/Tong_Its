@@ -192,6 +192,7 @@ Playing_Card::Playing_Card(string pcRank, string pcSuit)
         throw invalid_argument("Playing_Card ctor - Invalid Playing Card rank");
     }
 
+    sapaw = false;
     numMelds = 0;
     rank = pcRank;
 }
@@ -215,6 +216,7 @@ name(playerName), numOfChips(100), playersHand(make_shared<vector<shared_ptr<PCa
     sortBySuit = true;
     calledTongits = false;
     calledDraw = false;
+    challengedDraw = false;
     burned = false;
     finalScore = 0;
 }
@@ -280,11 +282,43 @@ int Tong_Its_Player::count_chips(void)
 }
 
 
+/*
+    Purpose - Count the players's total number of aces for the purposes of scoring
+    Input - None
+    Output - The total number of aces
+    Note - This method counts both aces in hand and aces in exposed melds but does not count 'sapaw' aces
+ */
+int Tong_Its_Player::count_aces(void)
+{
+    int retVal = 0;
+
+    for (auto playingCard : (*playersHand))
+    {
+        if (playingCard->rankValue == 1 && !(playingCard->sapaw))
+        {
+            retVal++;
+        }
+    }
+    for (auto oneExposedMeld : playersExposedMelds)
+    {
+        for (auto playingCard : (*oneExposedMeld))
+        {
+            if (playingCard->rankValue == 1 && !(playingCard->sapaw))
+            {
+                retVal++;
+            }
+        }
+    }
+
+    return retVal;
+}
+
+
 void Tong_Its_Player::win_chips(int wonChips)
 {
     if (wonChips > 0)
     {
-        numChips += wonChips;
+        numOfChips += wonChips;
     }
     else
     {
@@ -299,7 +333,7 @@ void Tong_Its_Player::win_chips(int wonChips)
     Purpose - The player lost some chips
     Input - Number of chips lost
     Output - Last remaining chips or lostChips, whichever is lowest
-    Note - This method will not allow the player's numChips to go negative
+    Note - This method will not allow the player's numOfChips to go negative
  */
 int Tong_Its_Player::lose_chips(int lostChips)
 {
@@ -308,15 +342,15 @@ int Tong_Its_Player::lose_chips(int lostChips)
 
     // PAY OUT
     // Not enough to cover
-    if (lostChips > numChips)
+    if (lostChips > numOfChips)
     {
-        numChips = 0;
-        retVal = numChips;
+        numOfChips = 0;
+        retVal = numOfChips;
     }
     // Enough to cover
     else
     {
-        numChips -= lostChips;
+        numOfChips -= lostChips;
         retVal = lostChips;
     }
 
@@ -485,6 +519,20 @@ bool Tong_Its_Player::called_draw(void)
 }
 
 
+
+void Tong_Its_Player::challenge(void)
+{
+    challengedDraw = true;
+    return;
+}
+
+
+bool Tong_Its_Player::challenged_a_draw(void)
+{
+    return challengedDraw;
+}
+
+
 int Tong_Its_Player::hand_size(void)
 {
     numOfCards = (*playersHand).size();
@@ -550,6 +598,29 @@ int Tong_Its_Player::get_final_score(void)
         calc_final_score();
     }
     return finalScore;
+}
+
+
+void Tong_Its_Player::reset(Tong_Its_Game& theGame)
+{
+    // 1. Reset member variables
+    numOfCards = 0;
+    sortBySuit = true;
+    calledTongits = false;
+    calledDraw = false;
+    challengedDraw = false;
+    burned = false;
+    finalScore = 0;
+    // 2. Reset member containers
+    // 2.1. Player's Hand
+    for (int i = 0; i < (*playersHand).size(); i++)
+    {
+        theGame.receive_a_discard(play_a_card(1));
+    }
+    // 2.2. Player's Melds
+    playersMelds.clear();
+    // 2.3. Player's Exposed Melds
+    playersExposedMelds.clear();
 }
 
 
@@ -1591,8 +1662,11 @@ players({*humanPlayerName, string("Mike"), string("Eren")})
 void Tong_Its_Game::start_the_game(void)
 {
     // LOCAL VARIABLES
-    int gameOver = 0;
+    int gameOver = 0;               // Return value from user_interface()
+    int stopPlaying = 1;            // User choice to stop playing or continue
     int winningPlayerNumber = 0;
+    int tmpLoss = 0;                // Temp variable which stores a player's chip loss
+    int playerNumber = 0;           // Temp variable tracking player number
 
     while(gameOver != USER_EXIT)
     {
@@ -1614,17 +1688,56 @@ void Tong_Its_Game::start_the_game(void)
         // 2. Has anyone won?
         if (is_the_game_over())
         {
-            // Scoring
+            // 2.1. Scoring
             winningPlayerNumber = score_the_game();
 
-            // Resolve chips
-            // IMPLEMENT THIS LATER
+            // 2.2. Resolve chips
+            for (int i = 0; i < players.size(); i++)
+            {
+                if (i == winningPlayerNumber - 1)
+                {
+                    continue;
+                }
+                // 2.2.1. Calculate loss
+                tmpLoss = calc_chip_loss(players[winningPlayerNumber - 1], players[i]);
+                // 2.2.2. Take away loser's chips
+                tmpLoss = players[i].lose_chips(tmpLoss);
+                // 2.2.3. Give those chips to the winner
+                players[winningPlayerNumber - 1].win_chips(tmpLoss);
+            }
 
-            // Continue playing?
-            // If yes, reset game and player variables, increment the dealer then call start_the_game() again
-            // If no...
-            cout << "'Game over man. Game over!' -Pvt. Hudson" << endl;  // DEBUGGING
-            break;
+            // 2.3. Print results
+            for (auto player : players)
+            {
+                playerNumber++;
+                cout << "Player " << playerNumber << ": " << player.get_name() << " has " << player.count_chips() << " chips." << endl;
+            }
+
+            // 2.4. Continue playing?
+            cout << "Would you like to continue playing?  Enter '1'.  Any other positive number will exit the game."
+            stopPlaying = input_number();
+            if (stopPlaying == 1)
+            {
+                // 2.4.1. Reset game (which resets players)
+                // 2.4.1.1. Reset local variables
+                int gameOver = 0;
+                int stopPlaying = 1;
+                int winningPlayerNumber = 0;
+                int tmpLoss = 0;
+                int playerNumber = 0;
+                // 2.4.1.2. Reset players
+                for (auto player : players)
+                {
+                    player.reset();
+                }
+                // 2.4.1.3. Reset game state
+                reset_game();
+            }
+            else
+            {
+                cout << "'Game over man. Game over!' -Pvt. Hudson" << endl;  // DEBUGGING
+                break;
+            }
         }
         else
         {
@@ -2295,6 +2408,85 @@ int Tong_Its_Game::score_the_game(void)
 
     // DONE
     return winningPlayerNumber;
+}
+
+
+int Tong_Its_Game::calc_chip_loss(const Tong_Its_Player& winner, const Tong_Its_Player& loser)
+{
+    // LOCAL VARIABLES
+    int retVal = 0;
+
+    // INPUT VALIDATION
+    if (winner.get_name() == loser.get_name())
+    {
+        retVal = 0;
+    }
+    else
+    {
+        // CALCULATE
+        // Winning by Tongits
+        if (winner.called_tongits())
+        {
+            retVal += 3;
+        }
+        // Winning a Draw
+        else if (winner.called_draw() && loser.challenged_a_draw())
+        {
+            retVal += 3;
+        }
+        // Just winning
+        else
+        {
+            retVal += 1;
+        }
+        // Aces in hand
+        retVal += winner.count_aces();
+        // Burned?
+        if (loser.is_burned())
+        {
+            retVal += 1;
+        }
+        // Secret set
+        // IMPLEMENT THIS LATER... secret sets
+    }
+
+    // DONE
+    return retVal;
+}
+
+
+void Tong_Its_Game::reset_game(int winnerNum)
+{
+    // VALIDATION
+    if (winnerNum < 1 || winnerNum > players.size())
+    {
+        throw invalid_argument("Tong_Its_Game::reset_game() was passed an invalid winner number")
+    }
+    else if (((*drawPile).size() + (*discardPile).size()) != 52)
+    {
+        cerr << "There are only " << (*drawPile).size() << " cards between the draw and discard pile!" << endl;  // DEBUGGING
+        throw runtime_error("Tong_Its_Game::reset_game() detected a missing card");
+    }
+
+    // RESET
+    // 1. Winner becomes the new dealer
+    currentPlayer = winnerNum;
+    // 2. Move the discards into the draw pile
+    for (auto discard : (*discardPile))
+    {
+        (*drawPile).push_back(discard);
+    }
+    (*discardPile).clear();
+    // Validate the move
+    if ((*drawPile).size() != 52 || (*drawPile).size() != 0)
+    {
+        throw runtime_error("Tong_Its_Game::reset_game() draw pile reset has failed");
+    }
+    // 3. Shuffle the draw pile
+    shuffle_a_deck(drawPile);
+
+    // DONE
+    return;
 }
 /*********************/
 /* TONG ITS GAME END */

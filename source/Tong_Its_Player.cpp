@@ -461,15 +461,30 @@ void Tong_Its_Player::reset(Tong_Its_Game* theGame_ptr)
     burned = false;
     finalScore = 0;
     // 2. Reset member containers
-    // 2.1. Player's Hand
-    for (int i = 0; i < (*playersHand).size(); i++)
+    // 2.1. Player's Expsosed Melds
+    // 2.1.1. Move them back to the player's hand
+    for (auto exposedMeld : playersExposedMelds)
+    {
+        while ((*exposedMeld).size() > 0)
+        {
+            receive_a_card(play_any_card(1, exposedMeld));
+        }
+    }
+    // 2.1.2. Remove the empty vectors
+    while (!playersExposedMelds.empty())
+    {
+        playersExposedMelds.pop_back();
+    }
+    // 2.2. Player's Hand
+    cout << "Pre-Reset:\t" << get_name() << " has " << count_cards() << " in his hand and " << count_exposed_melds() << " exposed melds." << endl;  // DEBUGGING
+    while ((*playersHand).size() > 0)
+    // for (int i = 0; i < (*playersHand).size(); i++)
     {
         theGame_ptr->receive_a_discard(play_a_card(1));
     }
-    // 2.2. Player's Melds
+    cout << "Pre-Reset:\t" << get_name() << " has " << count_cards() << " in his hand and " << count_exposed_melds() << " exposed melds." << endl;  // DEBUGGING
+    // 2.3. Player's Melds (this is just a copy)
     playersMelds.clear();
-    // 2.3. Player's Exposed Melds
-    playersExposedMelds.clear();
 }
 
 

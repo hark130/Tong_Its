@@ -901,7 +901,11 @@ int Tong_Its_Game::calc_chip_loss(Tong_Its_Player& winner, Tong_Its_Player& lose
             retVal += 1;
         }
         // Secret set
-        // IMPLEMENT THIS LATER... secret sets
+        if (winner.count_special_melds() > 0)
+        {
+            cout << "Winner had special melds... adding " << (3 * winner.count_special_melds()) << endl;  // DEBUGGING
+            retVal += (3 * winner.count_special_melds());
+        }
     }
 
     // DONE
@@ -938,6 +942,13 @@ void Tong_Its_Game::reset_game(int winnerNum)
     }
     // 3. Shuffle the draw pile
     shuffle_a_deck(drawPile);
+    // 4. Reset the state of the playing cards
+    for (auto playingCard : (*drawPile))
+    {
+        playingCard->sapaw = false;
+        playingCard->special = false;
+        playingCard->numMelds = 0;
+    }
 
     // DONE
     return;

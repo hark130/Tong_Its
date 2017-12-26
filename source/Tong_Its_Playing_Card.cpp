@@ -139,6 +139,7 @@ Playing_Card::Playing_Card(string pcRank, string pcSuit)
     }
 
     sapaw = false;
+    special = false;
     numMelds = 0;
     rank = pcRank;
 }

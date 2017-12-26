@@ -15,6 +15,7 @@ typedef struct Playing_Card
     int pointValue;  // Scoring value
     int numMelds;    // Number of melds containing this PCard
     bool sapaw;      // Played on someone else's meld
+    bool special;	 // True if in a special meld
 } PCard, *PCard_ptr;
 
 

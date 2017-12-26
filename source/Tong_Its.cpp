@@ -9,6 +9,7 @@ string spadeString = string(SPADE);
 string clubString = string(CLUB);
 string heartString = string(HEART);
 string diamondString = string(DIAMOND);
+string specialString = string(SPECIAL);
 
 int input_number(void)
 {

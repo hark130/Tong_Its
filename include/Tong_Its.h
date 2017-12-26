@@ -27,15 +27,17 @@ using namespace std;
 #endif // SKINNY OR FAT BOXES
 
 #if defined(_WIN32) || defined(__MSDOS__)
-   #define SPADE   "\x06"
-   #define CLUB    "\x05"
-   #define HEART   "\x03"
-   #define DIAMOND "\x04"
+    #define SPADE   "\x06"
+    #define CLUB    "\x05"
+    #define HEART   "\x03"
+    #define DIAMOND "\x04"
+    #define SPECIAL "\x245"
 #else
-   #define SPADE   "\xE2\x99\xA0"
-   #define CLUB    "\xE2\x99\xA3"
-   #define HEART   "\xE2\x99\xA5"
-   #define DIAMOND "\xE2\x99\xA6"
+    #define SPADE   "\xE2\x99\xA0"
+    #define CLUB    "\xE2\x99\xA3"
+    #define HEART   "\xE2\x99\xA5"
+    #define DIAMOND "\xE2\x99\xA6"
+    #define SPECIAL "\xC2\xA7"
 #endif
 
 // extern const auto spadeString = string(SPADE);
@@ -46,6 +48,7 @@ extern string spadeString;
 extern string clubString;
 extern string heartString;
 extern string diamondString;
+extern string specialString;
 
 
 // #define CLEAR_SCREEN 30      // Number of newlines to print to clear the screen 

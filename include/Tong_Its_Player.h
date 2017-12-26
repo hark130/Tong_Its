@@ -27,6 +27,7 @@ public:
     int count_cards(void);
     int count_exposed_melds(void);
     int count_potential_melds(void);
+    int count_special_melds(void);
     void receive_a_card(shared_ptr<PCard> drawnCard);
     int get_card_number(shared_ptr<PCard> findThisCard);
     shared_ptr<PCard> play_a_card(int cardNumber);

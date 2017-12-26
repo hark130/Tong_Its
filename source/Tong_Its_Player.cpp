@@ -190,6 +190,46 @@ int Tong_Its_Player::count_potential_melds(void)
 }
 
 
+int Tong_Its_Player::count_special_melds(void)
+{
+    int retVal = 0;
+
+    // Refresh player's melds
+    update_potential_melds(true);
+
+    // Count the special cards
+    for (auto playingCard : (*playersHand))
+    {
+        if (playingCard->special)
+        {
+            retVal++;
+        }
+    }
+    for (auto oneExposedMeld : playersExposedMelds)
+    {
+        for (auto playingCard : (*oneExposedMeld))
+        {
+            if (playingCard->special)
+            {
+                retVal++;
+            }
+        }
+    }
+
+    // Translate special count to meld count
+    if (retVal % 4 != 0)
+    {
+        throw runtime_error("Tong_Its_Player::count_special_melds() appears to have found a rogue 'special' card");
+    }
+    else
+    {
+        retVal = retVal / 4;
+    }
+
+    return retVal;
+}
+
+
 /*
     Purpose - Glue together all of the 'heavy lifting' methods to expose one meld
     Input - Meld number to expose (see: Index number into the potentialMeld vector)
@@ -894,6 +934,7 @@ int Tong_Its_Player::show_all_sets(bool playOne, int startingNum)
     vector<string> cardRanks = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
     int tempCount = 0;  // Count for each rank
     int retVal = 0;
+    bool specialMeld = false;
 
     // INPUT VALIDATION
     if (startingNum > 0)
@@ -911,10 +952,17 @@ int Tong_Its_Player::show_all_sets(bool playOne, int startingNum)
         toggle_sort();
     }
 
+    // RESET ANY SPECIAL MELDS
+    for (auto currCard : (*playersHand))
+    {
+        currCard->special = false;
+    }
+
     // COUNT RANKS
     for (auto currRank : cardRanks)
     {
         tempCount = 0;  // Reset temp variable
+        specialMeld = false;  // Reset temp variable
 
         for (auto currCard : (*playersHand))
         {
@@ -923,6 +971,32 @@ int Tong_Its_Player::show_all_sets(bool playOne, int startingNum)
                 (*tempMeld).push_back(currCard);                
                 ++tempCount;
             }
+        }
+
+        // Determine if meld is special
+        // 1. There must be four
+        if (tempCount == 4)
+        {
+            specialMeld = true;
+            for (auto meldCard : (*tempMeld))
+            {
+                // 2. There can't be sapaw
+                if (meldCard->sapaw)
+                {
+                    specialMeld = false;
+                    break;
+                }
+            }
+            // 3. It's special
+            if (specialMeld)
+            {
+                for (auto meldCard : (*tempMeld))
+                {
+                    // 4. Make it special
+                    meldCard->special = true;
+                }
+            }
+            
         }
 
         // Three, or more, of a kind
@@ -965,15 +1039,18 @@ void Tong_Its_Player::print_a_meld(vector<shared_ptr<PCard>> oneMeld, int meldNu
 {
     string leftBorder = "";
     string leftNumber = "";
+    bool specialMeld = false;
+
+    // Printing numbers?
     if (meldNum > 0)
     {
         leftBorder = "  ";
         // leftNumber = string(meldNum) + " ";
         switch (meldNum)
         {
-            case(0):
-                leftNumber = "0 ";
-                break;
+            // case(0):
+            //     leftNumber = "0 ";
+            //     break;
             case(1):
                 leftNumber = "1 ";
                 break;
@@ -1007,6 +1084,25 @@ void Tong_Its_Player::print_a_meld(vector<shared_ptr<PCard>> oneMeld, int meldNu
         };
     }
 
+    // Is this a special meld?
+    if (oneMeld.size() == 4)
+    {
+        // cout << "The size of this meld is " << oneMeld.size() << endl;  // DEBUGGING
+        specialMeld = true;
+
+        for (int i = 1; i < oneMeld.size(); i++)
+        {
+            if (oneMeld[i]->rank != oneMeld[0]->rank)
+            {
+                specialMeld = false;
+            }
+        }
+    }
+    // if (specialMeld)
+    // {
+    //     cout << "WE'VE GOT A SPECIAL MELD HERE... USE " << specialString << endl;  // DEBUGGING
+    // }
+
     // Print the card pointers
     // Card Row 1
     cout << leftNumber;
@@ -1033,7 +1129,14 @@ void Tong_Its_Player::print_a_meld(vector<shared_ptr<PCard>> oneMeld, int meldNu
     cout << leftBorder;
     for (shared_ptr<PCard> cardToPrint : oneMeld)
     {
-        cout << BORDER_VERTICAL << BORDER_SPACE << cardToPrint->suit << BORDER_SPACE << BORDER_SPACE << BORDER_VERTICAL;
+        if (specialMeld)
+        {
+            cout << BORDER_VERTICAL << BORDER_SPACE << specialString << BORDER_SPACE << BORDER_SPACE << BORDER_VERTICAL;
+        }
+        else
+        {
+            cout << BORDER_VERTICAL << BORDER_SPACE << cardToPrint->suit << BORDER_SPACE << BORDER_SPACE << BORDER_VERTICAL;
+        }
     }
     cout << endl;
     // Row 4

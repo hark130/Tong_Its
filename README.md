@@ -99,9 +99,10 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 
 ## Bugs
 - [ ] User interface is allowing a player to call Draw if they have 0 exposed melds
+- [ ] Calling draw counts in-hand melds against you.  Once you call draw then the game should auto-play remaining potentialMelds
+- [ ] drawPile somehow goes back to 52 before T_I_G::score_the_game() validates the end-of-game state (currently commented out)
 - [ ] There must be a better solution to allow a Tong_Its_Game to count the number of potential melds for a player than calling a public method since *anyone* could call that method to gain insight into what a player has
 - [ ] There must be a better solution than to find a cardnumber using a public member function in Tong_Its_Player class.  Anyone could figure out what's in your hand.
 - [ ] Does sorting change after I expose a meld?
 - [ ] When no one wins, exposes a meld, draws, or Tongits... Player 0:  won with a score of 2147483647!  CONGRATULATIONS! Segmentation fault
-
 - [ ] When NUM_CARDS_PER_ROW is 1... terminate called after throwing an instance of 'std::out_of_range' what():  vector::_M_range_check: __n (which is 16) >= this->size() (which is 13)

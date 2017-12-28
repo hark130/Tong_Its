@@ -1280,17 +1280,34 @@ void Tong_Its_Player::print_a_meld(vector<shared_ptr<PCard>> oneMeld, int meldNu
  */
 void Tong_Its_Player::print_exposed_melds(void)
 {
+    // LOCAL VARIABLES
+    // shared_ptr<vector<shared_ptr<PCard>>>
+    auto tempHandOfMelds = make_shared<vector<shared_ptr<PCard>>>();
+
+    // BUILD TEMP HAND OF MELDS
     for (auto oneExposedMeld : playersExposedMelds)
     {
         if (oneExposedMeld != nullptr)
         {
-            print_a_meld((*oneExposedMeld), 0);
+            // print_a_meld((*oneExposedMeld), 0);
+            for (auto meldCard : (*oneExposedMeld))
+            {
+                (*tempHandOfMelds).push_back(meldCard);    
+            }
+            // Add a spacer
+            (*tempHandOfMelds).push_back(make_shared<PCard>(" ", " "));
         }
         else
         {
             throw runtime_error("How did a nullptr get into this player's exposed melds?!");
         }
     }
+
+    // Pop last empty card
+    (*tempHandOfMelds).pop_back();
+
+    // PRINT TEMP HAND OF MELDS
+    print_playing_cards(false, tempHandOfMelds);    
 
     return;
 }
@@ -1428,6 +1445,7 @@ void Tong_Its_Player::print_a_row(int rowToPrint, bool printNums, shared_ptr<vec
     int numCardsToPrint = 0;
     int startingCardNum = 0;
     vector<shared_ptr<PCard>> cardsToPrint = vector<shared_ptr<PCard>>();
+    string emptyCard = "      ";
 
     // Input Validation
     if (rowToPrint < 1)
@@ -1507,13 +1525,24 @@ void Tong_Its_Player::print_a_row(int rowToPrint, bool printNums, shared_ptr<vec
     // Row 1
     for (shared_ptr<PCard> cardToPrint : cardsToPrint)
     {
-        cout << BORDER_UPPER_LEFT << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_UPPER_RIGHT;        
+        if (cardToPrint->rank != " " && cardToPrint->suit != " ")
+        {
+            cout << BORDER_UPPER_LEFT << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_UPPER_RIGHT;        
+        }
+        else
+        {
+            cout << emptyCard;
+        }
     }
     cout << endl;
     // Row 2
     for (shared_ptr<PCard> cardToPrint : cardsToPrint)
     {
-        if (cardToPrint->rank == "10")
+        if (cardToPrint->rank == " " && cardToPrint->suit == " ")
+        {
+            cout << emptyCard;
+        }
+        else if (cardToPrint->rank == "10")
         {
             cout << BORDER_VERTICAL << cardToPrint->rank << BORDER_SPACE << BORDER_SPACE << BORDER_VERTICAL;
         }
@@ -1526,13 +1555,24 @@ void Tong_Its_Player::print_a_row(int rowToPrint, bool printNums, shared_ptr<vec
     // Row 3
     for (shared_ptr<PCard> cardToPrint : cardsToPrint)
     {
-        cout << BORDER_VERTICAL << BORDER_SPACE << cardToPrint->suit << BORDER_SPACE << BORDER_SPACE << BORDER_VERTICAL;
+        if (cardToPrint->rank == " " && cardToPrint->suit == " ")
+        {
+            cout << emptyCard;
+        }
+        else
+        {
+            cout << BORDER_VERTICAL << BORDER_SPACE << cardToPrint->suit << BORDER_SPACE << BORDER_SPACE << BORDER_VERTICAL;
+        }
     }
     cout << endl;
     // Row 4
     for (shared_ptr<PCard> cardToPrint : cardsToPrint)
     {
-        if (cardToPrint->rank == "10")
+        if (cardToPrint->rank == " " && cardToPrint->suit == " ")
+        {
+            cout << emptyCard;
+        }
+        else if (cardToPrint->rank == "10")
         {
             cout << BORDER_VERTICAL << BORDER_SPACE << BORDER_SPACE << cardToPrint->rank << BORDER_VERTICAL;
         }
@@ -1545,7 +1585,14 @@ void Tong_Its_Player::print_a_row(int rowToPrint, bool printNums, shared_ptr<vec
     // Row 5
     for (shared_ptr<PCard> cardToPrint : cardsToPrint)
     {
-        cout << BORDER_LOWER_LEFT << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_LOWER_RIGHT;        
+        if (cardToPrint->rank == " " && cardToPrint->suit == " ")
+        {
+            cout << emptyCard;
+        }
+        else
+        {
+            cout << BORDER_LOWER_LEFT << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_LOWER_RIGHT;        
+        }
     }    
     cout << endl;
 

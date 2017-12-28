@@ -55,6 +55,7 @@ public:
     int get_final_score(void);
     void reset(Tong_Its_Game* theGame_ptr);
     bool already_open(void);
+    bool challenge_a_draw(Tong_Its_Player& drawPlayer);
 private:
     bool sortBySuit;
     string name;

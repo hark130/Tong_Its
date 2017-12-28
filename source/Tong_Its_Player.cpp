@@ -497,6 +497,41 @@ bool Tong_Its_Player::already_open(void)
 }
 
 
+bool Tong_Its_Player::challenge_a_draw(Tong_Its_Player& drawPlayer)
+{
+    // LOCAL VARIABLES
+    bool retVal = false;
+    int userChoice = 0;
+
+    // PROCESS REQUEST
+    // 1. Determine eligibility to challenge
+    if (already_open())
+    {
+        // 3. State the situation
+        cout << drawPlayer.get_name() << " has called Draw." << endl;
+        cout << drawPlayer.get_name() << " has " << drawPlayer.count_cards() << " still in hand." << endl;
+        cout << drawPlayer.get_name() << " has " << drawPlayer.count_exposed_melds() << "." << endl;
+        drawPlayer.print_exposed_melds();
+
+        // 4. Print current hand score
+        cout << "You currently have " << count_cards() << " valued at " << current_card_points() << "." << endl;
+        cout << "Do you want to challenge?  Enter 1 to challenge, any other positive number to fold." << endl;
+
+        // 5. Take input from the user
+        userChoice = input_number();
+
+        // 6. Updated challenged draw accordingly
+        if (userChoice == 1)
+        {
+            retVal = true;
+        }
+    }
+
+    // DONE
+    return retVal;
+}
+
+
 void Tong_Its_Player::receive_a_card(shared_ptr<PCard> drawnCard)
 {
     if (drawnCard)
@@ -1356,6 +1391,7 @@ void Tong_Its_Player::print_a_row(int rowToPrint)
 {
     int numCardsInHand = (*playersHand).size();
     int numCardsToPrint = 0;
+    int startingCardNum = 0;
     vector<shared_ptr<PCard>> cardsToPrint = vector<shared_ptr<PCard>>();
 
     // Input Validation
@@ -1402,6 +1438,9 @@ void Tong_Its_Player::print_a_row(int rowToPrint)
         cardsToPrint = (*playersHand);
     }
 
+    // Determine starting card number to print
+    startingCardNum = ((rowToPrint - 1) * NUM_CARDS_PER_ROW) + 1;
+
     // DO NOT DELETE... UNDERSTANDING REQUIRES AN IDE
     // for (auto it = begin(*playersHand) + ((rowToPrint - 1) * 4); it < begin(*playersHand) + (rowToPrint * 4); ++it)
     // {
@@ -1410,7 +1449,20 @@ void Tong_Its_Player::print_a_row(int rowToPrint)
     // }
 
     // Print the card pointers
-    // Card Row 1
+    // Row 0 - Card numbers
+    for (int i = startingCardNum; i < (startingCardNum + numCardsToPrint); i++)
+    {
+        if (i > 9)
+        {
+            cout << BORDER_SPACE << BORDER_SPACE << i << BORDER_SPACE << BORDER_SPACE;
+        }
+        else
+        {
+            cout << BORDER_SPACE << BORDER_SPACE << i << BORDER_SPACE << BORDER_SPACE << BORDER_SPACE;
+        }
+    }
+    cout << endl;
+    // Row 1
     for (shared_ptr<PCard> cardToPrint : cardsToPrint)
     {
         cout << BORDER_UPPER_LEFT << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_HORIZONTAL << BORDER_UPPER_RIGHT;        

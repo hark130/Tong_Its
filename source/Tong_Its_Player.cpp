@@ -754,6 +754,7 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
     // auto allDiamonds = make_shared<vector<shared_ptr<PCard>>>();
     // auto currentSet = make_shared<vector<shared_ptr<PCard>>>();
     // bool thisIsOne = false;
+    bool originalSortingState = sortBySuit;
 
     // INPUT VALIDATION
     if (startingNum > 0)
@@ -775,6 +776,12 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
     for (auto suitToSort : cardSuits)
     {
         find_a_suit_run(suitToSort);
+    }
+
+    // RESET SORTING
+    if (originalSortingState != sortBySuit)
+    {
+        toggle_sort();
     }
 
     // // COPY AND SEPARATE
@@ -959,6 +966,7 @@ int Tong_Its_Player::show_all_sets(bool playOne, int startingNum)
     int tempCount = 0;  // Count for each rank
     int retVal = 0;
     bool specialMeld = false;
+    bool originalSortingState = sortBySuit;
 
     // INPUT VALIDATION
     if (startingNum > 0)
@@ -1044,6 +1052,12 @@ int Tong_Its_Player::show_all_sets(bool playOne, int startingNum)
             (*tempMeld).pop_back();
         }
         // cout << "Done with rank: " << currRank << endl;  // DEBUGGING
+    }
+
+    // RESET SORTING
+    if (originalSortingState != sortBySuit)
+    {
+        toggle_sort();
     }
 
     // cout << "Returning" << endl;  // DEBUGGING

@@ -976,6 +976,8 @@ void Tong_Its_Game::reset_game(int winnerNum)
         playingCard->sapaw = false;
         playingCard->special = false;
         playingCard->numMelds = 0;
+        playingCard->inSet = false;
+        playingCard->inRun = false;
     }
     // 5. Deal cards to the players
     deal_player_hands(players[winnerNum - 1]);

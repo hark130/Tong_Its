@@ -33,6 +33,7 @@ public:
     shared_ptr<PCard> play_a_card(int cardNumber);
     shared_ptr<PCard> play_any_card(int cardNumber, shared_ptr<vector<shared_ptr<PCard>>> deckToPlayFrom);
     void print_players_hand(void);
+    void print_playing_cards(bool printNums, shared_ptr<vector<shared_ptr<PCard>>> cardsToPrint);
     int show_all_melds(bool playOne);
     int show_all_runs(bool playOne, int startingNum);
     int show_all_sets(bool playOne, int startingNum);
@@ -71,7 +72,7 @@ private:
     vector<shared_ptr<vector<shared_ptr<PCard>>>> playersMelds;
     vector<shared_ptr<vector<shared_ptr<PCard>>>> playersExposedMelds;
     int find_a_suit_run(string sortThisSuit);
-    void print_a_row(int rowToPrint);
+    void print_a_row(int rowToPrint, bool printNums, shared_ptr<vector<shared_ptr<PCard>>> printTheseCards);
     void sort_cards(shared_ptr<vector<shared_ptr<PCard>>> cardsToSort, bool sortBySuit);
     int random_num(int start, int stop);
     bool card_in_a_meld(shared_ptr<PCard> findThisCard);

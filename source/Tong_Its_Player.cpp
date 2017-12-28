@@ -661,7 +661,43 @@ shared_ptr<PCard> Tong_Its_Player::play_any_card(int cardNumber, shared_ptr<vect
 
 void Tong_Its_Player::print_players_hand(void)
 {
-    int totalCards = (*playersHand).size();
+    // int totalCards = (*playersHand).size();
+    // int currentCardNum = 0;
+    // // Number of full rows
+    // int numOfFullRows = (totalCards - totalCards % NUM_CARDS_PER_ROW) / NUM_CARDS_PER_ROW;
+    // // cout << "Number of full rows: " << numOfFullRows << endl;  // DEBUGGING
+    // int numOfPrintedRows = numOfFullRows;
+    // int numOfLeftovers = totalCards % NUM_CARDS_PER_ROW;
+    // // cout << "Number of leftovers: " << numOfLeftovers << endl;  // DEBUGGING
+    // // Spare row
+    // if (numOfLeftovers != 0)
+    // {
+    //     ++numOfPrintedRows;
+    // }
+
+    // // cout << "Number of rows: " << numOfPrintedRows << endl;  // DEBUGGING
+
+    // for (int i = 1; i <= numOfPrintedRows; ++i)
+    // {
+    //     print_a_row(i);
+    // }
+    // cout << "print_players_hand() not yet implemented!" << endl;
+
+    print_playing_cards(true, playersHand);
+
+    return;
+}
+
+
+void Tong_Its_Player::print_playing_cards(bool printNums, shared_ptr<vector<shared_ptr<PCard>>> printTheseCards)
+{
+    // INPUT VALIDATION
+    if (printTheseCards == nullptr)
+    {
+        throw invalid_argument("print_a_row() - Received a nullptr");
+    }
+
+    int totalCards = (*printTheseCards).size();
     int currentCardNum = 0;
     // Number of full rows
     int numOfFullRows = (totalCards - totalCards % NUM_CARDS_PER_ROW) / NUM_CARDS_PER_ROW;
@@ -679,9 +715,8 @@ void Tong_Its_Player::print_players_hand(void)
 
     for (int i = 1; i <= numOfPrintedRows; ++i)
     {
-        print_a_row(i);
+        print_a_row(i, printNums, printTheseCards);
     }
-    // cout << "print_players_hand() not yet implemented!" << endl;
 
     return;
 }
@@ -1387,9 +1422,9 @@ int Tong_Its_Player::find_a_suit_run(string sortThisSuit)
 }
 
 
-void Tong_Its_Player::print_a_row(int rowToPrint)
+void Tong_Its_Player::print_a_row(int rowToPrint, bool printNums, shared_ptr<vector<shared_ptr<PCard>>> printTheseCards)
 {
-    int numCardsInHand = (*playersHand).size();
+    int numCardsInHand = (*printTheseCards).size();
     int numCardsToPrint = 0;
     int startingCardNum = 0;
     vector<shared_ptr<PCard>> cardsToPrint = vector<shared_ptr<PCard>>();
@@ -1398,6 +1433,10 @@ void Tong_Its_Player::print_a_row(int rowToPrint)
     if (rowToPrint < 1)
     {
         throw invalid_argument("print_a_row() - Invalid row number to print");
+    }
+    else if (printTheseCards == nullptr)
+    {
+        throw invalid_argument("print_a_row() - Received a nullptr");
     }
     // else if ((((rowToPrint - 1) * NUM_CARDS_PER_ROW) + 1) > numCardsInHand)
     // {
@@ -1421,28 +1460,28 @@ void Tong_Its_Player::print_a_row(int rowToPrint)
     }
 
     // Get the card pointers
-    // cout << "Size of hand: " << (*playersHand).size() << endl;  // DEBUGGING
-    // cout << "Card 1: Rank " << (*playersHand).at(0)->rank << endl;  // DEBUGGING
-    // cout << "Card 2: Rank " << (*playersHand).at(1)->rank << endl;  // DEBUGGING
+    // cout << "Size of hand: " << (*printTheseCards).size() << endl;  // DEBUGGING
+    // cout << "Card 1: Rank " << (*printTheseCards).at(0)->rank << endl;  // DEBUGGING
+    // cout << "Card 2: Rank " << (*printTheseCards).at(1)->rank << endl;  // DEBUGGING
     // TEST_the_hand();  // DEBUGGING
     if (numCardsToPrint < numCardsInHand)
     {
         for (int i = ((rowToPrint - 1) * NUM_CARDS_PER_ROW); i < (numCardsToPrint + ((rowToPrint - 1) * NUM_CARDS_PER_ROW)); ++i)
         {
             // cout << "Card # " << i << endl;  // DEBUGGING 
-            cardsToPrint.push_back((*playersHand).at(i));
+            cardsToPrint.push_back((*printTheseCards).at(i));
         }
     }
     else if (numCardsToPrint == numCardsInHand)
     {
-        cardsToPrint = (*playersHand);
+        cardsToPrint = (*printTheseCards);
     }
 
     // Determine starting card number to print
     startingCardNum = ((rowToPrint - 1) * NUM_CARDS_PER_ROW) + 1;
 
     // DO NOT DELETE... UNDERSTANDING REQUIRES AN IDE
-    // for (auto it = begin(*playersHand) + ((rowToPrint - 1) * 4); it < begin(*playersHand) + (rowToPrint * 4); ++it)
+    // for (auto it = begin(*printTheseCards) + ((rowToPrint - 1) * 4); it < begin(*printTheseCards) + (rowToPrint * 4); ++it)
     // {
     //     cout << "Rank: " << (*it)->rank << endl;  // DEBUGGING
     //     cout << "Suit: " << (*it)->suit << endl;  // DEBUGGING
@@ -1450,18 +1489,21 @@ void Tong_Its_Player::print_a_row(int rowToPrint)
 
     // Print the card pointers
     // Row 0 - Card numbers
-    for (int i = startingCardNum; i < (startingCardNum + numCardsToPrint); i++)
+    if (printNums)
     {
-        if (i > 9)
+        for (int i = startingCardNum; i < (startingCardNum + numCardsToPrint); i++)
         {
-            cout << BORDER_SPACE << BORDER_SPACE << i << BORDER_SPACE << BORDER_SPACE;
+            if (i > 9)
+            {
+                cout << BORDER_SPACE << BORDER_SPACE << i << BORDER_SPACE << BORDER_SPACE;
+            }
+            else
+            {
+                cout << BORDER_SPACE << BORDER_SPACE << i << BORDER_SPACE << BORDER_SPACE << BORDER_SPACE;
+            }
         }
-        else
-        {
-            cout << BORDER_SPACE << BORDER_SPACE << i << BORDER_SPACE << BORDER_SPACE << BORDER_SPACE;
-        }
+        cout << endl;
     }
-    cout << endl;
     // Row 1
     for (shared_ptr<PCard> cardToPrint : cardsToPrint)
     {

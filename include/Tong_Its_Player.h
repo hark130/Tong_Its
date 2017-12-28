@@ -54,6 +54,7 @@ public:
     void calc_final_score(void);
     int get_final_score(void);
     void reset(Tong_Its_Game* theGame_ptr);
+    bool already_open(void);
 private:
     bool sortBySuit;
     string name;
@@ -64,6 +65,7 @@ private:
     bool challengedDraw;
     bool burned;
     int finalScore;
+    bool open;
     shared_ptr<vector<shared_ptr<PCard>>> playersHand;
     vector<shared_ptr<vector<shared_ptr<PCard>>>> playersMelds;
     vector<shared_ptr<vector<shared_ptr<PCard>>>> playersExposedMelds;

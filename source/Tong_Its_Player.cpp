@@ -28,6 +28,7 @@ name(playerName), numOfChips(100), playersHand(make_shared<vector<shared_ptr<PCa
     challengedDraw = false;
     burned = false;
     finalScore = 0;
+    open = false;
 }
 
 
@@ -326,6 +327,7 @@ bool Tong_Its_Player::expose_a_meld(int meldNum)
     if (tmpMeldSet.size() == (*pExpMeldsVector_ptr).size())
     {
         retVal = true;
+        open = true;
     }
 
     // 4. Recalculate the player's melds
@@ -460,6 +462,7 @@ void Tong_Its_Player::reset(Tong_Its_Game* theGame_ptr)
     challengedDraw = false;
     burned = false;
     finalScore = 0;
+    open = false;
     // 2. Reset member containers
     // 2.1. Player's Expsosed Melds
     // 2.1.1. Move them back to the player's hand
@@ -485,6 +488,12 @@ void Tong_Its_Player::reset(Tong_Its_Game* theGame_ptr)
     cout << "Pre-Reset:\t" << get_name() << " has " << count_cards() << " in his hand and " << count_exposed_melds() << " exposed melds." << endl;  // DEBUGGING
     // 2.3. Player's Melds (this is just a copy)
     playersMelds.clear();
+}
+
+
+bool Tong_Its_Player::already_open(void)
+{
+    return open;
 }
 
 

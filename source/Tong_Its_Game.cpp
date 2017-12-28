@@ -446,10 +446,10 @@ int Tong_Its_Game::user_interface(void)
     int subMenuChoice = 0;
     bool isTurnOver = false;
     bool eligibleToCallDraw = true;
-    if (players[0].count_exposed_melds() == 0)
-    {
-        eligibleToCallDraw = false;
-    }
+    // if (players[0].count_exposed_melds() == 0)
+    // {
+    //     eligibleToCallDraw = false;
+    // }
 
     game_state();
 
@@ -473,7 +473,7 @@ int Tong_Its_Game::user_interface(void)
         {
             cout << "6. " << dynamicChoice6 << endl;  // TONGITS
         }
-        if (eligibleToCallDraw)
+        if (eligibleToCallDraw && players[0].already_open())
         {
             cout << "7. " << dynamicChoice7 << endl;  // Draw
         }
@@ -656,7 +656,7 @@ int Tong_Its_Game::user_interface(void)
                 break;
             // 7. DRAW
             case 7:
-                if (eligibleToCallDraw)
+                if (eligibleToCallDraw && players[0].already_open())
                 {
                     // IMPLEMENT THIS LATER
                     // 1. Call draw

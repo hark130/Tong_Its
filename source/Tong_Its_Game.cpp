@@ -506,12 +506,16 @@ int Tong_Its_Game::user_interface(void)
                     }
                     else if (subMenuChoice == 1)
                     {
-                        players[0].receive_a_card(card_is_drawn());
+                        // players[0].receive_a_card(card_is_drawn());
+                        tempCard = card_is_drawn();
+                        players[0].receive_a_card(tempCard);
                         eligibleToCallDraw = false;
                     }
                     else if (subMenuChoice == 2)
                     {
-                        players[0].receive_a_card(discard_is_taken());
+                        // players[0].receive_a_card(discard_is_taken());
+                        tempCard = discard_is_taken();
+                        players[0].receive_a_card(tempCard);
                         eligibleToCallDraw = false;
                     }
                     else
@@ -527,6 +531,14 @@ int Tong_Its_Game::user_interface(void)
 
                     // Reprint the state of the game
                     game_state();
+
+                    // Print the card you just drew
+                    if (subMenuChoice == 1)
+                    {                        
+                        // print_a_card(tempCard);
+                        cout << "You just drew a " << tempCard->rank << tempCard->suit << "\n" << endl;
+                    }
+                    tempCard = nullptr;
                 }
                 // Discard a card
                 else if (dynamicChoice1 == dynamicChoice1opt2)

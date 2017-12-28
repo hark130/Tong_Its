@@ -108,4 +108,14 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 - [ ] There must be a better solution than to find a cardnumber using a public member function in Tong_Its_Player class.  Anyone could figure out what's in your hand.
 - [X] Does sorting change after I expose a meld?
 - [ ] When no one wins, exposes a meld, draws, or Tongits... Player 0:  won with a score of 2147483647!  CONGRATULATIONS! Segmentation fault
-- [ ] When NUM_CARDS_PER_ROW is 1... terminate called after throwing an instance of 'std::out_of_range' what():  vector::_M_range_check: __n (which is 16) >= this->size() (which is 13)
+- [ ] When NUM_CARDS_PER_ROW is 1... terminate called after throwing an instance of 'std::out_of_range' what():  vector::M range check: n (which is 16) >= this->size() (which is 13)
+
+## Future Notes
+
+### Playing_Card class
+- At a minimum, new members to the Playing Card class constitute an update in:
+    - The Playing Card class constructor
+    - Tong_Its_Game::reset_game()
+
+### Tong_Its_Player class
+### Tong_Its_Game class

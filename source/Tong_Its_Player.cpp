@@ -181,22 +181,22 @@ int Tong_Its_Player::count_exposed_melds(void)
 }
 
 
-int Tong_Its_Player::count_potential_melds(void)
+int Tong_Its_Player::count_potential_melds(vector<Tong_Its_Player>& players)
 {
     // Refresh player's melds
-    update_potential_melds(true);
+    update_potential_melds(true, players);
 
     // Count the melds
     return playersMelds.size();
 }
 
 
-int Tong_Its_Player::count_special_melds(void)
+int Tong_Its_Player::count_special_melds(vector<Tong_Its_Player>& players)
 {
     int retVal = 0;
 
     // Refresh player's melds
-    update_potential_melds(true);
+    update_potential_melds(true, players);
 
     // Count the special cards
     for (auto playingCard : (*playersHand))
@@ -236,7 +236,7 @@ int Tong_Its_Player::count_special_melds(void)
     Input - Meld number to expose (see: Index number into the potentialMeld vector)
     Output - True for sucess, False for failure
  */
-bool Tong_Its_Player::expose_a_meld(int meldNum)
+bool Tong_Its_Player::expose_a_meld(int meldNum, vector<Tong_Its_Player>& players)
 {
     // LOCAL VARIABLES
     bool retVal = false;
@@ -271,6 +271,107 @@ bool Tong_Its_Player::expose_a_meld(int meldNum)
     {
         throw runtime_error("Tong_Its_Player::expose_a_meld() received a nullptr");
     }
+
+    if ((*pMeldsVector_ptr)[0]->sapaw)
+    {
+        retVal = expose_a_sapaw_meld(pMeldsVector_ptr, players);
+    }
+    else
+    {
+        retVal = expose_a_normal_meld(pMeldsVector_ptr);    
+    }
+    
+    // for (auto meldCard : (*pMeldsVector_ptr))
+    // {
+    //     // 2. Remove the meld from player's hand
+    //     // 2.1. Get the card number
+    //     tempCardNum = get_card_number(meldCard);
+    //     // 2.2. Remove that card
+    //     try
+    //     {
+    //         tmpPCard_ptr = play_a_card(tempCardNum);
+    //     }
+    //     catch (const std::invalid_argument& err)
+    //     {
+    //         cerr << "Invalid argument: " << err.what() << endl;
+    //         // continue;
+    //     }
+    //     // 2.3. Verify return value
+    //     if (tmpPCard_ptr == nullptr)
+    //     {
+    //         throw runtime_error("Tong_Its_Player::expose_a_meld() received a nullptr");    
+    //     }
+    //     else if (meldCard != tmpPCard_ptr)
+    //     {
+    //         throw runtime_error("Tong_Its_Player::expose_a_meld() received the wrong card");
+    //     }
+
+    //     // 2.4. Add the card to the tmpMeldSet vector
+    //     tmpMeldSet.push_back(tmpPCard_ptr);
+    // }
+
+    // // 3. Add the meld to the player's exposed melds
+    // // 3.1. Make a new shared_pointer to a vector of PCard shared pointers
+    // pExpMeldsVector_ptr = make_shared<vector<shared_ptr<PCard>>>();
+    // if (pExpMeldsVector_ptr == nullptr)
+    // {
+    //     throw runtime_error("Tong_Its_Player::expose_a_meld() made a nullptr?!");    
+    // }
+
+    // // 3.2. Add a new shared_point to a vector of PCard shared pointers to playersExposedMelds
+    // playersExposedMelds.push_back(pExpMeldsVector_ptr);
+
+    // // 3.3. Copy the PCards to the player's exposed melds
+    // for (auto meldCard : tmpMeldSet)
+    // {
+    //     meldCard->numMelds = 1;  // Set meld number
+    //     meldCard->inRun = runMeld;
+    //     meldCard->inSet = setMeld;
+    //     (*pExpMeldsVector_ptr).push_back(meldCard);
+    // }
+
+    // // 3.4. Validate the meld
+    // if (set_meld_type(pExpMeldsVector_ptr))
+    // {
+    //     // 3.5. Validate the copy
+    //     if (tmpMeldSet.size() == (*pExpMeldsVector_ptr).size())
+    //     {
+    //         retVal = true;
+    //         open = true;
+    //     }   
+    // }
+
+    // 4. Recalculate the player's melds
+    update_potential_melds(false, players);
+
+    // 5. Did the player get Tongits?
+    if (hand_size() == 0)
+    {
+        call_tongits();
+    }
+
+    // DONE
+    return retVal;
+}
+
+
+/*
+    Purpose - Expose a meld from the players hand into the players exposed melds
+    Input
+        pMeldsVector_ptr - pointer to a vector of PCard pointers that represents the meld to expose
+    Output - True for sucess, False for failure
+    Note - Extricated from expose_a_meld() to allow for normal/sapaw meld branching
+ */
+bool Tong_Its_Player::expose_a_normal_meld(shared_ptr<vector<shared_ptr<PCard>>> pMeldsVector_ptr)
+{
+    // LOCAL VARIABLES
+    bool retVal = false;
+    int tempCardNum = 0;
+    shared_ptr<PCard> tmpPCard_ptr = nullptr;
+    vector<shared_ptr<PCard>> tmpMeldSet;
+    shared_ptr<vector<shared_ptr<PCard>>> pExpMeldsVector_ptr = nullptr;  // playersExposedMelds
+    bool runMeld = false;  // Used to define the type of meld the PCards are in
+    bool setMeld = false;  // Used to define the type of meld the PCards are in
 
     for (auto meldCard : (*pMeldsVector_ptr))
     {
@@ -332,13 +433,88 @@ bool Tong_Its_Player::expose_a_meld(int meldNum)
         }   
     }
 
-    // 4. Recalculate the player's melds
-    update_potential_melds(false);
+    // DONE
+    return retVal;
+}
 
-    // 5. Did the player get Tongits?
-    if (hand_size() == 0)
+
+/*
+    Purpose - Expose a meld from the players hand into a players exposed melds as a 'sapaw'
+    Input
+        pMeldsVector_ptr - pointer to a vector of PCard pointers that represents the meld to expose
+        players - vector of Tong Its Players to place the pMeldsVector into
+    Output - True for sucess, False for failure
+    Note - Extricated from expose_a_meld() to allow for normal/sapaw meld branching
+ */
+bool Tong_Its_Player::expose_a_sapaw_meld(shared_ptr<vector<shared_ptr<PCard>>> pMeldsVector_ptr, vector<Tong_Its_Player>& players)
+{
+    // LOCAL VARIABLES
+    bool retVal = false;
+    int tempCardNum = 0;
+    shared_ptr<PCard> tmpPCard_ptr = nullptr;
+    vector<shared_ptr<PCard>> tmpMeldSet;
+    shared_ptr<vector<shared_ptr<PCard>>> pExpMeldsVector_ptr = nullptr;  // playersExposedMelds
+    bool runMeld = false;  // Used to define the type of meld the PCards are in
+    bool setMeld = false;  // Used to define the type of meld the PCards are in
+
+    for (auto meldCard : (*pMeldsVector_ptr))
     {
-        call_tongits();
+        // 2. Remove the meld from player's hand
+        // 2.1. Get the card number
+        tempCardNum = get_card_number(meldCard);
+        // 2.2. Remove that card
+        try
+        {
+            tmpPCard_ptr = play_a_card(tempCardNum);
+        }
+        catch (const std::invalid_argument& err)
+        {
+            cerr << "Invalid argument: " << err.what() << endl;
+            // continue;
+        }
+        // 2.3. Verify return value
+        if (tmpPCard_ptr == nullptr)
+        {
+            throw runtime_error("Tong_Its_Player::expose_a_meld() received a nullptr");    
+        }
+        else if (meldCard != tmpPCard_ptr)
+        {
+            throw runtime_error("Tong_Its_Player::expose_a_meld() received the wrong card");
+        }
+
+        // 2.4. Add the card to the tmpMeldSet vector
+        tmpMeldSet.push_back(tmpPCard_ptr);
+    }
+
+    // 3. Add the meld to the player's exposed melds
+    // 3.1. Make a new shared_pointer to a vector of PCard shared pointers
+    pExpMeldsVector_ptr = make_shared<vector<shared_ptr<PCard>>>();
+    if (pExpMeldsVector_ptr == nullptr)
+    {
+        throw runtime_error("Tong_Its_Player::expose_a_meld() made a nullptr?!");    
+    }
+
+    // 3.2. Add a new shared_point to a vector of PCard shared pointers to playersExposedMelds
+    playersExposedMelds.push_back(pExpMeldsVector_ptr);
+
+    // 3.3. Copy the PCards to the player's exposed melds
+    for (auto meldCard : tmpMeldSet)
+    {
+        meldCard->numMelds = 1;  // Set meld number
+        meldCard->inRun = runMeld;
+        meldCard->inSet = setMeld;
+        (*pExpMeldsVector_ptr).push_back(meldCard);
+    }
+
+    // 3.4. Validate the meld
+    if (set_meld_type(pExpMeldsVector_ptr))
+    {
+        // 3.5. Validate the copy
+        if (tmpMeldSet.size() == (*pExpMeldsVector_ptr).size())
+        {
+            retVal = true;
+            open = true;
+        }   
     }
 
     // DONE
@@ -393,13 +569,13 @@ int Tong_Its_Player::hand_size(void)
 }
 
 
-int Tong_Its_Player::current_card_points(void)
+int Tong_Its_Player::current_card_points(vector<Tong_Its_Player>& players)
 {
     // LOCAL VARIABLES
     int retVal = 0;
 
     // UPDATE HAND
-    update_potential_melds(false);
+    update_potential_melds(false, players);
 
     // CALCULATE POINTS
     if (!called_tongits())
@@ -438,17 +614,17 @@ bool Tong_Its_Player::is_burned(void)
 }
 
 
-void Tong_Its_Player::calc_final_score(void)
+void Tong_Its_Player::calc_final_score(vector<Tong_Its_Player>& players)
 {
-    finalScore = current_card_points();
+    finalScore = current_card_points(players);
 }
 
 
-int Tong_Its_Player::get_final_score(void)
+int Tong_Its_Player::get_final_score(vector<Tong_Its_Player>& players)
 {
     if (finalScore == 0)
     {
-        calc_final_score();
+        calc_final_score(players);
     }
     return finalScore;
 }
@@ -499,7 +675,7 @@ bool Tong_Its_Player::already_open(void)
 }
 
 
-bool Tong_Its_Player::challenge_a_draw(Tong_Its_Player& drawPlayer)
+bool Tong_Its_Player::challenge_a_draw(Tong_Its_Player& drawPlayer, vector<Tong_Its_Player>& players)
 {
     // LOCAL VARIABLES
     bool retVal = false;
@@ -516,7 +692,7 @@ bool Tong_Its_Player::challenge_a_draw(Tong_Its_Player& drawPlayer)
         drawPlayer.print_exposed_melds();
 
         // 3. Print current hand score
-        cout << "You currently have " << count_cards() << " valued at " << current_card_points() << "." << endl;
+        cout << "You currently have " << count_cards() << " valued at " << current_card_points(players) << "." << endl;
         cout << "Do you want to challenge?  Enter 1 to challenge, any other positive number to fold." << endl;
 
         // 4. Take input from the user
@@ -608,8 +784,8 @@ bool Tong_Its_Player::validate_meld(shared_ptr<vector<shared_ptr<PCard>>> meldVe
     bool retVal = true;
     string startRank = "";
     string startSuit = "";
-    bool startinRun = false;
-    bool startinSet = false;
+    bool startInRun = false;
+    bool startInSet = false;
 
     // INPUT VALIDATION
     if (meldVec_ptr == nullptr)
@@ -641,8 +817,8 @@ bool Tong_Its_Player::validate_meld(shared_ptr<vector<shared_ptr<PCard>>> meldVe
         {
             startRank = (*meldVec_ptr)[0]->rank;
             startSuit = (*meldVec_ptr)[0]->suit;
-            startinRun = (*meldVec_ptr)[0]->inRun;
-            startinSet = (*meldVec_ptr)[0]->inSet;
+            startInRun = (*meldVec_ptr)[0]->inRun;
+            startInSet = (*meldVec_ptr)[0]->inSet;
         }
     }
     // 2.2. Verify inRun and inSet are all the same
@@ -651,13 +827,13 @@ bool Tong_Its_Player::validate_meld(shared_ptr<vector<shared_ptr<PCard>>> meldVe
         for (int i = 1; i < (*meldVec_ptr).size(); i++)
         {
             // Check inRun
-            if ((*meldVec_ptr)[i]->inRun != startinRun)
+            if ((*meldVec_ptr)[i]->inRun != startInRun)
             {
                 retVal = false;
                 break;
             }
             // Check inSet
-            if ((*meldVec_ptr)[i]->inSet != startinSet)
+            if ((*meldVec_ptr)[i]->inSet != startInSet)
             {
                 retVal = false;
                 break;
@@ -668,55 +844,141 @@ bool Tong_Its_Player::validate_meld(shared_ptr<vector<shared_ptr<PCard>>> meldVe
     if (retVal)
     {
         // 2.3.1. Run
-        if (startinRun)
+        if (startInRun)
         {
-            for (int i = 1; i < (*meldVec_ptr).size(); i++)
-            {
-                // 2.3.1.1. Verify ordered
-                if ((*meldVec_ptr)[i - 1]->rankValue + 1 != (*meldVec_ptr)[i]->rankValue)
-                {
-                    retVal = false;
-                    break;
-                }
-                // 2.3.1.2. Verify all same suit
-                else if ((*meldVec_ptr)[i]->suit != startSuit)
-                {
-                    retVal = false;
-                    break;
-                }
-            }
+            retVal = is_this_a_run(meldVec_ptr);
+            // for (int i = 1; i < (*meldVec_ptr).size(); i++)
+            // {
+            //     // 2.3.1.1. Verify ordered
+            //     if ((*meldVec_ptr)[i - 1]->rankValue + 1 != (*meldVec_ptr)[i]->rankValue)
+            //     {
+            //         retVal = false;
+            //         break;
+            //     }
+            //     // 2.3.1.2. Verify all same suit
+            //     else if ((*meldVec_ptr)[i]->suit != startSuit)
+            //     {
+            //         retVal = false;
+            //         break;
+            //     }
+            // }
         }
         // 2.3.2. Set
-        else if (startinSet)
+        else if (startInSet)
         {
-            // 2.3.2.1. Size is 3 or 4
-            if ((*meldVec_ptr).size() > 4)
+            retVal = is_this_a_set(meldVec_ptr);
+            // // 2.3.2.1. Size is 3 or 4
+            // if ((*meldVec_ptr).size() > 4)
+            // {
+            //     retVal = false;
+            // }
+            // else
+            // {
+            //     for (int i = 1; i < (*meldVec_ptr).size(); i++)
+            //     { 
+            //         // 2.3.2.2. All ranks match
+            //         if ((*meldVec_ptr)[i]->rank != startRank)
+            //         {
+            //             retVal = false;
+            //             break;
+            //         }
+            //         // 2.3.2.3. No suits match
+            //         else if ((*meldVec_ptr)[i]->suit == startSuit)
+            //         {
+            //             retVal = false;
+            //             break;
+            //         }
+            //     }
+            // }
+        }
+    }
+
+    // DONE
+    return retVal;
+}
+
+
+/*
+    Purpose - Evaluate a vector of PCard pointers as a run
+    Input
+        meldVec_ptr - pointer to a vector of PCard pointers
+    Output - True if meldVec_ptr holds a meld, false otherwise
+    Note
+        This method was extricated from validate_a_meld() to aid 'sapaw' validation
+ */
+bool Tong_Its_Player::is_this_a_run(shared_ptr<vector<shared_ptr<PCard>>> meldVec_ptr)
+{
+    // LOCAL VARIABLES
+    bool retVal = true;
+
+    // INPUT VALIDATION
+    if ((*meldVec_ptr).size() < 3)
+    {
+        retVal = false;
+    }
+    else
+    {
+        // VALIDATE RUN
+        for (int i = 1; i < (*meldVec_ptr).size(); i++)
+        {
+            // Verify ordered
+            if ((*meldVec_ptr)[i - 1]->rankValue + 1 != (*meldVec_ptr)[i]->rankValue)
             {
                 retVal = false;
+                break;
             }
-            else
+            // Verify all same suit
+            else if ((*meldVec_ptr)[i - 1]->suit != (*meldVec_ptr)[i]->suit)
             {
-                for (int i = 1; i < (*meldVec_ptr).size(); i++)
-                { 
-                    // 2.3.2.2. All ranks match
-                    if ((*meldVec_ptr)[i]->rank != startRank)
-                    {
-                        retVal = false;
-                        break;
-                    }
-                    // 2.3.2.3. No suits match
-                    else if ((*meldVec_ptr)[i]->suit == startSuit)
-                    {
-                        retVal = false;
-                        break;
-                    }
-                }
+                retVal = false;
+                break;
             }
         }
     }
 
     // DONE
     return retVal;
+}
+
+
+bool Tong_Its_Player::is_this_a_set(shared_ptr<vector<shared_ptr<PCard>>> meldVec_ptr)
+{
+    // LOCAL VARIABLES
+    bool retVal = true;
+
+    // INPUT VALIDATION
+    if ((*meldVec_ptr).size() < 3 || (*meldVec_ptr).size() > 4)
+    {
+        retVal = false;
+    }
+    else
+    {
+        // VALIDATE RUN
+        for (int i = 1; i < (*meldVec_ptr).size(); i++)
+        { 
+            // All ranks must match
+            if ((*meldVec_ptr)[i - 1]->rank != (*meldVec_ptr)[i]->rank)
+            {
+                retVal = false;
+                break;
+            }
+            // No suits can match
+            else if ((*meldVec_ptr)[i - 1]->suit == (*meldVec_ptr)[i]->suit)
+            {
+                retVal = false;
+                break;
+            }
+        }
+    }
+
+    // DONE
+    return retVal;
+}
+
+
+vector<shared_ptr<vector<shared_ptr<PCard>>>> Tong_Its_Player::get_exposed_melds(void)
+{
+    return playersExposedMelds;
 }
 
 
@@ -889,28 +1151,41 @@ void Tong_Its_Player::print_playing_cards(bool printNums, shared_ptr<vector<shar
     Input - None
     Output - Number of melds in playersMelds
  */
-void Tong_Its_Player::update_potential_melds(bool playOne)
+void Tong_Its_Player::update_potential_melds(bool playOne, vector<Tong_Its_Player>& players)
 {
+    // Reset existing melds
+    for (auto meldVec_ptr : playersMelds)
+    {
+        if (meldVec_ptr != nullptr)
+        {
+            for (auto meldCard_ptr : (*meldVec_ptr))
+            {
+                meldCard_ptr->sapaw = false;
+                meldCard_ptr->special = false;
+                meldCard_ptr->numMelds = 0;
+                meldCard_ptr->inSet = false;
+                meldCard_ptr->inRun = false;
+            }
+        }
+    }
+
     // Clear existing melds
     playersMelds.clear();
 
     if (sortBySuit == true)
     {
         show_all_runs(playOne);
-        // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
-
         show_all_sets(playOne);
-        // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
     }
     else
     {
         show_all_sets(playOne);
-        // cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
         show_all_runs(playOne);   
-        // cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
     }
 
-    return;   
+    update_potential_sapaw(playOne, players);
+
+    return;
 }
 
 
@@ -920,13 +1195,13 @@ void Tong_Its_Player::update_potential_melds(bool playOne)
     Output - Number of melds that were found
     Notes - This function will ensure the original sorting state is maintained
  */
-int Tong_Its_Player::show_all_melds(bool playOne)
+int Tong_Its_Player::show_all_melds(bool playOne, vector<Tong_Its_Player>& players)
 {
     int currMeldNum = 1;
     bool originalSortingState = sortBySuit;
     playersMelds.clear();
 
-    update_potential_melds(playOne);
+    update_potential_melds(playOne, players);
 
     // cout << "Resetting sort" << endl;  // DEBUGGING
     if (originalSortingState != sortBySuit)
@@ -974,14 +1249,11 @@ void Tong_Its_Player::show_all_runs(bool playOne)
     }
 
     // FIND RUNS
-    // 1. Find runs in player's hand
+    // Find runs in player's hand
     for (auto suitToSort : cardSuits)
     {
         find_a_suit_run(suitToSort);
     }
-    // 2. Find runs to 'sapaw'...
-    // 2.1. ...in player's exposed melds
-    // 2.2. ...in other player's exposed melds
 
     // RESET SORTING
     if (originalSortingState != sortBySuit)
@@ -1089,6 +1361,125 @@ void Tong_Its_Player::show_all_sets(bool playOne)
     }
 
     // cout << "Returning" << endl;  // DEBUGGING
+    return;
+}
+
+
+/*
+    Purpose - Wrapper method to update playersMelds with possible 'sapaw' plays
+    Input
+        playOne - numbers melds if true
+        players - reference to the Tong_Its_Game vector of players
+    Output - None
+    Note
+        playersMelds will be updated directly
+        This method will check each player's exposed melds when looking for sapaw
+ */
+void Tong_Its_Player::update_potential_sapaw(bool playOne, vector<Tong_Its_Player>& players)
+{
+    if (sortBySuit == true)
+    {
+        show_all_sapaw_runs(playOne, players);
+        // show_all_sapaw_sets(playOne, players);
+    }
+    else
+    {
+        // show_all_sapaw_sets(playOne, players);
+        show_all_sapaw_runs(playOne, players);   
+    }
+
+    return;
+}
+
+
+/*
+    Purpose - Find all of the sapaw for exposed runs among the players
+    Input
+        playOne - numbers melds if true
+        players - reference to the Tong_Its_Game vector of players        
+    Output - None
+    Note
+        playersMelds will be updated directly
+        This method will check each player's exposed melds when looking for sapaw
+ */
+void Tong_Its_Player::show_all_sapaw_runs(bool playOne, vector<Tong_Its_Player>& players)
+{
+    // cout << "ENTERING SHOW_ALL_SAPAW_RUNS" << endl;  // DEBUGGING
+    vector<string> cardSuits = {spadeString, clubString, heartString, diamondString};
+    bool originalSortingState = sortBySuit;
+    auto tmpExposedMelds = make_shared<vector<shared_ptr<vector<shared_ptr<PCard>>>>>();
+    auto tmpMeldVector = make_shared<vector<shared_ptr<PCard>>>();
+
+    // INPUT VALIDATION
+    // Existing validation factored out
+
+    // CHECK SORTING
+    if (sortBySuit == false)
+    {
+        toggle_sort();
+    }
+
+    // FIND RUNS
+    // Iterate through each player
+    for (auto player : players)
+    {
+        // Get the player's exposed melds
+        (*tmpExposedMelds) = player.get_exposed_melds();
+        // cout << player.get_name() << " has " << player.count_exposed_melds() << " exposed melds." << endl;  // DEBUGGING
+
+        // Iterate through each meld vector pointer
+        for (auto meldVec_ptr : (*tmpExposedMelds))
+        {
+            // If that meld vector has at least one card, let's check it
+            if ((*meldVec_ptr).size() > 0)
+            {
+                // Set
+                if ((*meldVec_ptr)[0]->inSet)
+                {
+                    continue;  // We're not looking for sets here
+                }
+                // Run
+                else
+                {
+                    // Iterate through each of the player's cards and check it against this meld
+                    for (auto playerCard : (*playersHand))
+                    {
+                        // cout << "LOOKING FOR A SAPAW RUN WITH " << playerCard->rank << playerCard->suit << endl;  // DEBUGGING
+                        // Add the playing card to a temp meld
+                        (*tmpMeldVector).push_back(playerCard);
+
+                        // Add the exposed meld to the temp meld
+                        for (auto meldCard_ptr : (*meldVec_ptr))
+                        {
+                            (*tmpMeldVector).push_back(meldCard_ptr);
+                        }
+
+                        // Sort the temp meld
+                        sort_cards(tmpMeldVector, true);
+
+                        // Check if it's a meld
+                        if(is_this_a_run(tmpMeldVector))
+                        {
+                            // cout << "FOUND A SAPAW RUN!" << endl;  // DEBUGGING
+                            playerCard->sapaw = true;
+                            playersMelds.push_back(make_shared<vector<shared_ptr<PCard>>>());
+                            playersMelds.at(playersMelds.size() - 1)->push_back(playerCard);
+                            // (*meldVec_ptr).push_back(playerCard);
+                            // sort_cards(meldVec_ptr, true);
+                            (*tmpMeldVector).clear();
+                        }
+                    } 
+                }
+            }
+        }
+    }
+
+    // RESET SORTING
+    if (originalSortingState != sortBySuit)
+    {
+        toggle_sort();
+    }
+
     return;
 }
 
@@ -1279,9 +1670,9 @@ void Tong_Its_Player::sort_players_hand(void)
     Purpose - Find all runs in the player's hand for a given suit
     Input
         sortThisSuit - string representation of the suit to match for
-    Output - Number of the last meld found, startingNum if no sets were found
+    Output - None
  */
-int Tong_Its_Player::find_a_suit_run(string sortThisSuit)
+void Tong_Its_Player::find_a_suit_run(string sortThisSuit)
 {   
     // LOCAL VARIABLES
     auto suitMatches = make_shared<vector<shared_ptr<PCard>>>();
@@ -1363,7 +1754,7 @@ int Tong_Its_Player::find_a_suit_run(string sortThisSuit)
         }
     }
 
-
+    return;
 }
 
 

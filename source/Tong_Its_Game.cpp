@@ -31,7 +31,7 @@ players({*humanPlayerName, string("Mike"), string("Eren")})
 
     // 2. Shuffle the deck of cards
     // cout << "Function call to shuffle_a_deck()" << endl;  // DEBUGGING
-    shuffle_a_deck(drawPile);  // COMMENTED FOR TESTING
+    // shuffle_a_deck(drawPile);  // COMMENTED FOR TESTING
 
     // 3. Create the discard pile
     discardPile = make_shared<vector<shared_ptr<PCard>>>();
@@ -568,10 +568,10 @@ int Tong_Its_Game::user_interface(void)
                 break;
             // 2. EXPOSE A MELD
             case 2:
-                if (players[0].count_potential_melds() > 0)
+                if (players[0].count_potential_melds(players) > 0)
                 {
                     // Print
-                    players[0].show_all_melds(true);
+                    players[0].show_all_melds(true, players);
 
                     // Prompt
                     cout << "Enter the number of the meld you would like to expose: " << endl;
@@ -580,7 +580,7 @@ int Tong_Its_Game::user_interface(void)
                     subMenuChoice = input_number();
 
                     // Input Validation
-                    if (subMenuChoice < 1 || subMenuChoice > players[0].count_potential_melds())
+                    if (subMenuChoice < 1 || subMenuChoice > players[0].count_potential_melds(players))
                     {
                         // Try again
                         cout << "Invalid meld number.\n" << "Please choose again." << endl;
@@ -588,7 +588,7 @@ int Tong_Its_Game::user_interface(void)
                     }
                     else
                     {
-                        if (!(players[0].expose_a_meld(subMenuChoice)))
+                        if (!(players[0].expose_a_meld(subMenuChoice, players)))
                         {
                             cout << "There was a problem exposing your meld.\n" << endl;
                         }
@@ -608,7 +608,7 @@ int Tong_Its_Game::user_interface(void)
                 break;
             // 3. SHOW ALL MELDS
             case 3:
-                players[0].show_all_melds(false);
+                players[0].show_all_melds(false, players);
                 break;
             // 4. REPRINT GAME STATE
             case 4:
@@ -805,9 +805,9 @@ int Tong_Its_Game::score_the_game(void)
         playerNumber++;
         if (!player.is_burned())
         {
-            if (player.get_final_score() < winningScore)
+            if (player.get_final_score(players) < winningScore)
             {
-                winningScore = player.get_final_score();
+                winningScore = player.get_final_score(players);
                 currentWinner = player.get_name();
                 winningPlayerNumber = playerNumber;
             }
@@ -869,10 +869,10 @@ int Tong_Its_Game::calc_chip_loss(Tong_Its_Player& winner, Tong_Its_Player& lose
             retVal += 1;
         }
         // Secret set
-        if (winner.count_special_melds() > 0)
+        if (winner.count_special_melds(players) > 0)
         {
             // cout << "Winner had special melds... adding " << (3 * winner.count_special_melds()) << endl;  // DEBUGGING
-            retVal += (3 * winner.count_special_melds());
+            retVal += (3 * winner.count_special_melds(players));
         }
     }
 

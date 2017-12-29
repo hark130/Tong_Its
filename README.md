@@ -52,7 +52,6 @@ NOTE: I wanted std::make_unique so I needed C++ 14
     - [ ] {re}Implement "currentDealer" functionality <br />
     - [X] Account for runs longer than 3 <br />
     - [ ] Only allowed to take from the discard if you can make a meld with it <br />
-    - [ ] Default draw location (1. Draw pile 2. Discard pile [Draw pile]) <br />
     - [X] "You just drew a ..." assistant <br />
 * End Of Play <br />
     - [ ] Determine if the game is over
@@ -83,6 +82,8 @@ NOTE: I wanted std::make_unique so I needed C++ 14
     - [ ] Configuration file/user request for optional rules/gameplay?
 
 ## Refactoring
+* Default draw location (1. Draw pile 2. Discard pile [Draw pile])?
+* Extricate playersMelds reset code block from Tong_Its_Player::update_potential_melds into its own method
 * Less hacky method to get the index number into a vector while also getting the vector (see: show_all_melds())
 * Better way to move cards from a game-private deck member variable to a player-private hand member variable than "tempDeck"?
 * Current method of moving cards is clunky!
@@ -92,14 +93,16 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 * Better way to store currentPlayer/currentDealer?  Pointer?  Reference?
 * Dynamically size printed cards?  Is this even necessary?
 * Research the C++ proper way of converting an int to a string in print_a_meld()
-* Refactor show_all_*() to stop using currMeldNum.  We're using class member vectors now.
 * As a shortcut, could I just take the shared_pointer from playersMelds and move it to playersExposedMelds in T_I_P::expose_a_meld()?!?!
 * Vector of player objects instead of hard-coded player1, 2, and 3.  Then, you can iterate through the vector instead of copy/paste player actions (see: game_state() printing exposed melds, is_game_over() checking for Tongits and Draw)
 * Tong_Its_Game::deal_players_hands() should utilize the newly created vector of players instead of hard-coded player references
 * Apparently, I should never include "using namespace" in a header file.  Research this more indepth later.
 * Modify T_I_G::user_interface() to take a Tong_Its_Player& humanPlayer as a parameter instead of always banking on the fact that players[0] is the human player
+* Modify T_I_P::validate_meld() to use int values for comparison instead of strings whenever possible.  I expect it would optimize the method ever so slightly.  I'd do it now but I'm in too far.
+* Not every meld-related method requires 'bool playOne' as a parameter
 
 ## Bugs
+- [ ] There exists a condition in which update_potential_melds() is called twice before the user can interact (user_interface && expose_a_meld?)
 - [X] User interface is allowing a player to call Draw if they have 0 exposed melds
 - [ ] Artifically extend meld spacing based on max-cards-per-line to avoid any soft-wrap from the hand printing methods
 - [ ] Calling draw counts in-hand melds against you.  Once you call draw then the game should auto-play remaining potentialMelds

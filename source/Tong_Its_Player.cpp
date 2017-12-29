@@ -312,16 +312,6 @@ bool Tong_Its_Player::expose_a_meld(int meldNum)
     // 3.2. Add a new shared_point to a vector of PCard shared pointers to playersExposedMelds
     playersExposedMelds.push_back(pExpMeldsVector_ptr);
 
-    // 3.3. Determine the type of meld
-    // if (tmpMeldSet[0]->rank == tmpMeldSet[1]->rank)
-    // {
-    //     runMeld = true;
-    // }
-    // else
-    // {
-    //     setMeld = false;
-    // }
-
     // 3.3. Copy the PCards to the player's exposed melds
     for (auto meldCard : tmpMeldSet)
     {
@@ -519,20 +509,20 @@ bool Tong_Its_Player::challenge_a_draw(Tong_Its_Player& drawPlayer)
     // 1. Determine eligibility to challenge
     if (already_open())
     {
-        // 3. State the situation
+        // 2. State the situation
         cout << drawPlayer.get_name() << " has called Draw." << endl;
         cout << drawPlayer.get_name() << " has " << drawPlayer.count_cards() << " still in hand." << endl;
         cout << drawPlayer.get_name() << " has " << drawPlayer.count_exposed_melds() << "." << endl;
         drawPlayer.print_exposed_melds();
 
-        // 4. Print current hand score
+        // 3. Print current hand score
         cout << "You currently have " << count_cards() << " valued at " << current_card_points() << "." << endl;
         cout << "Do you want to challenge?  Enter 1 to challenge, any other positive number to fold." << endl;
 
-        // 5. Take input from the user
+        // 4. Take input from the user
         userChoice = input_number();
 
-        // 6. Updated challenged draw accordingly
+        // 5. Updated challenged draw accordingly
         if (userChoice == 1)
         {
             retVal = true;
@@ -794,10 +784,6 @@ shared_ptr<PCard> Tong_Its_Player::play_a_card(int cardNumber)
     }
     else
     {
-        // auto cardPos = (*playersHand).begin() + cardNumber - 1;
-        // retVal = (*playersHand).at(cardNumber - 1);
-        // // (*playersHand).erase(playersHand.begin() + cardNumber - 1);
-        // (*playersHand).erase(cardPos);
         try
         {
             retVal = play_any_card(cardNumber, playersHand);
@@ -859,28 +845,6 @@ shared_ptr<PCard> Tong_Its_Player::play_any_card(int cardNumber, shared_ptr<vect
 
 void Tong_Its_Player::print_players_hand(void)
 {
-    // int totalCards = (*playersHand).size();
-    // int currentCardNum = 0;
-    // // Number of full rows
-    // int numOfFullRows = (totalCards - totalCards % NUM_CARDS_PER_ROW) / NUM_CARDS_PER_ROW;
-    // // cout << "Number of full rows: " << numOfFullRows << endl;  // DEBUGGING
-    // int numOfPrintedRows = numOfFullRows;
-    // int numOfLeftovers = totalCards % NUM_CARDS_PER_ROW;
-    // // cout << "Number of leftovers: " << numOfLeftovers << endl;  // DEBUGGING
-    // // Spare row
-    // if (numOfLeftovers != 0)
-    // {
-    //     ++numOfPrintedRows;
-    // }
-
-    // // cout << "Number of rows: " << numOfPrintedRows << endl;  // DEBUGGING
-
-    // for (int i = 1; i <= numOfPrintedRows; ++i)
-    // {
-    //     print_a_row(i);
-    // }
-    // cout << "print_players_hand() not yet implemented!" << endl;
-
     print_playing_cards(true, playersHand);
 
     return;
@@ -963,21 +927,6 @@ int Tong_Its_Player::show_all_melds(bool playOne)
     playersMelds.clear();
 
     update_potential_melds(playOne);
-    // if (sortBySuit == true)
-    // {
-    //     show_all_runs(playOne, currMeldNum);
-    //     // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
-
-    //     show_all_sets(playOne, currMeldNum + 1);
-    //     // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
-    // }
-    // else
-    // {
-    //     show_all_sets(playOne, currMeldNum);
-    //     // cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
-    //     show_all_runs(playOne, currMeldNum + 1);   
-    //     // cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
-    // }
 
     // cout << "Resetting sort" << endl;  // DEBUGGING
     if (originalSortingState != sortBySuit)
@@ -1014,14 +963,7 @@ int Tong_Its_Player::show_all_melds(bool playOne)
 int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
 {
     int retVal = 0;
-    // vector<string> cardRanks = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
     vector<string> cardSuits = {spadeString, clubString, heartString, diamondString};
-    // auto allSpades = make_shared<vector<shared_ptr<PCard>>>();
-    // auto allClubs = make_shared<vector<shared_ptr<PCard>>>();
-    // auto allHearts = make_shared<vector<shared_ptr<PCard>>>();
-    // auto allDiamonds = make_shared<vector<shared_ptr<PCard>>>();
-    // auto currentSet = make_shared<vector<shared_ptr<PCard>>>();
-    // bool thisIsOne = false;
     bool originalSortingState = sortBySuit;
 
     // INPUT VALIDATION
@@ -1051,170 +993,6 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
     {
         toggle_sort();
     }
-
-    // // COPY AND SEPARATE
-    // for (shared_ptr<PCard> cardToEvaluate : (*playersHand))
-    // {
-    //     if (cardToEvaluate->suit == spadeString)
-    //     {
-    //         (*allSpades).push_back(cardToEvaluate);
-    //     }
-    //     else if (cardToEvaluate->suit == clubString)
-    //     {
-    //         (*allClubs).push_back(cardToEvaluate);
-    //     }
-    //     else if (cardToEvaluate->suit == heartString)
-    //     {
-    //         (*allHearts).push_back(cardToEvaluate);
-    //     }
-    //     else if (cardToEvaluate->suit == diamondString)
-    //     {
-    //         (*allDiamonds).push_back(cardToEvaluate);
-    //     }
-    //     else
-    //     {
-    //         // cout << "Invalid rank: " << cardToEvaluate->rank << endl;  // DEBUGGING
-    //         throw invalid_argument("Tong_Its_Player::show_all_runs() - Invalid rank on a playing card");
-    //     }
-    // }
-    // // cout << "Done separating" << endl;  // DEBUGGING
-
-    // // EVALUATE SEPARATE VECTORS FOR RUNS
-    // // Spades
-    // while ((*allSpades).size() >= 3)
-    // {
-    //     int lastCard = (*allSpades).size() - 1;
-    //     if ((*allSpades).at(lastCard)->rankValue == (*allSpades).at(lastCard - 1)->rankValue + 1 && \
-    //         (*allSpades).at(lastCard)->rankValue == (*allSpades).at(lastCard - 2)->rankValue + 2)
-    //     {
-    //         (*currentSet).push_back((*allSpades).at(lastCard - 2));
-    //         (*currentSet).push_back((*allSpades).at(lastCard - 1));
-    //         (*currentSet).push_back((*allSpades).at(lastCard));
-
-    //         while((*allSpades).size() > 0)
-    //         {
-    //             (*allSpades).pop_back();
-    //         }
-    //     }
-    //     else
-    //     {
-    //         (*allSpades).pop_back();
-    //     }
-
-    //     if ((*currentSet).size() >= 3)
-    //     {
-    //         print_a_meld((*currentSet));
-    //         ++retVal;
-
-    //         while ((*currentSet).size() > 0)
-    //         {
-    //             (*currentSet).pop_back();
-    //         }
-    //     }
-    // }
-    // // cout << "Done evaluating spades" << endl;  // DEBUGGING
-
-    // // Clubs
-    // while ((*allClubs).size() >= 3)
-    // {
-    //     int lastCard = (*allClubs).size() - 1;
-    //     if ((*allClubs).at(lastCard)->rankValue == (*allClubs).at(lastCard - 1)->rankValue + 1 && \
-    //         (*allClubs).at(lastCard)->rankValue == (*allClubs).at(lastCard - 2)->rankValue + 2)
-    //     {
-    //         (*currentSet).push_back((*allClubs).at(lastCard - 2));
-    //         (*currentSet).push_back((*allClubs).at(lastCard - 1));
-    //         (*currentSet).push_back((*allClubs).at(lastCard));
-
-    //         while((*allClubs).size() > 0)
-    //         {
-    //             (*allClubs).pop_back();
-    //         }
-    //     }
-    //     else
-    //     {
-    //         (*allClubs).pop_back();
-    //     }
-
-    //     if ((*currentSet).size() >= 3)
-    //     {
-    //         print_a_meld((*currentSet));
-    //         ++retVal;
-
-    //         while ((*currentSet).size() > 0)
-    //         {
-    //             (*currentSet).pop_back();
-    //         }
-    //     }
-    // }
-    // // cout << "Done evaluating clubs" << endl;  // DEBUGGING
-
-    // // Hearts
-    // while ((*allHearts).size() >= 3)
-    // {
-    //     int lastCard = (*allHearts).size() - 1;
-    //     if ((*allHearts).at(lastCard)->rankValue == (*allHearts).at(lastCard - 1)->rankValue + 1 && \
-    //         (*allHearts).at(lastCard)->rankValue == (*allHearts).at(lastCard - 2)->rankValue + 2)
-    //     {
-    //         (*currentSet).push_back((*allHearts).at(lastCard - 2));
-    //         (*currentSet).push_back((*allHearts).at(lastCard - 1));
-    //         (*currentSet).push_back((*allHearts).at(lastCard));
-
-    //         while((*allHearts).size() > 0)
-    //         {
-    //             (*allHearts).pop_back();
-    //         }
-    //     }
-    //     else
-    //     {
-    //         (*allHearts).pop_back();
-    //     }
-
-    //     if ((*currentSet).size() >= 3)
-    //     {
-    //         print_a_meld((*currentSet));
-    //         ++retVal;
-
-    //         while ((*currentSet).size() > 0)
-    //         {
-    //             (*currentSet).pop_back();
-    //         }
-    //     }
-    // }
-    // // cout << "Done evaluating hearts" << endl;  // DEBUGGING
-
-    // // Diamonds
-    // while ((*allDiamonds).size() >= 3)
-    // {
-    //     int lastCard = (*allDiamonds).size() - 1;
-    //     if ((*allDiamonds).at(lastCard)->rankValue == (*allDiamonds).at(lastCard - 1)->rankValue + 1 && \
-    //         (*allDiamonds).at(lastCard)->rankValue == (*allDiamonds).at(lastCard - 2)->rankValue + 2)
-    //     {
-    //         (*currentSet).push_back((*allDiamonds).at(lastCard - 2));
-    //         (*currentSet).push_back((*allDiamonds).at(lastCard - 1));
-    //         (*currentSet).push_back((*allDiamonds).at(lastCard));
-
-    //         while((*allDiamonds).size() > 0)
-    //         {
-    //             (*allDiamonds).pop_back();
-    //         }
-    //     }
-    //     else
-    //     {
-    //         (*allDiamonds).pop_back();
-    //     }
-
-    //     if ((*currentSet).size() >= 3)
-    //     {
-    //         print_a_meld((*currentSet));
-    //         ++retVal;
-
-    //         while ((*currentSet).size() > 0)
-    //         {
-    //             (*currentSet).pop_back();
-    //         }
-    //     }
-    // }
-    // // cout << "Done evaluating diamonds" << endl;  // DEBUGGING
 
     return retVal;
 }
@@ -1295,16 +1073,12 @@ int Tong_Its_Player::show_all_sets(bool playOne, int startingNum)
                     // 4. Make it special
                     meldCard->special = true;
                 }
-            }
-            
+            }            
         }
 
         // Three, or more, of a kind
         if (tempCount >= 3)
         {
-            // print_a_meld(*currentSet);
-            // playersMelds.push_back(tempMeld);
-
             playersMelds.push_back(make_shared<vector<shared_ptr<PCard>>>());
             for (shared_ptr<PCard> meldCard : (*tempMeld))
             {
@@ -1404,10 +1178,6 @@ void Tong_Its_Player::print_a_meld(vector<shared_ptr<PCard>> oneMeld, int meldNu
             }
         }
     }
-    // if (specialMeld)
-    // {
-    //     cout << "WE'VE GOT A SPECIAL MELD HERE... USE " << specialString << endl;  // DEBUGGING
-    // }
 
     // Print the card pointers
     // Card Row 1
@@ -1513,35 +1283,6 @@ void Tong_Its_Player::print_exposed_melds(void)
 
 void Tong_Its_Player::sort_players_hand(void)
 {
-    // if (sortBySuit == true)
-    // {
-    //     sort((*playersHand).begin(), (*playersHand).end(), [ ]( const auto& left, const auto& right )
-    //         {
-    //             if (left->suitValue < right->suitValue)
-    //             {
-    //                 return true;
-    //             }
-    //             else if (left->suitValue == right->suitValue)
-    //             {
-    //                 return left->rankValue < right->rankValue;
-    //             }
-    //         });
-    // }
-    // else
-    // {
-    //     sort((*playersHand).begin(), (*playersHand).end(), [ ]( const auto& left, const auto& right )
-    //         {
-    //             if (left->rankValue < right->rankValue)
-    //             {
-    //                 return true;
-    //             }
-    //             else if (left->rankValue == right->rankValue)
-    //             {
-    //                 return left->suitValue < right->suitValue;
-    //             }
-    //         });
-    // }
-
     sort_cards(playersHand, sortBySuit);
 
     return;
@@ -1555,13 +1296,19 @@ void Tong_Its_Player::sort_players_hand(void)
     Output - Number of the last meld found, startingNum if no sets were found
  */
 int Tong_Its_Player::find_a_suit_run(string sortThisSuit)
-{
-    // INPUT VALIDATION
-    // IMPLEMENT THIS LATER!  CHECK AGAINST VALID SUITS?
-
+{   
     // LOCAL VARIABLES
     auto suitMatches = make_shared<vector<shared_ptr<PCard>>>();
     auto tempMeld = make_shared<vector<shared_ptr<PCard>>>();
+    vector<string> validSuits = {spadeString, heartString, diamondString, clubString};
+    vector<string>::iterator it;
+
+    // INPUT VALIDATION
+    it = find(validSuits.begin(), validSuits.end(), sortThisSuit);
+    if (it == validSuits.end())
+    {
+        throw invalid_argument("Tong_Its_Player::find_a_suit_run() was passed an invalid suit!");
+    }   
 
     // COPY AND SEPARATE
     for (shared_ptr<PCard> cardToEvaluate : (*playersHand))
@@ -1603,9 +1350,6 @@ int Tong_Its_Player::find_a_suit_run(string sortThisSuit)
                 }
                 else
                 {
-                    // playersMelds.push_back(tempMeld);
-                    // (*tempMeld).clear();
-                    // break;
                     // cout << "Found a suit run" << endl;  // DEBUGGING
                     playersMelds.push_back(make_shared<vector<shared_ptr<PCard>>>());
                     for (shared_ptr<PCard> meldCard : (*tempMeld))

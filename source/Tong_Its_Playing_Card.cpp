@@ -1,6 +1,7 @@
 #include "Clear_Screen.h"       // clear_screen
 #include "Tong_Its.h"
 #include "Tong_Its_Playing_Card.h"
+#include <iostream>             // cout
 #include <locale>               // toupper, locale
 #include <string>               // stoi
 
@@ -172,6 +173,7 @@ bool Playing_Card::validate_playing_card(void)
         it = find(validRanks.begin(), validRanks.end(), rank);
         if (it == validRanks.end())
         {
+            // cout << "Playing_Card::validate_playing_card() found an invalid rank!" << endl;  // DEBUGGING
             retVal = false;
         }
     }
@@ -182,6 +184,7 @@ bool Playing_Card::validate_playing_card(void)
         it = find(validSuits.begin(), validSuits.end(), suit);
         if (it == validSuits.end())
         {
+            // cout << "Playing_Card::validate_playing_card() found an invalid suit!" << endl;  // DEBUGGING
             retVal = false;
         }
     }
@@ -192,11 +195,13 @@ bool Playing_Card::validate_playing_card(void)
         // Verify rankValue bounds
         if (rankValue > 13 || rankValue < 1)
         {
+            // cout << "Playing_Card::validate_playing_card() found an out of bound rank value!" << endl;  // DEBUGGING
             retVal = false;
         }
         // Use rankValue to compare validRanks index to the rank
         else if (validRanks[rankValue - 1] != rank)
         {
+            // cout << "Playing_Card::validate_playing_card() found an invalid rankValue translation!" << endl;  // DEBUGGING
             retVal = false;
         }
     }
@@ -207,11 +212,13 @@ bool Playing_Card::validate_playing_card(void)
         // Verify suitValue bounds
         if (suitValue > 4 || suitValue < 1)
         {
+            // cout << "Playing_Card::validate_playing_card() found an out of bound suitValue!" << endl;  // DEBUGGING
             retVal = false;
         }
         // Use rankValue to compare validSuits index to the suit
         else if (validSuits[suitValue - 1] != suit)
         {
+            // cout << "Playing_Card::validate_playing_card() found an invalid suitValue translation!" << endl;  // DEBUGGING
             retVal = false;
         }
     }
@@ -222,16 +229,19 @@ bool Playing_Card::validate_playing_card(void)
         // Verify bounds
         if (pointValue > 10 || pointValue < 1)
         {
+            // cout << "Playing_Card::validate_playing_card() found an out of bound pointValue!" << endl;  // DEBUGGING
             retVal = false;
         }
         //  1 - 9
         else if (rankValue < 10 && rankValue != pointValue)
         {
+            // cout << "Playing_Card::validate_playing_card() found an invalid pointValue!" << endl;  // DEBUGGING
             retVal = false;
         }
         // 10 - K
         else if ((rank == "10" || rank == "J" || rank == "Q" || rank == "K") && pointValue != 10)
         {
+            // cout << "Playing_Card::validate_playing_card() found an invalid pointValue!" << endl;  // DEBUGGING
             retVal = false;
         }
     }
@@ -239,9 +249,10 @@ bool Playing_Card::validate_playing_card(void)
     // Verify (((inRun || inSet) || (!inRun && !inSet)) && !(inRun && inSet))
     if (retVal)
     {
-        // inRun or inSet, but not both, *must* be true
-        if ((!inRun && !inSet) || (inRun && inSet))
+        // inRun or inSet may not *both* be true
+        if (inRun && inSet)
         {
+            // cout << "Playing_Card::validate_playing_card() found an invalid inRun/inSet!" << endl;  // DEBUGGING
             retVal = false;
         }
     }

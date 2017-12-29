@@ -16,8 +16,9 @@ typedef struct Playing_Card
     int numMelds;    // Number of melds containing this PCard
     bool sapaw;      // Played on someone else's meld
     bool special;	 // True if in a special meld
-    bool inSet;      // Is this card part of an exposed set?
     bool inRun;      // Is this card part of an exposed run?
+    bool inSet;      // Is this card part of an exposed set?
+    bool validate_playing_card(void);  // Validate this PCard
 } PCard, *PCard_ptr;
 
 

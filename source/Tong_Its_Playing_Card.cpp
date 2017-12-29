@@ -2,7 +2,7 @@
 #include "Tong_Its.h"
 #include "Tong_Its_Playing_Card.h"
 #include <locale>               // toupper, locale
-#include <string>
+#include <string>               // stoi
 
 
 /**********************/
@@ -141,11 +141,114 @@ Playing_Card::Playing_Card(string pcRank, string pcSuit)
     sapaw = false;
     special = false;
     numMelds = 0;
-    inSet = false;
     inRun = false;
+    inSet = false;
     rank = pcRank;
 }
 
+
+/*
+    Purpose - Validate a single playing card
+    Input - None
+    Output - True if valid, false if invalid
+    Note - 
+        Minimize calling this method:
+            TIG::build a deck, TIG::reset_game, TIP::validate_meld
+        This method returns false for 'blank' PCards (still debating otherwise)
+
+ */
+bool Playing_Card::validate_playing_card(void)
+{
+    // LOCAL VARIABLES
+    bool retVal = true;
+    vector<string> validRanks = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
+    vector<string> validSuits = {spadeString, heartString, diamondString, clubString};
+    vector<string>::iterator it;
+
+    // VALIDATE PCARD
+    // Verify valid rank
+    if (retVal)
+    {
+        it = find(validRanks.begin(), validRanks.end(), rank);
+        if (it == validRanks.end())
+        {
+            retVal = false;
+        }
+    }
+
+    // Verify valid suit
+    if (retVal)
+    {
+        it = find(validSuits.begin(), validSuits.end(), suit);
+        if (it == validSuits.end())
+        {
+            retVal = false;
+        }
+    }
+
+    // Check rank against rankValue
+    if (retVal)
+    {
+        // Verify rankValue bounds
+        if (rankValue > 13 || rankValue < 1)
+        {
+            retVal = false;
+        }
+        // Use rankValue to compare validRanks index to the rank
+        else if (validRanks[rankValue - 1] != rank)
+        {
+            retVal = false;
+        }
+    }
+
+    // Check suit against suitValue
+    if (retVal)
+    {
+        // Verify suitValue bounds
+        if (suitValue > 4 || suitValue < 1)
+        {
+            retVal = false;
+        }
+        // Use rankValue to compare validSuits index to the suit
+        else if (validSuits[suitValue - 1] != suit)
+        {
+            retVal = false;
+        }
+    }
+
+    // Check rank against pointValue
+    if (retVal)
+    {
+        // Verify bounds
+        if (pointValue > 10 || pointValue < 1)
+        {
+            retVal = false;
+        }
+        //  1 - 9
+        else if (rankValue < 10 && rankValue != pointValue)
+        {
+            retVal = false;
+        }
+        // 10 - K
+        else if ((rank == "10" || rank == "J" || rank == "Q" || rank == "K") && pointValue != 10)
+        {
+            retVal = false;
+        }
+    }
+
+    // Verify (((inRun || inSet) || (!inRun && !inSet)) && !(inRun && inSet))
+    if (retVal)
+    {
+        // inRun or inSet, but not both, *must* be true
+        if ((!inRun && !inSet) || (inRun && inSet))
+        {
+            retVal = false;
+        }
+    }
+
+    // DONE
+    return retVal;
+}
 /********************/
 /* PLAYING CARD END */
 /********************/

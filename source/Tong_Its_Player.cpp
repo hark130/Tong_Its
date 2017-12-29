@@ -245,6 +245,8 @@ bool Tong_Its_Player::expose_a_meld(int meldNum)
     shared_ptr<PCard> tmpPCard_ptr = nullptr;
     int tempCardNum = 0;
     vector<shared_ptr<PCard>> tmpMeldSet;
+    bool runMeld = false;  // Used to define the type of meld the PCards are in
+    bool setMeld = false;  // Used to define the type of meld the PCards are in
 
     // INPUT VALIDATION
     if (meldNum < 1)
@@ -301,6 +303,7 @@ bool Tong_Its_Player::expose_a_meld(int meldNum)
 
     // 3. Add the meld to the player's exposed melds
     // 3.1. Validate tmpMeldSet
+    // IMPLEMENT VALIDATE MELD AND USE IT HERE!!!!!!!!!!!!!!!!
     if (tmpMeldSet.size() < 3)
     {
         throw runtime_error("Tong_Its_Player::expose_a_meld() tmpMeldSet is improperly sized");
@@ -316,10 +319,23 @@ bool Tong_Its_Player::expose_a_meld(int meldNum)
     // 3.2. Add a new shared_point to a vector of PCard shared pointers to playersExposedMelds
     playersExposedMelds.push_back(pExpMeldsVector_ptr);
 
+    // 3.3. Determine the type of meld
+    // IMPLEMENT SET MELD TYPE AND USE IT HERE!!!!!!!!!!!!!!!!
+    if (tmpMeldSet[0]->rank == tmpMeldSet[1]->rank)
+    {
+        runMeld = true;
+    }
+    else
+    {
+        setMeld = false;
+    }
+
     // 3.3. Copy the PCards to the player's exposed melds
     for (auto meldCard : tmpMeldSet)
     {
         meldCard->numMelds = 1;  // Set meld number
+        meldCard->inRun = runMeld;
+        meldCard->inSet = setMeld;
         (*pExpMeldsVector_ptr).push_back(meldCard);
     }
 
@@ -524,6 +540,192 @@ bool Tong_Its_Player::challenge_a_draw(Tong_Its_Player& drawPlayer)
         if (userChoice == 1)
         {
             retVal = true;
+        }
+    }
+
+    // DONE
+    return retVal;
+}
+
+
+/*
+    Purpose - Set the meld type for a vector of PCard pointers
+    Input - Pointer to a vectore of PCard pointers
+    Output - True on success, false on failure
+    Note - This function calls validate_meld() before returning to verify the meld's integrity
+ */
+bool Tong_Its_Player::set_meld_type(shared_ptr<vector<shared_ptr<PCard>>> meldVec_ptr)
+{
+    // LOCAL VARIABLES
+    bool retVal = false;
+    string firstRank = "";
+    string firstSuit = "";
+    bool foundRun = true;
+    bool foundSet = true;
+
+    // INPUT VALIDATION
+    if (meldVec_ptr == nullptr)
+    {
+        throw invalid_argument("Tong_Its_Player::set_meld_type() was passed a nullptr");
+    }
+    else if ((*meldVec_ptr).size() >= 3)
+    {
+        // DETERMINE MELD TYPE
+        // Get the first card's details
+        firstRank = (*meldVec_ptr)[0]->rank;
+        firstSuit = (*meldVec_ptr)[0]->suit;
+        // Compare the meld to the first card
+        for (int i = 1; i < (*meldVec_ptr).size(); i++)
+        {
+            // Check for a run
+            if ((*meldVec_ptr)[i]->suit != firstSuit)
+            {
+                foundRun = false;
+            }
+
+            // Check for a set
+            if ((*meldVec_ptr)[i]->rank != firstRank)
+            {
+                foundSet = false;
+            }
+
+            // Premature failure
+            if ((!foundRun && !foundSet) || (foundRun && foundSet))
+            {
+                break;
+            }
+        }
+    }
+
+    // Check results
+    if ((foundRun || foundSet) && !(foundRun && foundSet))
+    {
+        // Set the PCard members accordingly
+        for (auto meldCard : (*meldVec_ptr))
+        {
+            meldCard->inRun = foundRun;
+            meldCard->inSet = foundSet;
+        }
+
+        // VALIDATE MELD
+        retVal = validate_meld(meldVec_ptr);
+    }
+
+    // DONE
+    return retVal;
+}
+
+
+bool Tong_Its_Player::validate_meld(shared_ptr<vector<shared_ptr<PCard>>> meldVec_ptr)
+{
+    // LOCAL VARIABLES
+    bool retVal = true;
+    string startRank = "";
+    string startSuit = "";
+    bool startinRun = false;
+    bool startinSet = false;
+
+    // INPUT VALIDATION
+    if (meldVec_ptr == nullptr)
+    {
+        throw invalid_argument("Tong_Its_Player::validate_meld was passed a nullptr");
+    }
+
+    // PERFORM VALIDATION
+    // 1. Validate individual PCards
+    for (auto meldCard_ptr : (*meldVec_ptr))
+    {
+        retVal = meldCard_ptr->validate_playing_card();
+        if (!retVal)
+        {
+            break;
+        }
+    }
+
+    // 2. Validate the meld as a whole
+    // 2.1. Verify meld meets minimum size
+    if (retVal)
+    {
+        if ((*meldVec_ptr).size() < 3)
+        {
+            retVal = false;
+        }
+        // Set starting condition
+        else
+        {
+            startRank = (*meldVec_ptr)[0]->rank;
+            startSuit = (*meldVec_ptr)[0]->suit;
+            startinRun = (*meldVec_ptr)[0]->inRun;
+            startinSet = (*meldVec_ptr)[0]->inSet;
+        }
+    }
+    // 2.2. Verify inRun and inSet are all the same
+    if (retVal)
+    {
+        for (int i = 1; i < (*meldVec_ptr).size(); i++)
+        {
+            // Check inRun
+            if ((*meldVec_ptr)[i]->inRun != startinRun)
+            {
+                retVal = false;
+                break;
+            }
+            // Check inSet
+            if ((*meldVec_ptr)[i]->inSet != startinSet)
+            {
+                retVal = false;
+                break;
+            }
+        }
+    }
+    // 2.3. Verify inRun or inSet are valid
+    if (retVal)
+    {
+        // 2.3.1. Run
+        if (startinRun)
+        {
+            for (int i = 1; i < (*meldVec_ptr).size(); i++)
+            {
+                // 2.3.1.1. Verify ordered
+                if ((*meldVec_ptr)[i - 1]->rankValue + 1 != (*meldVec_ptr)[i]->rankValue)
+                {
+                    retVal = false;
+                    break;
+                }
+                // 2.3.1.2. Verify all same suit
+                else if ((*meldVec_ptr)[i]->suit != startSuit)
+                {
+                    retVal = false;
+                    break;
+                }
+            }
+        }
+        // 2.3.2. Set
+        else if (startinSet)
+        {
+            // 2.3.2.1. Size is 3 or 4
+            if ((*meldVec_ptr).size() > 4)
+            {
+                retVal = false;
+            }
+            else
+            {
+                for (int i = 1; i < (*meldVec_ptr).size(); i++)
+                { 
+                    // 2.3.2.2. All ranks match
+                    if ((*meldVec_ptr)[i]->rank != startRank)
+                    {
+                        retVal = false;
+                        break;
+                    }
+                    // 2.3.2.3. No suits match
+                    else if ((*meldVec_ptr)[i]->suit == startSuit)
+                    {
+                        retVal = false;
+                        break;
+                    }
+                }
+            }
         }
     }
 

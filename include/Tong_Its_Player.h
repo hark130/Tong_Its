@@ -35,8 +35,8 @@ public:
     void print_players_hand(void);
     void print_playing_cards(bool printNums, shared_ptr<vector<shared_ptr<PCard>>> cardsToPrint);
     int show_all_melds(bool playOne);
-    int show_all_runs(bool playOne, int startingNum);
-    int show_all_sets(bool playOne, int startingNum);
+    void show_all_runs(bool playOne);
+    void show_all_sets(bool playOne);
     void print_a_meld(vector<shared_ptr<PCard>> oneMeld, int meldNum);
     void print_exposed_melds(void);
     void sort_players_hand(void);

@@ -896,17 +896,17 @@ void Tong_Its_Player::update_potential_melds(bool playOne)
 
     if (sortBySuit == true)
     {
-        show_all_runs(playOne, 1);
+        show_all_runs(playOne);
         // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
 
-        show_all_sets(playOne, 1);
+        show_all_sets(playOne);
         // cout << "1. Current meld number: " << currMeldNum << endl;  // DEBUGGING
     }
     else
     {
-        show_all_sets(playOne, 1);
+        show_all_sets(playOne);
         // cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
-        show_all_runs(playOne, 1);   
+        show_all_runs(playOne);   
         // cout << "2. Current meld number: " << currMeldNum << endl;  // DEBUGGING
     }
 
@@ -957,24 +957,15 @@ int Tong_Its_Player::show_all_melds(bool playOne)
     Purpose - Print all the runs found in the player's hand
     Input
         playOne - numbers melds if true
-        startingNum - If playOne is true, this is the number of the last meld
-    Output - Number of the last meld found, startingNum if no runs were found
+    Output - None
  */
-int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
+void Tong_Its_Player::show_all_runs(bool playOne)
 {
-    int retVal = 0;
     vector<string> cardSuits = {spadeString, clubString, heartString, diamondString};
     bool originalSortingState = sortBySuit;
 
     // INPUT VALIDATION
-    if (startingNum > 0)
-    {
-        retVal = startingNum;
-    }
-    else
-    {
-        throw invalid_argument("show_all_runs() - Invalid starting number");
-    }
+    // Existing validation factored out
 
     // CHECK SORTING
     if (sortBySuit == false)
@@ -983,10 +974,14 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
     }
 
     // FIND RUNS
+    // 1. Find runs in player's hand
     for (auto suitToSort : cardSuits)
     {
         find_a_suit_run(suitToSort);
     }
+    // 2. Find runs to 'sapaw'...
+    // 2.1. ...in player's exposed melds
+    // 2.2. ...in other player's exposed melds
 
     // RESET SORTING
     if (originalSortingState != sortBySuit)
@@ -994,7 +989,7 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
         toggle_sort();
     }
 
-    return retVal;
+    return;
 }
 
 
@@ -1002,27 +997,18 @@ int Tong_Its_Player::show_all_runs(bool playOne, int startingNum)
     Purpose - Print all the sets found in the player's hand
     Input
         playOne - numbers melds if true
-        startingNum - If playOne is true, this is the number of the last meld
-    Output - Number of the last meld found, startingNum if no sets were found
+    Output - None
  */
-int Tong_Its_Player::show_all_sets(bool playOne, int startingNum)
+void Tong_Its_Player::show_all_sets(bool playOne)
 {
     auto tempMeld = make_shared<vector<shared_ptr<PCard>>>();
     vector<string> cardRanks = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
     int tempCount = 0;  // Count for each rank
-    int retVal = 0;
     bool specialMeld = false;
     bool originalSortingState = sortBySuit;
 
     // INPUT VALIDATION
-    if (startingNum > 0)
-    {
-        retVal = startingNum;
-    }
-    else
-    {
-        throw invalid_argument("show_all_sets() - Invalid starting number");
-    }
+    // Existing validation factored out
 
     // CHECK SORTING
     if (sortBySuit == true)
@@ -1103,7 +1089,7 @@ int Tong_Its_Player::show_all_sets(bool playOne, int startingNum)
     }
 
     // cout << "Returning" << endl;  // DEBUGGING
-    return retVal;
+    return;
 }
 
 

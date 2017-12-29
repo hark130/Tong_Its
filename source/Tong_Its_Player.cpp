@@ -302,14 +302,7 @@ bool Tong_Its_Player::expose_a_meld(int meldNum)
     }
 
     // 3. Add the meld to the player's exposed melds
-    // 3.1. Validate tmpMeldSet
-    // IMPLEMENT VALIDATE MELD AND USE IT HERE!!!!!!!!!!!!!!!!
-    if (tmpMeldSet.size() < 3)
-    {
-        throw runtime_error("Tong_Its_Player::expose_a_meld() tmpMeldSet is improperly sized");
-    }
-
-    // 3.2. Make a new shared_pointer to a vector of PCard shared pointers
+    // 3.1. Make a new shared_pointer to a vector of PCard shared pointers
     pExpMeldsVector_ptr = make_shared<vector<shared_ptr<PCard>>>();
     if (pExpMeldsVector_ptr == nullptr)
     {
@@ -320,15 +313,14 @@ bool Tong_Its_Player::expose_a_meld(int meldNum)
     playersExposedMelds.push_back(pExpMeldsVector_ptr);
 
     // 3.3. Determine the type of meld
-    // IMPLEMENT SET MELD TYPE AND USE IT HERE!!!!!!!!!!!!!!!!
-    if (tmpMeldSet[0]->rank == tmpMeldSet[1]->rank)
-    {
-        runMeld = true;
-    }
-    else
-    {
-        setMeld = false;
-    }
+    // if (tmpMeldSet[0]->rank == tmpMeldSet[1]->rank)
+    // {
+    //     runMeld = true;
+    // }
+    // else
+    // {
+    //     setMeld = false;
+    // }
 
     // 3.3. Copy the PCards to the player's exposed melds
     for (auto meldCard : tmpMeldSet)
@@ -339,11 +331,15 @@ bool Tong_Its_Player::expose_a_meld(int meldNum)
         (*pExpMeldsVector_ptr).push_back(meldCard);
     }
 
-    // 3.4. Validate the copy
-    if (tmpMeldSet.size() == (*pExpMeldsVector_ptr).size())
+    // 3.4. Validate the meld
+    if (set_meld_type(pExpMeldsVector_ptr))
     {
-        retVal = true;
-        open = true;
+        // 3.5. Validate the copy
+        if (tmpMeldSet.size() == (*pExpMeldsVector_ptr).size())
+        {
+            retVal = true;
+            open = true;
+        }   
     }
 
     // 4. Recalculate the player's melds

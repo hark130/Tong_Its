@@ -57,6 +57,8 @@ public:
     void reset(Tong_Its_Game* theGame_ptr);
     bool already_open(void);
     bool challenge_a_draw(Tong_Its_Player& drawPlayer);
+    bool set_meld_type(shared_ptr<vector<shared_ptr<PCard>>> meldVec_ptr);
+    bool validate_meld(shared_ptr<vector<shared_ptr<PCard>>> meldVec_ptr);
 private:
     bool sortBySuit;
     string name;
@@ -73,7 +75,7 @@ private:
     vector<shared_ptr<vector<shared_ptr<PCard>>>> playersExposedMelds;
     int find_a_suit_run(string sortThisSuit);
     void print_a_row(int rowToPrint, bool printNums, shared_ptr<vector<shared_ptr<PCard>>> printTheseCards);
-    void sort_cards(shared_ptr<vector<shared_ptr<PCard>>> cardsToSort, bool sortBySuit);
+    void sort_cards(shared_ptr<vector<shared_ptr<PCard>>> cardsToSort, bool sortByTheSuits);
     int random_num(int start, int stop);
     bool card_in_a_meld(shared_ptr<PCard> findThisCard);
     // AI decision algorithm

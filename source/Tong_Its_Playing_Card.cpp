@@ -16,23 +16,9 @@ Playing_Card::Playing_Card(string pcRank, string pcSuit)
     locale loc;
 
     if (pcSuit == spadeString || pcSuit == heartString || pcSuit == diamondString || pcSuit == clubString || pcSuit == " ")
-    // if (pcSuit == SPADE || pcSuit == HEART || pcSuit == DIAMOND || pcSuit == CLUB)
     {
-        // const wchar_t heart[] = L"\u2665";  // DEBUGGING
-        // setlocale(LC_CTYPE,"");  // TESTING
-        // setlocale(LC_ALL, "");
-        // wcout << heart << L'\n';
         suit = pcSuit;
-        // wcout << suit << endl;  // DEBUGGING
-        // cout << suit << endl;  // DEBUGGING
-        // wcout << L"こんにちは世界\n";
-        // wcout << L"♣\n";
-        // wcout << L"\u2660\n";
-        // cout << "\5";
-        // cout << SPADE;
-        // wcout << SPADE;
-        // cout << "\xE2\x99\xA6";
-        // wcout << L"\xE2\x99\xA6";
+
         if (pcSuit == spadeString)
         {
             suitValue = 1;
@@ -49,7 +35,7 @@ Playing_Card::Playing_Card(string pcRank, string pcSuit)
         {
             suitValue = 4;
         }
-        else // " "
+        else  // " "
         {
             suitValue = 0;
         }
@@ -260,6 +246,7 @@ bool Playing_Card::validate_playing_card(void)
     // DONE
     return retVal;
 }
+
 /********************/
 /* PLAYING CARD END */
 /********************/

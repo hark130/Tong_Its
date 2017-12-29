@@ -148,7 +148,7 @@ void Tong_Its_Game::start_the_game(void)
             }
             else
             {
-                cout << "'Game over man. Game over!' -Pvt. Hudson" << endl;  // DEBUGGING
+                cout << "'Game over man. Game over!' -Pvt. Hudson, Aliens" << endl;  // DEBUGGING
                 break;
             }
         }
@@ -306,7 +306,14 @@ shared_ptr<vector<shared_ptr<PCard>>> Tong_Its_Game::build_a_deck(void)
             {
                 // cout << rank << endl;  // DEBUGGING
                 tempCard = make_shared<PCard>(PCard(rank, suit));
-                (*retVal).emplace_back(tempCard);
+                if (tempCard->validate_playing_card())
+                {
+                    (*retVal).emplace_back(tempCard);
+                }
+                else
+                {
+                    throw runtime_error("Tong_Its_Game::build_a_deck() encountered an invalid playing card!");
+                }
             }
         }        
     }
@@ -978,6 +985,10 @@ void Tong_Its_Game::reset_game(int winnerNum)
         playingCard->numMelds = 0;
         playingCard->inSet = false;
         playingCard->inRun = false;
+        if (!(playingCard->validate_playing_card()))
+        {
+            throw runtime_error("Tong_Its_Game::reset_game() has discovered an invalid playing card");
+        }
     }
     // 5. Deal cards to the players
     deal_player_hands(players[winnerNum - 1]);

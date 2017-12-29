@@ -5,12 +5,23 @@
 
 using namespace std;
 
+// Definition of global externed variables used
+//  by each header utilized by main.cpp
 string spadeString = string(SPADE);
 string clubString = string(CLUB);
 string heartString = string(HEART);
 string diamondString = string(DIAMOND);
 string specialString = string(SPECIAL);
 
+
+/*
+    Purpose - An attempt to abstract-away user input
+    Input - None
+    Output - Int read from user input
+    Note
+        Will not accept a number less than 1
+        Will never give up, never surrender
+ */
 int input_number(void)
 {
     string str;

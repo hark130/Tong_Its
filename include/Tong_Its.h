@@ -40,18 +40,12 @@ using namespace std;
     #define SPECIAL "\xC2\xA7"
 #endif
 
-// extern const auto spadeString = string(SPADE);
-// extern const auto clubString = string(CLUB);
-// extern const auto heartString = string(HEART);
-// extern const auto diamondString = string(DIAMOND);
 extern string spadeString;
 extern string clubString;
 extern string heartString;
 extern string diamondString;
 extern string specialString;
 
-
-// #define CLEAR_SCREEN 30      // Number of newlines to print to clear the screen 
 #define USER_EXIT 999           // User interface indication to quit the program
 #define NUM_CARDS_PER_ROW 52    // Indicates how many cards print_a_row() will print per row
 

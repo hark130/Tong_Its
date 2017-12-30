@@ -453,9 +453,12 @@ bool Tong_Its_Player::expose_a_sapaw_meld(shared_ptr<vector<shared_ptr<PCard>>> 
     int tempCardNum = 0;
     shared_ptr<PCard> tmpPCard_ptr = nullptr;
     vector<shared_ptr<PCard>> tmpMeldSet;
-    shared_ptr<vector<shared_ptr<PCard>>> pExpMeldsVector_ptr = nullptr;  // playersExposedMelds
-    bool runMeld = false;  // Used to define the type of meld the PCards are in
-    bool setMeld = false;  // Used to define the type of meld the PCards are in
+    auto tmpExposedMelds = make_shared<vector<shared_ptr<vector<shared_ptr<PCard>>>>>();
+    auto tmpMeldVector = make_shared<vector<shared_ptr<PCard>>>();
+    bool playedIt = false;
+    // shared_ptr<vector<shared_ptr<PCard>>> pExpMeldsVector_ptr = nullptr;  // playersExposedMelds
+    // bool runMeld = false;  // Used to define the type of meld the PCards are in
+    // bool setMeld = false;  // Used to define the type of meld the PCards are in
 
     for (auto meldCard : (*pMeldsVector_ptr))
     {
@@ -486,35 +489,88 @@ bool Tong_Its_Player::expose_a_sapaw_meld(shared_ptr<vector<shared_ptr<PCard>>> 
         tmpMeldSet.push_back(tmpPCard_ptr);
     }
 
-    // 3. Add the meld to the player's exposed melds
-    // 3.1. Make a new shared_pointer to a vector of PCard shared pointers
-    pExpMeldsVector_ptr = make_shared<vector<shared_ptr<PCard>>>();
-    if (pExpMeldsVector_ptr == nullptr)
+    // Iterate through each player
+    for (auto player : players)
     {
-        throw runtime_error("Tong_Its_Player::expose_a_meld() made a nullptr?!");    
-    }
-
-    // 3.2. Add a new shared_point to a vector of PCard shared pointers to playersExposedMelds
-    playersExposedMelds.push_back(pExpMeldsVector_ptr);
-
-    // 3.3. Copy the PCards to the player's exposed melds
-    for (auto meldCard : tmpMeldSet)
-    {
-        meldCard->numMelds = 1;  // Set meld number
-        meldCard->inRun = runMeld;
-        meldCard->inSet = setMeld;
-        (*pExpMeldsVector_ptr).push_back(meldCard);
-    }
-
-    // 3.4. Validate the meld
-    if (set_meld_type(pExpMeldsVector_ptr))
-    {
-        // 3.5. Validate the copy
-        if (tmpMeldSet.size() == (*pExpMeldsVector_ptr).size())
+        // If playedIt is true, stop
+        if (playedIt)
         {
-            retVal = true;
-            open = true;
-        }   
+            break;
+        }
+
+        // Get the player's exposed melds
+        (*tmpExposedMelds) = player.get_exposed_melds();
+        // cout << player.get_name() << " has " << player.count_exposed_melds() << " exposed melds." << endl;  // DEBUGGING
+
+        // Iterate through each meld vector pointer
+        for (auto meldVec_ptr : (*tmpExposedMelds))
+        {
+            // If playedIt is true, stop
+            if (playedIt)
+            {
+                break;
+            }
+
+            // If that meld vector has at least one card, let's check it
+            if ((*meldVec_ptr).size() > 0)
+            {
+                // Add the sapaw cards
+                for (auto sapawCard : tmpMeldSet)
+                {
+                    (*tmpMeldVector).push_back(sapawCard);
+                }
+
+                // Add the exposed meld to the temp meld
+                for (auto meldCard_ptr : (*meldVec_ptr))
+                {
+                    (*tmpMeldVector).push_back(meldCard_ptr);
+                }
+
+                // Sort the temp meld
+                sort_cards(tmpMeldVector, true);
+
+                // Check if it's a run meld
+                if (is_this_a_run(tmpMeldVector))
+                {
+                    // cout << "FOUND A SAPAW RUN!" << endl;  // DEBUGGING
+                    // playerCard->sapaw = true;
+                    // playersMelds.push_back(make_shared<vector<shared_ptr<PCard>>>());
+                    // playersMelds.at(playersMelds.size() - 1)->push_back(playerCard);
+                    for (auto sapawCard : tmpMeldSet)
+                    {
+                        sapawCard->sapaw = true;
+                        sapawCard->inRun = true;
+                        (*meldVec_ptr).push_back(sapawCard);    
+                    }                    
+                    sort_cards(meldVec_ptr, true);
+                    set_meld_type(meldVec_ptr);
+                    (*tmpMeldVector).clear();
+                    playedIt = true;
+                    retVal = true;
+                    break;
+                }
+                else
+                {
+                    sort_cards(tmpMeldVector, false);
+
+                    if (is_this_a_set(tmpMeldVector))
+                    {
+                        for (auto sapawCard : tmpMeldSet)
+                        {
+                            sapawCard->sapaw = true;
+                            sapawCard->inSet = true;
+                            (*meldVec_ptr).push_back(sapawCard);
+                        }
+                        sort_cards(meldVec_ptr, false);
+                        set_meld_type(meldVec_ptr);
+                        (*tmpMeldVector).clear();
+                        playedIt = true;
+                        retVal = true;
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     // DONE
@@ -1468,7 +1524,7 @@ void Tong_Its_Player::show_all_sapaw_runs(bool playOne, vector<Tong_Its_Player>&
                             // sort_cards(meldVec_ptr, true);
                             (*tmpMeldVector).clear();
                         }
-                    } 
+                    }
                 }
             }
         }

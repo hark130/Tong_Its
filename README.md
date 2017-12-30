@@ -42,7 +42,7 @@ NOTE: I wanted std::make_unique so I needed C++ 14
             - [X] Add that meld to player's exposed melds <br />
             - [X] Recalculate player's melds <br />
             - [X] Printing the game state should show all of the exposed melds <br />
-            - [ ] Showing player's melds should also show potential 'add ons' to previously exposed melds <br />
+            - [X] Showing player's melds should also show potential 'add ons' to previously exposed melds <br />
             - [X] Print a player's melds horizontally to conserve space <br />
             - [ ] Allow the user to build specific melds (e.g. 9999 789 vs 999 *and* 789) <br />
             - [X] Account for "special" melds somehow (struct with bool special and vector<shared_ptr<PCard>> ?) and don't forget to update T_I_G::calc_chip_loss() when you do <br />
@@ -53,6 +53,11 @@ NOTE: I wanted std::make_unique so I needed C++ 14
     - [X] Account for runs longer than 3 <br />
     - [ ] Only allowed to take from the discard if you can make a meld with it <br />
     - [X] "You just drew a ..." assistant <br />
+    - [ ] Sapaw
+        - [X] List available sapaws
+        - [X] Play a sapaw into another player's meld
+        - [ ] Choose the player you want to sapaw
+        - [ ] Choose the meld you want to sapaw
 * End Of Play <br />
     - [ ] Determine if the game is over
         - [X] Draw pile empty
@@ -121,4 +126,5 @@ NOTE: I wanted std::make_unique so I needed C++ 14
     - Tong_Its_Game::reset_game()
 
 ### Tong_Its_Player class
+
 ### Tong_Its_Game class

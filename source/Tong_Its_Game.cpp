@@ -433,6 +433,8 @@ int Tong_Its_Game::user_interface(void)
     int subMenuChoice = 0;
     bool isTurnOver = false;
     bool eligibleToCallDraw = true;
+    bool originalSapawState = players[0].na_sapaw_ako();  // Holds the current sapaw state in case a method fails
+    bool playerSapawHimself = false;
 
     game_state();
 
@@ -456,7 +458,7 @@ int Tong_Its_Game::user_interface(void)
         {
             cout << "6. " << dynamicChoice6 << endl;  // TONGITS
         }
-        if (eligibleToCallDraw && players[0].already_open())
+        if (eligibleToCallDraw && players[0].already_open() && !(players[0].na_sapaw_ako()))
         {
             cout << "7. " << dynamicChoice7 << endl;  // Draw
         }
@@ -490,13 +492,76 @@ int Tong_Its_Game::user_interface(void)
                     {
                         tempCard = card_is_drawn();
                         players[0].receive_a_card(tempCard);
-                        eligibleToCallDraw = false;
                     }
                     else if (subMenuChoice == 2)
                     {
                         tempCard = discard_is_taken();
                         players[0].receive_a_card(tempCard);
-                        eligibleToCallDraw = false;
+                        // Validate that tempCard makes a meld
+                        if (players[0].card_can_meld(tempCard))
+                        {
+                            // WHILE TEMPCARD IS *NOT* IN THE PLAYER'S EXPOSED MELDS
+                                // Clear the sapaw state
+                                players[0].wala_nang_sapaw();
+                                
+                                // Print
+                                players[0].show_all_melds(true, players);
+
+                                // Prompt
+                                cout << "Enter the number of the meld you would like to expose: " << endl;
+                                
+                                // Input
+                                subMenuChoice = input_number();
+
+                                // Input Validation
+                                if (subMenuChoice < 1 || subMenuChoice > players[0].count_potential_melds(players))
+                                {
+                                    // Try again
+                                    cout << "Invalid meld number.\n" << "Please choose again." << endl;
+                                    // Reset sapaw state (which was cleared earlier)
+                                    if (originalSapawState)
+                                    {
+                                        players[0].na_sapaw_ka();
+                                    }
+                                    break;
+                                }
+                                else
+                                {
+                                    if (!(players[0].expose_a_meld(subMenuChoice, players)))
+                                    {
+                                        cout << "There was a problem exposing your meld.\n" << endl;
+                                        // Reset sapaw state (which was cleared earlier)
+                                        if (originalSapawState)
+                                        {
+                                            players[0].na_sapaw_ka();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // No longer eligible to call Draw
+                                        eligibleToCallDraw = false;
+                                        playerSapawHimself = players[0].na_sapaw_ako();
+                                        game_state();
+                                    }
+                                }
+                        }
+                        else
+                        {
+                            // Chastise the user
+                            cout << "Invalid draw.\n" << "This card can not meld." << endl;
+                            
+                            // Take the card from the player's hand
+                            if (tempCard != players[0].play_a_card(players[0].get_card_number(tempCard)))
+                            {
+                                throw runtime_error("user_interface() - Unable to recover invalid discard draw");
+                            }
+
+                            // Place the card back in the discards
+                            receive_a_discard(tempCard);
+
+                            // Continue the game
+                            continue;
+                        }
                     }
                     else
                     {
@@ -569,7 +634,10 @@ int Tong_Its_Game::user_interface(void)
             // 2. EXPOSE A MELD
             case 2:
                 if (players[0].count_potential_melds(players) > 0)
-                {
+                {                        
+                    // Clear the sapaw state
+                    players[0].wala_nang_sapaw();
+                    
                     // Print
                     players[0].show_all_melds(true, players);
 
@@ -584,6 +652,11 @@ int Tong_Its_Game::user_interface(void)
                     {
                         // Try again
                         cout << "Invalid meld number.\n" << "Please choose again." << endl;
+                        // Reset sapaw state (which was cleared earlier)
+                        if (originalSapawState)
+                        {
+                            players[0].na_sapaw_ka();
+                        }
                         break;
                     }
                     else
@@ -591,12 +664,17 @@ int Tong_Its_Game::user_interface(void)
                         if (!(players[0].expose_a_meld(subMenuChoice, players)))
                         {
                             cout << "There was a problem exposing your meld.\n" << endl;
+                            // Reset sapaw state (which was cleared earlier)
+                            if (originalSapawState)
+                            {
+                                players[0].na_sapaw_ka();
+                            }
                         }
                         else
                         {
                             // No longer eligible to call Draw
                             eligibleToCallDraw = false;
-
+                            playerSapawHimself = players[0].na_sapaw_ako();
                             game_state();
                         }
                     }
@@ -643,11 +721,11 @@ int Tong_Its_Game::user_interface(void)
                 break;
             // 7. DRAW
             case 7:
-                if (eligibleToCallDraw && players[0].already_open())
+                if (eligibleToCallDraw && players[0].already_open() && !(players[0].na_sapaw_ako()))
                 {
-                    // IMPLEMENT THIS LATER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     // 1. Call draw
                     players[0].call_draw();
+                    // IMPLEMENT THIS LATER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     // 2. Other players can challenge or fold (lose if ineligible to challenge)
                     // 3. Score and compare the players that challenged
                 }
@@ -664,6 +742,12 @@ int Tong_Its_Game::user_interface(void)
                 cout << "Invalid selection\n" << "Please choose again" << endl;
                 break;
         }
+    }
+
+    // Ensure sapaw state was cleared if player has not sapaw themselves
+    if (!playerSapawHimself)
+    {
+        players[0].wala_nang_sapaw();
     }
 
     return menuChoice;

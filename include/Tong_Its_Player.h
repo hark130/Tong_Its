@@ -67,6 +67,10 @@ public:
     bool is_this_a_run(shared_ptr<vector<shared_ptr<PCard>>> meldVec_ptr);
     bool is_this_a_set(shared_ptr<vector<shared_ptr<PCard>>> meldVec_ptr);
     vector<shared_ptr<vector<shared_ptr<PCard>>>> get_exposed_melds(void);
+    bool na_sapaw_ako(void);  // Has this player been 'layed off' on?  'Getter' for sapawAko
+    void na_sapaw_ka(void);  // Call this when a player 'lays off'.  Setter' for sapawAko
+    void wala_nang_sapaw(void);  // Call this to clear sapawAko
+    bool card_can_meld(shared_ptr<PCard> oneCard);
 private:
     bool sortBySuit;
     string name;
@@ -78,6 +82,7 @@ private:
     bool burned;
     int finalScore;
     bool open;
+    bool sapawAko;  // Set to true if a player lays off (sapaw) on your exposed meld
     shared_ptr<vector<shared_ptr<PCard>>> playersHand;
     vector<shared_ptr<vector<shared_ptr<PCard>>>> playersMelds;
     vector<shared_ptr<vector<shared_ptr<PCard>>>> playersExposedMelds;

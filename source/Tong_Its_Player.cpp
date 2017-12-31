@@ -455,7 +455,6 @@ bool Tong_Its_Player::expose_a_sapaw_meld(shared_ptr<vector<shared_ptr<PCard>>> 
     vector<shared_ptr<PCard>> tmpMeldSet;
     auto tmpExposedMelds = make_shared<vector<shared_ptr<vector<shared_ptr<PCard>>>>>();
     auto tmpMeldVector = make_shared<vector<shared_ptr<PCard>>>();
-    bool playedIt = false;
     // shared_ptr<vector<shared_ptr<PCard>>> pExpMeldsVector_ptr = nullptr;  // playersExposedMelds
     // bool runMeld = false;  // Used to define the type of meld the PCards are in
     // bool setMeld = false;  // Used to define the type of meld the PCards are in
@@ -492,8 +491,8 @@ bool Tong_Its_Player::expose_a_sapaw_meld(shared_ptr<vector<shared_ptr<PCard>>> 
     // Iterate through each player
     for (auto player : players)
     {
-        // If playedIt is true, stop
-        if (playedIt)
+        // If retVal is true, stop
+        if (retVal)
         {
             break;
         }
@@ -505,8 +504,8 @@ bool Tong_Its_Player::expose_a_sapaw_meld(shared_ptr<vector<shared_ptr<PCard>>> 
         // Iterate through each meld vector pointer
         for (auto meldVec_ptr : (*tmpExposedMelds))
         {
-            // If playedIt is true, stop
-            if (playedIt)
+            // If retVal is true, stop
+            if (retVal)
             {
                 break;
             }
@@ -545,7 +544,7 @@ bool Tong_Its_Player::expose_a_sapaw_meld(shared_ptr<vector<shared_ptr<PCard>>> 
                     sort_cards(meldVec_ptr, true);
                     set_meld_type(meldVec_ptr);
                     (*tmpMeldVector).clear();
-                    playedIt = true;
+                    player.na_sapaw_ka();
                     retVal = true;
                     break;
                 }
@@ -564,7 +563,7 @@ bool Tong_Its_Player::expose_a_sapaw_meld(shared_ptr<vector<shared_ptr<PCard>>> 
                         sort_cards(meldVec_ptr, false);
                         set_meld_type(meldVec_ptr);
                         (*tmpMeldVector).clear();
-                        playedIt = true;
+                        player.na_sapaw_ka();
                         retVal = true;
                         break;
                     }
@@ -1035,6 +1034,81 @@ bool Tong_Its_Player::is_this_a_set(shared_ptr<vector<shared_ptr<PCard>>> meldVe
 vector<shared_ptr<vector<shared_ptr<PCard>>>> Tong_Its_Player::get_exposed_melds(void)
 {
     return playersExposedMelds;
+}
+
+
+/*
+    Purpose - Has this player been 'layed off' on?
+    Input - None
+    Output - sapawAko
+ */
+bool Tong_Its_Player::na_sapaw_ako(void)
+{
+    return sapawAko;
+}
+
+
+/*
+    Purpose - Call this when a player 'lays off'.  
+    Input - None
+    Output - None
+    Note - 'Setter' for sapawAko
+ */
+void Tong_Its_Player::na_sapaw_ka(void)
+{
+    sapawAko = true;
+    return;
+}
+
+
+/*
+    Purpose - Clear a player's 'sapaw' status
+    Input - None
+    Output - None
+    Note - Call this before a player plays a card
+ */
+void Tong_Its_Player::wala_nang_sapaw(void)
+{
+    sapawAko = false;
+    return;
+}
+
+
+/*
+    Purpose - Originally written to validate that a drawn discard can be exposed in a meld
+    Input - Pointer to a playing card to validate
+    Output - True if it can be exposed in a meld, false otherwise
+    Note
+        oneCard will be validated against playersMelds
+        This method will call update_potential_melds()
+ */
+bool Tong_Its_Player::card_can_meld(shared_ptr<PCard> oneCard)
+{
+    // LOCAL VARIABLES
+    bool retVal = false;
+
+    // FIND THE CARD
+    update_potential_melds();
+
+    for (auto meldVec_ptr : playersMelds)
+    {
+        if (retVal)
+        {
+            break;
+        }
+
+        for (auto meldCard_ptr : (*meldVec_ptr))
+        {
+            if (meldCard_ptr == oneCard)
+            {
+                retVal = true;
+                break;
+            }
+        }
+    }
+
+    // DONE
+    return retVal;
 }
 
 

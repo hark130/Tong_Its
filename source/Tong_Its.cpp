@@ -41,3 +41,40 @@ int input_number(void)
 
     return stoi(str);
 }
+
+
+/*
+    Purpose - Randomize a number within a given range, inclusive
+    Input
+        start - beginning range number
+        stop - ending range number
+    Output - A random number between start and stop, inclusive
+    Note
+        This function assumes you've already seeded the random number generator
+ */
+int Tong_Its_Player::random_num(int start, int stop)
+{
+    // Local Variables
+    int low = start;
+    int high = stop;
+    int retVal = 0;
+
+    // Input Validation
+    if (low > high)
+    {
+        low = low ^ high;
+        high = low ^ high;
+        low = low ^ high;
+    }
+    
+    if (start == stop)
+    {
+        retVal = start;
+    }
+    else
+    {
+        retVal = (rand() % (high - low + 1)) + (high - low);
+    }
+
+    return retVal;
+}

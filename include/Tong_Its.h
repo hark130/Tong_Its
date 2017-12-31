@@ -50,5 +50,6 @@ extern string specialString;
 #define NUM_CARDS_PER_ROW 52    // Indicates how many cards print_a_row() will print per row
 
 int input_number(void);
+int random_num(int start, int stop);
 
 #endif // __TONG_ITS__

@@ -54,6 +54,7 @@ int input_number(void)
  */
 int random_num(int start, int stop)
 {
+    cout << "Start: " << start << "\nStop: " << stop << endl;  // DEBUGGING
     // Local Variables
     int low = start;
     int high = stop;
@@ -73,7 +74,17 @@ int random_num(int start, int stop)
     }
     else
     {
-        retVal = (rand() % (high - low + 1)) + (high - low);
+        retVal = rand();
+        // cout << "1. rand() == " << retVal << endl;  // DEBUGGING
+        // cout << "2. " << retVal << " % " << (high - low + 1);  // DEBUGGING
+        retVal = retVal % (high - low + 1);
+        // cout << " == " << retVal << endl;  // DEBUGGING
+        // cout << "3. " << retVal << " + (" << high << " - " << low << ")";  // DEBUGGING
+        // retVal += high - low;
+        // cout << "3. " << retVal << " + " << low;  // DEBUGGING
+        retVal += low;
+        // cout << " == " << retVal << endl;  // DEBUGGING
+        // retVal = (rand() % (high - low + 1)) + (high - low);
     }
 
     return retVal;

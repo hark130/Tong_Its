@@ -20,8 +20,8 @@ public:
     void receive_a_discard(shared_ptr<PCard> discardedCard);  // Tong_Its_Player discards a card
     shared_ptr<PCard> card_is_drawn(void);  // Tong_Its_Player draws a card from the drawPile
     shared_ptr<PCard> discard_is_taken(void);  // Tong_Its_Player takes the top discard from the discardPile
-    // int currentDealer;  // Also the last winner
-    int currentPlayer;  // AKA the dealer
+    int currentDealer;  // Also the last winner
+    int currentPlayer;  // Current player's turn
     bool is_the_game_over(void);
     vector<Tong_Its_Player> players;
 private:

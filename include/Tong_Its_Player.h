@@ -89,7 +89,6 @@ private:
     void find_a_suit_run(string sortThisSuit);
     void print_a_row(int rowToPrint, bool printNums, shared_ptr<vector<shared_ptr<PCard>>> printTheseCards);
     void sort_cards(shared_ptr<vector<shared_ptr<PCard>>> cardsToSort, bool sortByTheSuits);
-    int random_num(int start, int stop);
     bool card_in_a_meld(shared_ptr<PCard> findThisCard);
     // AI decision algorithm
     //    Random Plays

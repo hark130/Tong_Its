@@ -2084,34 +2084,6 @@ void Tong_Its_Player::sort_cards(shared_ptr<vector<shared_ptr<PCard>>> cardsToSo
 }
 
 
-int Tong_Its_Player::random_num(int start, int stop)
-{
-    // Local Variables
-    int low = start;
-    int high = stop;
-    int retVal = 0;
-
-    // Input Validation
-    if (low > high)
-    {
-        low = low ^ high;
-        high = low ^ high;
-        low = low ^ high;
-    }
-    
-    if (start == stop)
-    {
-        retVal = start;
-    }
-    else
-    {
-        retVal = (rand() % (high - low + 1)) + (high - low);
-    }
-
-    return retVal;
-}
-
-
 /*
     Purpose - Determine if this card is in a potential meld
     Input - findThisCard - PCard to find in playersPotentialMelds

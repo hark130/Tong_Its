@@ -31,20 +31,21 @@ players({*humanPlayerName, string("Mike"), string("Eren")})
 
     // 2. Shuffle the deck of cards
     // cout << "Function call to shuffle_a_deck()" << endl;  // DEBUGGING
-    // shuffle_a_deck(drawPile);  // COMMENTED FOR TESTING
+    shuffle_a_deck(drawPile);  // COMMENTED FOR TESTING
 
     // 3. Create the discard pile
     discardPile = make_shared<vector<shared_ptr<PCard>>>();
 
-    // 4. Set the current dealer to Player 1
-    // currentDealer = 1;
+    // 4. Randomize the starting dealer
+    currentDealer = random_num(1, players.size());
 
     // 5. Set current player
-    currentPlayer = 1;  // NOTE: Uncessary when currentDealer is (re)implemented?
+    currentPlayer = currentDealer;
 
     // 6. Deal hands to each player
     // cout << "Function call to deal_player_hands()" << endl;  // DEBUGGING
-    deal_player_hands(players[0]);
+    // deal_player_hands(players[0]);
+    deal_player_hands(players[currentDealer - 1]);
     // cout << "Ctor - Current player: " << currentPlayer << endl;  // DEBUGGING
 }
 

@@ -49,7 +49,7 @@ NOTE: I wanted std::make_unique so I needed C++ 14
     - [X] Declaring Draw (public method you_can_not_draw() coupled with a member variable ableToDraw) <br />
         - [X] You cannot call Draw if someone laid off on any of your melds since your previous turn <br />
         - [X] You cannot call Draw if you laid off on your own melds in your previous turn <br />
-    - [ ] {re}Implement "currentDealer" functionality <br />
+    - [X] {re}Implement "currentDealer" functionality <br />
     - [X] Account for runs longer than 3 <br />
     - [X] Only allowed to take from the discard if you can make a meld with it <br />
     - [X] "You just drew a ..." assistant <br />
@@ -86,7 +86,26 @@ NOTE: I wanted std::make_unique so I needed C++ 14
         - [ ] Organize methods into function groups?
     - [ ] Configuration file/user request for optional rules/gameplay?
 
+* AI <br />
+    - [ ] AI Class derived from Player Class
+        - [ ] Modify TIG constructor
+        - [ ] TIG must pass players and game(?) into entry level decision function (AI version of user_interface)
+    - [ ] AI strategies
+        - [ ] Random Plays
+        - [ ] Overt
+        - [ ] Covert
+            - [ ] Minimize sets played
+            - [ ] Minimize pulls from the discard pile
+            - [ ] Both
+        - [ ] Overt/Covert mix
+        - [ ] Perfect strategy (predictive)
+        - [ ] Perfect memory
+        - [ ] Maximize points   
+        - [ ] Cheater
+
 ## Refactoring
+* Once 'randomized dealer' and 'currentDealer = winner' is implemented, what is TIG::next_player() needed for?
+* TIG::user_interface() copy/pastes expose_a_meld() functionality between menu options 'expose a meld' and 'draw from discard'
 * Default draw location (1. Draw pile 2. Discard pile [Draw pile])?
 * Extricate playersMelds reset code block from Tong_Its_Player::update_potential_melds into its own method
 * Less hacky method to get the index number into a vector while also getting the vector (see: show_all_melds())

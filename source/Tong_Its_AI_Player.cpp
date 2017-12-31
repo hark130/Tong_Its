@@ -1,4 +1,8 @@
 #include "Tong_Its_AI_Player.h"
+#include "Tong_Its.h"
+#include "Tong_Its_Game.h"
+#include "Tong_Its_Player.h"
+#include "Tong_Its_Playing_Card.h"
 #include <iostream>
 
 
@@ -39,12 +43,18 @@ Tong_Its_AI_Player::Tong_Its_AI_Player(string playerName, int stratNum) : Tong_I
 
 /***** PUBLIC METHODS *****/
 
-void Tong_Its_AI_Player::ai_interface(Tong_Its_Game& theGame)
+void Tong_Its_AI_Player::ai_interface(Tong_Its_Game* theGame_ptr)
 {
+    // INPUT VALIDATION
+    if (theGame_ptr == nullptr)
+    {
+        throw invalid_argument("Tong_Its_AI_Player::ai_interface() received a nullptr");
+    }
+
     switch (strategy)
     {
         case (1):
-            ai_random_interface(theGame);
+            ai_random_interface(theGame_ptr);
             break;
         default:
             throw invalid_argument("Tong_Its_AI_Player::ai_interface() has detected an unsupported strategy");
@@ -53,16 +63,22 @@ void Tong_Its_AI_Player::ai_interface(Tong_Its_Game& theGame)
 
 /***** PRIVATE METHODS *****/
 
-void Tong_Its_AI_Player::ai_random_interface(Tong_Its_Game& theGame)
+void Tong_Its_AI_Player::ai_random_interface(Tong_Its_Game* theGame_ptr)
 {
     // LOCAL VARIABLES
     shared_ptr<PCard> tmpCard = nullptr;  // Temp playing card holder
     int tmpInt = 0;  // Random number holder
 
-    // Draw
-    if (count_cards() < 13)
+    // INPUT VALIDATION
+    if (theGame_ptr == nullptr)
     {
-        tmpCard = theGame.card_is_drawn();
+        throw invalid_argument("Tong_Its_AI_Player::ai_interface() received a nullptr");
+    }
+
+    // Draw
+    if (hand_size() < 13)
+    {
+        tmpCard = theGame_ptr->card_is_drawn();
         if (tmpCard == nullptr)
         {
             throw runtime_error("Tong_Its_AI_Player::ai_interface() received a nullptr");
@@ -71,9 +87,13 @@ void Tong_Its_AI_Player::ai_random_interface(Tong_Its_Game& theGame)
         tmpCard = nullptr;
     }
     // Discard
-    tmpInt = random_num(1, count_cards());
+    cout << get_name() << endl;  // DEBUGGING
+    cout << "Hand size: " << hand_size() << endl;  // DEBUGGING
+    tmpInt = random_num(1, hand_size());
+    cout << "Random number: " << tmpInt << endl;  // DEBUGGING
     tmpCard = play_a_card(tmpInt);
-    theGame.receive_a_discard(tmpCard);
+    cout << "Card number: " << tmpCard << endl;  // DEBUGGING
+    theGame_ptr->receive_a_discard(tmpCard);
 
     // DONE
     return;

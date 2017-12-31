@@ -181,7 +181,7 @@ int Tong_Its_Player::count_exposed_melds(void)
 }
 
 
-int Tong_Its_Player::count_potential_melds(vector<Tong_Its_Player>& players)
+int Tong_Its_Player::count_potential_melds(vector<shared_ptr<Tong_Its_Player>> players)
 {
     // Refresh player's melds
     update_potential_melds(true, players);
@@ -191,7 +191,7 @@ int Tong_Its_Player::count_potential_melds(vector<Tong_Its_Player>& players)
 }
 
 
-int Tong_Its_Player::count_special_melds(vector<Tong_Its_Player>& players)
+int Tong_Its_Player::count_special_melds(vector<shared_ptr<Tong_Its_Player>> players)
 {
     int retVal = 0;
 
@@ -236,7 +236,7 @@ int Tong_Its_Player::count_special_melds(vector<Tong_Its_Player>& players)
     Input - Meld number to expose (see: Index number into the potentialMeld vector)
     Output - True for sucess, False for failure
  */
-bool Tong_Its_Player::expose_a_meld(int meldNum, vector<Tong_Its_Player>& players)
+bool Tong_Its_Player::expose_a_meld(int meldNum, vector<shared_ptr<Tong_Its_Player>> players)
 {
     // LOCAL VARIABLES
     bool retVal = false;
@@ -446,7 +446,7 @@ bool Tong_Its_Player::expose_a_normal_meld(shared_ptr<vector<shared_ptr<PCard>>>
     Output - True for sucess, False for failure
     Note - Extricated from expose_a_meld() to allow for normal/sapaw meld branching
  */
-bool Tong_Its_Player::expose_a_sapaw_meld(shared_ptr<vector<shared_ptr<PCard>>> pMeldsVector_ptr, vector<Tong_Its_Player>& players)
+bool Tong_Its_Player::expose_a_sapaw_meld(shared_ptr<vector<shared_ptr<PCard>>> pMeldsVector_ptr, vector<shared_ptr<Tong_Its_Player>> players)
 {
     // LOCAL VARIABLES
     bool retVal = false;
@@ -498,8 +498,8 @@ bool Tong_Its_Player::expose_a_sapaw_meld(shared_ptr<vector<shared_ptr<PCard>>> 
         }
 
         // Get the player's exposed melds
-        (*tmpExposedMelds) = player.get_exposed_melds();
-        // cout << player.get_name() << " has " << player.count_exposed_melds() << " exposed melds." << endl;  // DEBUGGING
+        (*tmpExposedMelds) = player->get_exposed_melds();
+        // cout << player->get_name() << " has " << player->count_exposed_melds() << " exposed melds." << endl;  // DEBUGGING
 
         // Iterate through each meld vector pointer
         for (auto meldVec_ptr : (*tmpExposedMelds))
@@ -544,7 +544,7 @@ bool Tong_Its_Player::expose_a_sapaw_meld(shared_ptr<vector<shared_ptr<PCard>>> 
                     sort_cards(meldVec_ptr, true);
                     set_meld_type(meldVec_ptr);
                     (*tmpMeldVector).clear();
-                    player.na_sapaw_ka();
+                    player->na_sapaw_ka();
                     retVal = true;
                     break;
                 }
@@ -563,7 +563,7 @@ bool Tong_Its_Player::expose_a_sapaw_meld(shared_ptr<vector<shared_ptr<PCard>>> 
                         sort_cards(meldVec_ptr, false);
                         set_meld_type(meldVec_ptr);
                         (*tmpMeldVector).clear();
-                        player.na_sapaw_ka();
+                        player->na_sapaw_ka();
                         retVal = true;
                         break;
                     }
@@ -624,7 +624,7 @@ int Tong_Its_Player::hand_size(void)
 }
 
 
-int Tong_Its_Player::current_card_points(vector<Tong_Its_Player>& players)
+int Tong_Its_Player::current_card_points(vector<shared_ptr<Tong_Its_Player>> players)
 {
     // LOCAL VARIABLES
     int retVal = 0;
@@ -669,13 +669,13 @@ bool Tong_Its_Player::is_burned(void)
 }
 
 
-void Tong_Its_Player::calc_final_score(vector<Tong_Its_Player>& players)
+void Tong_Its_Player::calc_final_score(vector<shared_ptr<Tong_Its_Player>> players)
 {
     finalScore = current_card_points(players);
 }
 
 
-int Tong_Its_Player::get_final_score(vector<Tong_Its_Player>& players)
+int Tong_Its_Player::get_final_score(vector<shared_ptr<Tong_Its_Player>> players)
 {
     if (finalScore == 0)
     {
@@ -730,7 +730,7 @@ bool Tong_Its_Player::already_open(void)
 }
 
 
-bool Tong_Its_Player::challenge_a_draw(Tong_Its_Player& drawPlayer, vector<Tong_Its_Player>& players)
+bool Tong_Its_Player::challenge_a_draw(Tong_Its_Player& drawPlayer, vector<shared_ptr<Tong_Its_Player>> players)
 {
     // LOCAL VARIABLES
     bool retVal = false;
@@ -1082,7 +1082,7 @@ void Tong_Its_Player::wala_nang_sapaw(void)
         oneCard will be validated against playersMelds
         This method will call update_potential_melds()
  */
-bool Tong_Its_Player::card_can_meld(shared_ptr<PCard> oneCard, vector<Tong_Its_Player>& players)
+bool Tong_Its_Player::card_can_meld(shared_ptr<PCard> oneCard, vector<shared_ptr<Tong_Its_Player>> players)
 {
     // LOCAL VARIABLES
     bool retVal = false;
@@ -1172,6 +1172,9 @@ shared_ptr<PCard> Tong_Its_Player::play_a_card(int cardNumber)
     }
     else if (cardNumber > hand_size())
     {
+        cout << get_name() << endl;  // DEBUGGING
+        cout << "Card number: " << cardNumber << endl;  // DEBUGGING
+        cout << "Hand size: " << hand_size() << endl;  // DEBUGGING
         throw invalid_argument("Tong_Its_Player::play_a_card() received non-existent card number");
     }
     else
@@ -1281,7 +1284,7 @@ void Tong_Its_Player::print_playing_cards(bool printNums, shared_ptr<vector<shar
     Input - None
     Output - Number of melds in playersMelds
  */
-void Tong_Its_Player::update_potential_melds(bool playOne, vector<Tong_Its_Player>& players)
+void Tong_Its_Player::update_potential_melds(bool playOne, vector<shared_ptr<Tong_Its_Player>> players)
 {
     // Reset existing melds
     for (auto meldVec_ptr : playersMelds)
@@ -1325,7 +1328,7 @@ void Tong_Its_Player::update_potential_melds(bool playOne, vector<Tong_Its_Playe
     Output - Number of melds that were found
     Notes - This function will ensure the original sorting state is maintained
  */
-int Tong_Its_Player::show_all_melds(bool playOne, vector<Tong_Its_Player>& players)
+int Tong_Its_Player::show_all_melds(bool playOne, vector<shared_ptr<Tong_Its_Player>> players)
 {
     int currMeldNum = 1;
     bool originalSortingState = sortBySuit;
@@ -1505,7 +1508,7 @@ void Tong_Its_Player::show_all_sets(bool playOne)
         playersMelds will be updated directly
         This method will check each player's exposed melds when looking for sapaw
  */
-void Tong_Its_Player::update_potential_sapaw(bool playOne, vector<Tong_Its_Player>& players)
+void Tong_Its_Player::update_potential_sapaw(bool playOne, vector<shared_ptr<Tong_Its_Player>> players)
 {
     if (sortBySuit == true)
     {
@@ -1532,7 +1535,7 @@ void Tong_Its_Player::update_potential_sapaw(bool playOne, vector<Tong_Its_Playe
         playersMelds will be updated directly
         This method will check each player's exposed melds when looking for sapaw
  */
-void Tong_Its_Player::show_all_sapaw_runs(bool playOne, vector<Tong_Its_Player>& players)
+void Tong_Its_Player::show_all_sapaw_runs(bool playOne, vector<shared_ptr<Tong_Its_Player>> players)
 {
     // cout << "ENTERING SHOW_ALL_SAPAW_RUNS" << endl;  // DEBUGGING
     vector<string> cardSuits = {spadeString, clubString, heartString, diamondString};
@@ -1554,8 +1557,8 @@ void Tong_Its_Player::show_all_sapaw_runs(bool playOne, vector<Tong_Its_Player>&
     for (auto player : players)
     {
         // Get the player's exposed melds
-        (*tmpExposedMelds) = player.get_exposed_melds();
-        // cout << player.get_name() << " has " << player.count_exposed_melds() << " exposed melds." << endl;  // DEBUGGING
+        (*tmpExposedMelds) = player->get_exposed_melds();
+        // cout << player->get_name() << " has " << player->count_exposed_melds() << " exposed melds." << endl;  // DEBUGGING
 
         // Iterate through each meld vector pointer
         for (auto meldVec_ptr : (*tmpExposedMelds))

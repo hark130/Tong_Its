@@ -5,10 +5,12 @@
 #include <string>
 #include "Tong_Its_Playing_Card.h"
 #include "Tong_Its_Player.h"
+#include "Tong_Its_AI_Player.h"
 #include <vector>
 
 using namespace std;
 
+// class Tong_Its_AI_Player;  // Forward declared
 
 class Tong_Its_Game 
 {
@@ -24,8 +26,13 @@ public:
     int currentPlayer;  // Current player's turn
     bool is_the_game_over(void);
     // vector<Tong_Its_Player> players;
-    vector<unique_ptr<Tong_Its_Player>> players;
+    vector<shared_ptr<Tong_Its_Player>> players;
+    // vector<Tong_Its_AI_Player> players;
 private:
+    shared_ptr<Tong_Its_AI_Player> player2;
+    shared_ptr<Tong_Its_AI_Player> player3;
+    // Tong_Its_AI_Player player2;
+    // Tong_Its_AI_Player player3;
     // Current draw pile of unseen cards
     shared_ptr<vector<shared_ptr<PCard>>> drawPile;  // NOTE: Draw from the back()
     // Current discard pile (only the top should be accessible)
@@ -40,9 +47,9 @@ private:
     void game_state(void);
     int next_player(void);
     int score_the_game(void);
-    int calc_chip_loss(Tong_Its_Player& winner, Tong_Its_Player& loser);
+    int calc_chip_loss(shared_ptr<Tong_Its_Player> winner, shared_ptr<Tong_Its_Player> loser);
     void reset_game(int winnerNum);
-    };
+};
 
 
 #endif // __TONG_ITS_GAME__

@@ -58,6 +58,7 @@ NOTE: I wanted std::make_unique so I needed C++ 14
         - [X] Play a sapaw into another player's meld
         - [ ] Choose the player you want to sapaw
         - [ ] Choose the meld you want to sapaw
+    - [ ] Keep a running log of the AI player's turns
 * End Of Play <br />
     - [X] Determine if the game is over
         - [X] Draw pile empty
@@ -104,6 +105,7 @@ NOTE: I wanted std::make_unique so I needed C++ 14
         - [ ] Cheater
 
 ## Refactoring
+* TIP::hand_size() and TIP::count_cards() appear to be redundant
 * Once 'randomized dealer' and 'currentDealer = winner' is implemented, what is TIG::next_player() needed for?
 * TIG::user_interface() copy/pastes expose_a_meld() functionality between menu options 'expose a meld' and 'draw from discard'
 * Default draw location (1. Draw pile 2. Discard pile [Draw pile])?
@@ -126,6 +128,7 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 * Not every meld-related method requires 'bool playOne' as a parameter
 
 ## Bugs
+- [ ] Game thinks drawing a sapaw from discard is "can not play"
 - [ ] There exists a condition in which update_potential_melds() is called twice before the user can interact (user_interface && expose_a_meld?)
 - [X] User interface is allowing a player to call Draw if they have 0 exposed melds
 - [ ] Artifically extend meld spacing based on max-cards-per-line to avoid any soft-wrap from the hand printing methods
@@ -136,6 +139,13 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 - [X] Does sorting change after I expose a meld?
 - [ ] When no one wins, exposes a meld, draws, or Tongits... Player 0:  won with a score of 2147483647!  CONGRATULATIONS! Segmentation fault
 - [ ] When NUM_CARDS_PER_ROW is 1... terminate called after throwing an instance of 'std::out_of_range' what():  vector::M range check: n (which is 16) >= this->size() (which is 13)
+
+## Research
+* [Class casting](http://people.scs.carleton.ca/~dehne/projects/cpp-doc/tutorial/tut5-4.html)
+    * reinterpret_cast <new_type> (expression)
+    * dynamic_cast <new_type> (expression)
+    * static_cast <new_type> (expression)
+    * const_cast <new_type> (expression)
 
 ## Future Notes
 

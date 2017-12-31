@@ -1082,13 +1082,13 @@ void Tong_Its_Player::wala_nang_sapaw(void)
         oneCard will be validated against playersMelds
         This method will call update_potential_melds()
  */
-bool Tong_Its_Player::card_can_meld(shared_ptr<PCard> oneCard)
+bool Tong_Its_Player::card_can_meld(shared_ptr<PCard> oneCard, vector<Tong_Its_Player>& players)
 {
     // LOCAL VARIABLES
     bool retVal = false;
 
     // FIND THE CARD
-    update_potential_melds();
+    update_potential_melds(false, players);
 
     for (auto meldVec_ptr : playersMelds)
     {

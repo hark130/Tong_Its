@@ -495,12 +495,17 @@ int Tong_Its_Game::user_interface(void)
                     }
                     else if (subMenuChoice == 2)
                     {
+                        cout << "DRAWING FROM DISCARD" << endl;  // DEBUGGING
                         tempCard = discard_is_taken();
                         players[0].receive_a_card(tempCard);
                         // Validate that tempCard makes a meld
-                        if (players[0].card_can_meld(tempCard))
+                        if (players[0].card_can_meld(tempCard, players))
                         {
-                            // WHILE TEMPCARD IS *NOT* IN THE PLAYER'S EXPOSED MELDS
+                            cout << "IT CAN MELD" << endl;  // DEBUGGING
+                            // Force player to expose melds until the drawn discard is not longer in their hand
+                            while((players[0].get_card_number(tempCard)) != 0)
+                            {
+                                cout << "IT'S STILL IN YOUR HAND!" << endl;  // DEBUGGING
                                 // Clear the sapaw state
                                 players[0].wala_nang_sapaw();
                                 
@@ -508,6 +513,7 @@ int Tong_Its_Game::user_interface(void)
                                 players[0].show_all_melds(true, players);
 
                                 // Prompt
+                                cout << "You must now play the drawn discard." << endl;
                                 cout << "Enter the number of the meld you would like to expose: " << endl;
                                 
                                 // Input
@@ -541,9 +547,13 @@ int Tong_Its_Game::user_interface(void)
                                         // No longer eligible to call Draw
                                         eligibleToCallDraw = false;
                                         playerSapawHimself = players[0].na_sapaw_ako();
-                                        game_state();
+                                        // game_state();
                                     }
                                 }
+                            }
+                            // Reset temp variable
+                            subMenuChoice = 2;
+                            game_state();
                         }
                         else
                         {

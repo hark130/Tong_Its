@@ -46,12 +46,12 @@ NOTE: I wanted std::make_unique so I needed C++ 14
             - [X] Print a player's melds horizontally to conserve space <br />
             - [ ] Allow the user to build specific melds (e.g. 9999 789 vs 999 *and* 789) <br />
             - [X] Account for "special" melds somehow (struct with bool special and vector<shared_ptr<PCard>> ?) and don't forget to update T_I_G::calc_chip_loss() when you do <br />
-    - [ ] Declaring Draw (public method you_can_not_draw() coupled with a member variable ableToDraw) <br />
-        - [ ] You cannot call Draw if someone laid off on any of your melds since your previous turn <br />
-        - [ ] You cannot call Draw if you laid off on your own melds in your previous turn <br />
+    - [X] Declaring Draw (public method you_can_not_draw() coupled with a member variable ableToDraw) <br />
+        - [X] You cannot call Draw if someone laid off on any of your melds since your previous turn <br />
+        - [X] You cannot call Draw if you laid off on your own melds in your previous turn <br />
     - [ ] {re}Implement "currentDealer" functionality <br />
     - [X] Account for runs longer than 3 <br />
-    - [ ] Only allowed to take from the discard if you can make a meld with it <br />
+    - [X] Only allowed to take from the discard if you can make a meld with it <br />
     - [X] "You just drew a ..." assistant <br />
     - [ ] Sapaw
         - [X] List available sapaws
@@ -59,12 +59,12 @@ NOTE: I wanted std::make_unique so I needed C++ 14
         - [ ] Choose the player you want to sapaw
         - [ ] Choose the meld you want to sapaw
 * End Of Play <br />
-    - [ ] Determine if the game is over
+    - [X] Determine if the game is over
         - [X] Draw pile empty
         - [X] Player called Tongits (bool calledTongits)
         - [X] Player called Draw (bool calledDraw)
-            - [ ] Other players can fold or challenge
-            - [ ] Can't call draw if someone 'sapaw' you
+            - [X] Other players can fold or challenge
+            - [X] Can't call draw if someone 'sapaw' you
 * Scoring <br />
     - [X] Did anyone get 'burned'?
     - [X] Did anyone call Tongits?

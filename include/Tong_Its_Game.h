@@ -23,8 +23,8 @@ public:
     int currentDealer;  // Also the last winner
     int currentPlayer;  // Current player's turn
     bool is_the_game_over(void);
-    vector<Tong_Its_Player> players;
-    // vector<unique_ptr<Tong_Its_Player>> players;
+    // vector<Tong_Its_Player> players;
+    vector<unique_ptr<Tong_Its_Player>> players;
 private:
     // Current draw pile of unseen cards
     shared_ptr<vector<shared_ptr<PCard>>> drawPile;  // NOTE: Draw from the back()
@@ -34,7 +34,7 @@ private:
     shared_ptr<vector<shared_ptr<PCard>>> build_a_deck(void);
     // Randomizes the order of a vector of card pointers
     void shuffle_a_deck(shared_ptr<vector<shared_ptr<PCard>>> deckOfCards);
-    void deal_player_hands(Tong_Its_Player currentDealer);
+    void deal_player_hands(void);
     void print_a_card(shared_ptr<PCard> cardToPrint);
     int user_interface(void);
     void game_state(void);

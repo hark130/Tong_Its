@@ -19,10 +19,15 @@
 /***********************/
 
 // Tong_Its_Game::Tong_Its_Game(shared_ptr<string> humanPlayerName) : 
-Tong_Its_Game::Tong_Its_Game(const shared_ptr<string>& humanPlayerName) : 
+Tong_Its_Game::Tong_Its_Game(const shared_ptr<string>& humanPlayerName)
 // players({*humanPlayerName, string("Mike"), string("Eren")})
 // players({Tong_Its_Player(*humanPlayerName), Tong_Its_AI_Player(string("Mike"), 1), Tong_Its_AI_Player(string("Eren"), 1)})
 {
+    // -1. Build the players
+    players.push_back(unique_ptr<Tong_Its_Player>(new Tong_Its_Player(*humanPlayerName)));
+    players.push_back(unique_ptr<Tong_Its_Player>(new Tong_Its_AI_Player(string("Mike"), 1)));
+    players.push_back(unique_ptr<Tong_Its_Player>(new Tong_Its_AI_Player(string("Eren"), 1)));
+
     // 0. Seed the random number generator
     srand(unsigned(time(NULL)));
 
@@ -332,7 +337,7 @@ void Tong_Its_Game::shuffle_a_deck(shared_ptr<vector<shared_ptr<PCard>>> deckOfC
 /*
     Note - 13 cards to the dealer, 12 cards to the other players
  */
-void Tong_Its_Game::deal_player_hands(Tong_Its_Player currentDealer)
+void Tong_Its_Game::deal_player_hands(void)
 {
     // auto tempDeck = make_shared<vector<shared_ptr<PCard>>>();
     // auto tempCard = make_shared<PCard>(" ", " ");
@@ -343,17 +348,9 @@ void Tong_Its_Game::deal_player_hands(Tong_Its_Player currentDealer)
 
     // cout << "deal_player_hands() - Current player: " << currentPlayer << endl;  // DEBUGGING
 
-    if (currentPlayer == 1)
+    if (currentDealer > 0 && currentDealer < players.size())
     {
-        players[0].receive_a_card(tempCard);
-    }
-    else if (currentPlayer == 2)
-    {
-        players[1].receive_a_card(tempCard);        
-    }
-    else if (currentPlayer == 3)
-    {
-        players[2].receive_a_card(tempCard);
+        players[currentDealer - 1].receive_a_card(tempCard);
     }
     else
     {

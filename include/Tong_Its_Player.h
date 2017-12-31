@@ -71,7 +71,7 @@ public:
     void na_sapaw_ka(void);  // Call this when a player 'lays off'.  Setter' for sapawAko
     void wala_nang_sapaw(void);  // Call this to clear sapawAko
     bool card_can_meld(shared_ptr<PCard> oneCard, vector<Tong_Its_Player>& players);
-private:
+protected:
     bool sortBySuit;
     string name;
     int numOfChips;

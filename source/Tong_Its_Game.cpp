@@ -3,6 +3,7 @@
 #include "Tong_Its_Game.h"
 #include "Tong_Its_Playing_Card.h"
 #include "Tong_Its_Player.h"
+#include "Tong_Its_AI_Player.h"
 #include <algorithm>            // random_shuffle && sort 
 #include <climits>              // INT_MAX
 #include <cstdlib>              // srand
@@ -19,7 +20,8 @@
 
 // Tong_Its_Game::Tong_Its_Game(shared_ptr<string> humanPlayerName) : 
 Tong_Its_Game::Tong_Its_Game(const shared_ptr<string>& humanPlayerName) : 
-players({*humanPlayerName, string("Mike"), string("Eren")})
+// players({*humanPlayerName, string("Mike"), string("Eren")})
+// players({Tong_Its_Player(*humanPlayerName), Tong_Its_AI_Player(string("Mike"), 1), Tong_Its_AI_Player(string("Eren"), 1)})
 {
     // 0. Seed the random number generator
     srand(unsigned(time(NULL)));
@@ -58,6 +60,7 @@ void Tong_Its_Game::start_the_game(void)
     int winningPlayerNumber = 0;
     int tmpLoss = 0;                // Temp variable which stores a player's chip loss
     int playerNumber = 0;           // Temp variable tracking player number
+    Tong_Its_AI_Player currPlayer();
 
     while(gameOver != USER_EXIT)
     {
@@ -69,7 +72,9 @@ void Tong_Its_Game::start_the_game(void)
         else if (currentPlayer == 2 || currentPlayer == 3)
         {
             // AI Turn
-            // IMPLEMENT THIS LATER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // currPlayer = (Tong_Its_AI_Player)players[currentPlayer - 1];
+            // currPlayer.ai_interface(this);
+            players[currentPlayer - 1].ai_interface(this);
         }
         else
         {

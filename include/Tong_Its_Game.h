@@ -24,6 +24,7 @@ public:
     int currentPlayer;  // Current player's turn
     bool is_the_game_over(void);
     vector<Tong_Its_Player> players;
+    // vector<unique_ptr<Tong_Its_Player>> players;
 private:
     // Current draw pile of unseen cards
     shared_ptr<vector<shared_ptr<PCard>>> drawPile;  // NOTE: Draw from the back()

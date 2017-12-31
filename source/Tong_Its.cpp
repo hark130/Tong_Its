@@ -52,7 +52,7 @@ int input_number(void)
     Note
         This function assumes you've already seeded the random number generator
  */
-int Tong_Its_Player::random_num(int start, int stop)
+int random_num(int start, int stop)
 {
     // Local Variables
     int low = start;

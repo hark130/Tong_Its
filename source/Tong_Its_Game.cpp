@@ -365,12 +365,13 @@ void Tong_Its_Game::deal_player_hands(void)
 
     // cout << "deal_player_hands() - Current player: " << currentPlayer << endl;  // DEBUGGING
 
-    if (currentDealer > 0 && currentDealer < players.size())
+    if (currentDealer > 0 && currentDealer <= players.size())
     {
         players[currentDealer - 1]->receive_a_card(tempCard);
     }
     else
     {
+        // cout << "Current dealer == " << currentDealer << endl;  // DEBUGGING
         throw runtime_error("deal_player_hands() - Tong_Its_Game.currentPlayer has become corrupted");
     }
 

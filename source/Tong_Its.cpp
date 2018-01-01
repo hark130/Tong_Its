@@ -54,7 +54,7 @@ int input_number(void)
  */
 int random_num(int start, int stop)
 {
-    cout << "Start: " << start << "\nStop: " << stop << endl;  // DEBUGGING
+    // cout << "Start: " << start << "\nStop: " << stop << endl;  // DEBUGGING
     // Local Variables
     int low = start;
     int high = stop;

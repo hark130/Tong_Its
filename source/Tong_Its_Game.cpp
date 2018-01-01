@@ -532,17 +532,17 @@ int Tong_Its_Game::user_interface(void)
                     }
                     else if (subMenuChoice == 2)
                     {
-                        cout << "DRAWING FROM DISCARD" << endl;  // DEBUGGING
+                        // cout << "DRAWING FROM DISCARD" << endl;  // DEBUGGING
                         tempCard = discard_is_taken();
                         players[0]->receive_a_card(tempCard);
                         // Validate that tempCard makes a meld
                         if (players[0]->card_can_meld(tempCard, players))
                         {
-                            cout << "IT CAN MELD" << endl;  // DEBUGGING
+                            // cout << "IT CAN MELD" << endl;  // DEBUGGING
                             // Force player to expose melds until the drawn discard is not longer in their hand
                             while((players[0]->get_card_number(tempCard)) != 0)
                             {
-                                cout << "IT'S STILL IN YOUR HAND!" << endl;  // DEBUGGING
+                                // cout << "IT'S STILL IN YOUR HAND!" << endl;  // DEBUGGING
                                 // Clear the sapaw state
                                 players[0]->wala_nang_sapaw();
                                 

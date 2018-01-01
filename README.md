@@ -34,6 +34,8 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 * Randomizer <br />
     - [X] Returns a random number from x to y <br />
 * Game Play <br />
+    - [ ] Discards
+        - [ ] Don't give the option to draw from the discard if the play is illegal
     - [ ] Melds <br />
         - [X] Show melds <br />
         - [X] Number melds <br />
@@ -45,7 +47,9 @@ NOTE: I wanted std::make_unique so I needed C++ 14
             - [X] Showing player's melds should also show potential 'add ons' to previously exposed melds <br />
             - [X] Print a player's melds horizontally to conserve space <br />
             - [ ] Allow the user to build specific melds (e.g. 9999 789 vs 999 *and* 789) <br />
+        - [ ] Special Melds
             - [X] Account for "special" melds somehow (struct with bool special and vector<shared_ptr<PCard>> ?) and don't forget to update T_I_G::calc_chip_loss() when you do <br />
+            - [ ] Verify no one can see your exposed special melds
     - [X] Declaring Draw (public method you_can_not_draw() coupled with a member variable ableToDraw) <br />
         - [X] You cannot call Draw if someone laid off on any of your melds since your previous turn <br />
         - [X] You cannot call Draw if you laid off on your own melds in your previous turn <br />

@@ -128,6 +128,7 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 * Not every meld-related method requires 'bool playOne' as a parameter
 
 ## Bugs
+- [X] If the AI is to use TIP methods (see: expose_a_meld), some of them will have to modified to take a parameter that silences printed output (see: bool silent)
 - [ ] Previous turn, exposed a meld of three queens, drew a queen, fourth queen didn't show up as a potential meld
 - [ ] Special meld no longer being printed with the section marker?  2nd meld I exposed.  It came from drawing from the discard.  (source of bug in discard algorithm?)
 - [ ] Game thinks drawing a sapaw from discard is "can not play"
@@ -159,3 +160,9 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 ### Tong_Its_Player class
 
 ### Tong_Its_Game class
+
+### Tong_Its_AI_Player class
+- At a minimum, new AI strategies added to the AI class constitute an update in:
+    - The AI Player class constructor
+    - Tong_Its_AI_Player::ai_interface()
+    - Tong_Its_Game class constructor (to acutally utilize it)

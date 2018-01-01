@@ -24,8 +24,8 @@ Tong_Its_Game::Tong_Its_Game(const shared_ptr<string>& humanPlayerName)
 // players({Tong_Its_Player(*humanPlayerName), Tong_Its_AI_Player(string("Mike"), 1), Tong_Its_AI_Player(string("Eren"), 1)})
 {
     // -1. Build the players
-    player2 = make_shared<Tong_Its_AI_Player>(string("Mike"), 1);
-    player3 = make_shared<Tong_Its_AI_Player>(string("Eren"), 1);
+    player2 = make_shared<Tong_Its_AI_Player>(string("Mike"), 2);
+    player3 = make_shared<Tong_Its_AI_Player>(string("Eren"), 2);
     players.push_back(make_shared<Tong_Its_Player>(*humanPlayerName));
     // players.emplace_back(player2);
     // players.emplace_back(player3);
@@ -74,7 +74,7 @@ Tong_Its_Game::Tong_Its_Game(const shared_ptr<string>& humanPlayerName)
 
 void Tong_Its_Game::start_the_game(void)
 {
-    cout << "STARTING" << endl;  // DEBUGGING
+    // cout << "STARTING" << endl;  // DEBUGGING
     // LOCAL VARIABLES
     int gameOver = 0;               // Return value from user_interface()
     int stopPlaying = 1;            // User choice to stop playing or continue
@@ -570,7 +570,7 @@ int Tong_Its_Game::user_interface(void)
                                 }
                                 else
                                 {
-                                    if (!(players[0]->expose_a_meld(subMenuChoice, players)))
+                                    if (!(players[0]->expose_a_meld(subMenuChoice, players, false)))
                                     {
                                         cout << "There was a problem exposing your meld.\n" << endl;
                                         // Reset sapaw state (which was cleared earlier)
@@ -708,7 +708,7 @@ int Tong_Its_Game::user_interface(void)
                     }
                     else
                     {
-                        if (!(players[0]->expose_a_meld(subMenuChoice, players)))
+                        if (!(players[0]->expose_a_meld(subMenuChoice, players, false)))
                         {
                             cout << "There was a problem exposing your meld.\n" << endl;
                             // Reset sapaw state (which was cleared earlier)
@@ -847,10 +847,12 @@ void Tong_Its_Game::game_state(void)
     if (players[1]->count_exposed_melds() > 0)
     {
         cout << "Player 2: " << players[1]->get_name() << "'s Exposed Melds" << endl;
+        players[1]->print_exposed_melds();
     }
     if (players[2]->count_exposed_melds() > 0)
     {
         cout << "Player 3: " << players[2]->get_name() << "'s Exposed Melds" << endl;
+        players[2]->print_exposed_melds();
     }
     if (players[0]->count_exposed_melds() > 0 || players[1]->count_exposed_melds() > 0 || players[2]->count_exposed_melds() > 0)
     {

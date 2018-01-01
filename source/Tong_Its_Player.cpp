@@ -236,7 +236,7 @@ int Tong_Its_Player::count_special_melds(vector<shared_ptr<Tong_Its_Player>> pla
     Input - Meld number to expose (see: Index number into the potentialMeld vector)
     Output - True for sucess, False for failure
  */
-bool Tong_Its_Player::expose_a_meld(int meldNum, vector<shared_ptr<Tong_Its_Player>> players)
+bool Tong_Its_Player::expose_a_meld(int meldNum, vector<shared_ptr<Tong_Its_Player>> players, bool silent)
 {
     // LOCAL VARIABLES
     bool retVal = false;
@@ -260,11 +260,14 @@ bool Tong_Its_Player::expose_a_meld(int meldNum, vector<shared_ptr<Tong_Its_Play
 
     // EXPOSE THAT MELD
     // 1. Find the meld
-    cout << "You chose meld number " << meldNum << endl;  // DEBUGGING
-    cout << "There are " << playersMelds.size() << " melds to choose from" << endl;  // DEBUGGING
-    for (auto meld : playersMelds)
+    if (!silent)
     {
-        print_a_meld((*meld), 0);
+        cout << "You chose meld number " << meldNum << endl;  // DEBUGGING
+        cout << "There are " << playersMelds.size() << " melds to choose from" << endl;  // DEBUGGING
+        for (auto meld : playersMelds)
+        {
+            print_a_meld((*meld), 0);
+        }
     }
     pMeldsVector_ptr = playersMelds.at(meldNum - 1);
     if (pMeldsVector_ptr == nullptr)
@@ -341,8 +344,22 @@ bool Tong_Its_Player::expose_a_meld(int meldNum, vector<shared_ptr<Tong_Its_Play
     //     }   
     // }
 
+    // /* DEBUGGING */
+    // for (auto meldVec_ptr : playersExposedMelds)
+    // {        
+    //     cout << "PRINTING " << get_name() << "'s EXPOSED MELD (in expose_a_meld()):" << endl;  // DEBUGGING
+    //     print_a_meld(*meldVec_ptr, 0);
+    // }
+
     // 4. Recalculate the player's melds
     update_potential_melds(false, players);
+
+    // /* DEBUGGING */
+    // for (auto meldVec_ptr : playersExposedMelds)
+    // {        
+    //     cout << "PRINTING " << get_name() << "'s EXPOSED MELD (in expose_a_meld() post-update()):" << endl;  // DEBUGGING
+    //     print_a_meld(*meldVec_ptr, 0);
+    // }
 
     // 5. Did the player get Tongits?
     if (hand_size() == 0)
@@ -375,6 +392,7 @@ bool Tong_Its_Player::expose_a_normal_meld(shared_ptr<vector<shared_ptr<PCard>>>
 
     for (auto meldCard : (*pMeldsVector_ptr))
     {
+        // cout << "EXPOSING A " << meldCard->rank << meldCard->suit << "  FROM " << get_name() << endl;  // DEBUGGING
         // 2. Remove the meld from player's hand
         // 2.1. Get the card number
         tempCardNum = get_card_number(meldCard);
@@ -382,19 +400,23 @@ bool Tong_Its_Player::expose_a_normal_meld(shared_ptr<vector<shared_ptr<PCard>>>
         try
         {
             tmpPCard_ptr = play_a_card(tempCardNum);
+            // cout << "REMOVED A " << tmpPCard_ptr->rank << tmpPCard_ptr->suit << "  FROM " << get_name() << endl;  // DEBUGGING
         }
         catch (const std::invalid_argument& err)
         {
+            // cout << "ERROR ERROR ERROR!!!" << endl;  // DEBUGGING
             cerr << "Invalid argument: " << err.what() << endl;
             // continue;
         }
         // 2.3. Verify return value
         if (tmpPCard_ptr == nullptr)
         {
+            // cout << "ERROR ERROR ERROR!!!" << endl;  // DEBUGGING
             throw runtime_error("Tong_Its_Player::expose_a_meld() received a nullptr");    
         }
         else if (meldCard != tmpPCard_ptr)
         {
+            // cout << "ERROR ERROR ERROR!!!" << endl;  // DEBUGGING
             throw runtime_error("Tong_Its_Player::expose_a_meld() received the wrong card");
         }
 
@@ -416,21 +438,35 @@ bool Tong_Its_Player::expose_a_normal_meld(shared_ptr<vector<shared_ptr<PCard>>>
     // 3.3. Copy the PCards to the player's exposed melds
     for (auto meldCard : tmpMeldSet)
     {
+        // cout << "MOVING A " << meldCard->rank << meldCard->suit << "  TO " << get_name() << "'s EXPOSED MELDS!" << endl;  // DEBUGGING
         meldCard->numMelds = 1;  // Set meld number
         meldCard->inRun = runMeld;
         meldCard->inSet = setMeld;
         (*pExpMeldsVector_ptr).push_back(meldCard);
     }
+    // cout << get_name() << "'s NEWLY EXPOSED MELD CURRENTLY HAS " << (*pExpMeldsVector_ptr).size() << " CARDS IN IT!" << endl;  // DEBUGGING
 
     // 3.4. Validate the meld
     if (set_meld_type(pExpMeldsVector_ptr))
     {
+        // cout << "PRINTING " << get_name() << "'s TEMP MELD:" << endl;  // DEBUGGING
+        // print_a_meld(tmpMeldSet, 0);  // DEBUGGING
+        // cout << "PRINTING " << get_name() << "'s EXPOSED MELD:" << endl;  // DEBUGGING
+        // print_a_meld(*pExpMeldsVector_ptr, 0);  // DEBUGGING
         // 3.5. Validate the copy
         if (tmpMeldSet.size() == (*pExpMeldsVector_ptr).size())
         {
             retVal = true;
             open = true;
-        }   
+        }
+        else
+        {
+            throw runtime_error("Tong_Its_Player::expose_a_normal_meld() discovered a size mismatch between the temp meld and the exposed meld!");
+        }
+    }
+    else
+    {
+        throw runtime_error("Tong_Its_Player::expose_a_normal_meld() was unable to validate these playing cards!");
     }
 
     // DONE

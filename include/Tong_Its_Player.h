@@ -44,7 +44,7 @@ public:
     void print_a_meld(vector<shared_ptr<PCard>> oneMeld, int meldNum);
     void print_exposed_melds(void);
     void sort_players_hand(void);
-    bool expose_a_meld(int meldNum, vector<shared_ptr<Tong_Its_Player>> players);
+    bool expose_a_meld(int meldNum, vector<shared_ptr<Tong_Its_Player>> players, bool silent);
     bool expose_a_normal_meld(shared_ptr<vector<shared_ptr<PCard>>> pMeldsVector_ptr);
     bool expose_a_sapaw_meld(shared_ptr<vector<shared_ptr<PCard>>> pMeldsVector_ptr, vector<shared_ptr<Tong_Its_Player>> players);
     void call_tongits(void);

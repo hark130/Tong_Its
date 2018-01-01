@@ -22,9 +22,11 @@ public:
 
 private:
 	// 1 - Entirely random.  Never takes a discard.  Never exposes a meld.
+	// 2 - Almost random.  Never takes a discard.  Exposes all melds.
 	int strategy;  // Strategy being used by the computer
 	string strategyDesc;  // Stores a brief description of this strategy
 	void ai_random_interface(Tong_Its_Game* theGame_ptr);
+	void ai_almost_random_interface(Tong_Its_Game* theGame_ptr);
 };
 
 #endif  // __TONG_ITS_AI_PLAYER__

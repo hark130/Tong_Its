@@ -28,7 +28,9 @@ public:
     // vector<Tong_Its_Player> players;
     vector<shared_ptr<Tong_Its_Player>> players;
     // vector<Tong_Its_AI_Player> players;
+    void log_an_entry(string logEntry);
 private:
+    vector<string> turnLog;
     shared_ptr<Tong_Its_AI_Player> player2;
     shared_ptr<Tong_Its_AI_Player> player3;
     // Tong_Its_AI_Player player2;

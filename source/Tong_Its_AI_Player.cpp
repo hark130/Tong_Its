@@ -68,6 +68,7 @@ void Tong_Its_AI_Player::ai_random_interface(Tong_Its_Game* theGame_ptr)
     // LOCAL VARIABLES
     shared_ptr<PCard> tmpCard = nullptr;  // Temp playing card holder
     int tmpInt = 0;  // Random number holder
+    string tmpLogEntry = "";  // Reusable string to build log entries
 
     // INPUT VALIDATION
     if (theGame_ptr == nullptr)
@@ -79,21 +80,35 @@ void Tong_Its_AI_Player::ai_random_interface(Tong_Its_Game* theGame_ptr)
     if (hand_size() < 13)
     {
         tmpCard = theGame_ptr->card_is_drawn();
+
         if (tmpCard == nullptr)
         {
             throw runtime_error("Tong_Its_AI_Player::ai_interface() received a nullptr");
         }
+        else
+        {
+            // Log it
+            tmpLogEntry = get_name() + " drew a card from the draw pile.";
+            theGame_ptr->log_an_entry(tmpLogEntry);
+            tmpLogEntry = "";
+        }
+
         receive_a_card(tmpCard);
         tmpCard = nullptr;
     }
     // Discard
-    cout << get_name() << endl;  // DEBUGGING
-    cout << "Hand size: " << hand_size() << endl;  // DEBUGGING
+    // cout << get_name() << endl;  // DEBUGGING
+    // cout << "Hand size: " << hand_size() << endl;  // DEBUGGING
     tmpInt = random_num(1, hand_size());
-    cout << "Random number: " << tmpInt << endl;  // DEBUGGING
+    // cout << "Random number: " << tmpInt << endl;  // DEBUGGING
     tmpCard = play_a_card(tmpInt);
-    cout << "Card number: " << tmpCard << endl;  // DEBUGGING
+    // cout << "Card number: " << tmpCard << endl;  // DEBUGGING
     theGame_ptr->receive_a_discard(tmpCard);
+
+    // Log it
+    tmpLogEntry = get_name() + " discarded a " + tmpCard->rank + tmpCard->suit;
+    theGame_ptr->log_an_entry(tmpLogEntry);
+    tmpLogEntry = "";
 
     // DONE
     return;

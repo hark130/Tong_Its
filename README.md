@@ -128,6 +128,8 @@ NOTE: I wanted std::make_unique so I needed C++ 14
 * Not every meld-related method requires 'bool playOne' as a parameter
 
 ## Bugs
+- [ ] Previous turn, exposed a meld of three queens, drew a queen, fourth queen didn't show up as a potential meld
+- [ ] Special meld no longer being printed with the section marker?  2nd meld I exposed.  It came from drawing from the discard.  (source of bug in discard algorithm?)
 - [ ] Game thinks drawing a sapaw from discard is "can not play"
 - [ ] There exists a condition in which update_potential_melds() is called twice before the user can interact (user_interface && expose_a_meld?)
 - [X] User interface is allowing a player to call Draw if they have 0 exposed melds

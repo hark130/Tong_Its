@@ -301,6 +301,22 @@ bool Tong_Its_Game::is_the_game_over(void)
 }
 
 
+/*
+    Purpose - Interface to allow players to log activity in the private member turnLog
+    Input - string object containing the log entry
+    Output - None
+ */
+void Tong_Its_Game::log_an_entry(string logEntry)
+{
+    if (logEntry.size() > 0)
+    {
+        turnLog.push_back(logEntry);
+    }
+
+    return;
+}
+
+
 shared_ptr<vector<shared_ptr<PCard>>> Tong_Its_Game::build_a_deck(void)
 {
     auto retVal = make_shared<vector<shared_ptr<PCard>>>();
@@ -797,6 +813,17 @@ void Tong_Its_Game::game_state(void)
     cout << "Player 1: " << players[0]->get_name() << " has " << players[0]->count_cards() << " cards and " << players[0]->count_chips() << " chips." << endl;
     cout << "Player 2: " << players[1]->get_name() << " has " << players[1]->count_cards() << " cards and " << players[1]->count_chips() << " chips." << endl;
     cout << "Player 3: " << players[2]->get_name() << " has " << players[2]->count_cards() << " cards and " << players[2]->count_chips() << " chips." << endl;
+
+    // Print log
+    for (string entry : turnLog)
+    {
+        cout << entry << endl;
+    }
+
+    // Clear log
+    turnLog.clear();
+
+    // Vertical whitespace
     cout << "\n";
 
     // Print discard pile
